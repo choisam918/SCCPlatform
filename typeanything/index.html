@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="打字練習">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="theme-color" content="#667eea">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="MobileOptimized" content="width">
+  <title>打字練習</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 全局移動端優化 */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* 主頁面專用樣式 */
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    .main-container {
+      max-width: 100vw;
+      margin: 0 auto;
+      padding: 1.5rem;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      flex-shrink: 0;
+    }
+
+    .main-title {
+      font-size: 2.5rem;
+      margin: 0 0 0.75rem 0;
+      color: #fff;
+      font-weight: 800;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      background: linear-gradient(45deg, #fff, #f0f9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .main-subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .admin-link {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .admin-link:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      flex: 1;
+      align-content: start;
+    }
+
+    .mode-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 1.5rem;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 160px;
+    }
+
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    .mode-card:hover::before {
+      left: 100%;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      background: rgba(255,255,255,1);
+    }
+
+    .mode-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .mode-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .mode-description {
+      color: #6b7280;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    .practice-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 1rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin: 1rem auto;
+      max-width: 100%;
+      backdrop-filter: blur(10px);
+      height: calc(100vh - 2rem);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .practice-header {
+      text-align: center;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .practice-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #1f2937;
+    }
+    
+    .practice-subtitle {
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+    
+    .word-display {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      border: 2px solid #0ea5e9;
+      flex-shrink: 0;
+    }
+    
+    .word-text {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0369a1;
+      margin-bottom: 0.5rem;
+    }
+    
+    .article-display {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 2px solid #e2e8f0;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      font-size: 1rem;
+      color: #374151;
+      flex-shrink: 0;
+    }
+    
+    .practice-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border: 2px solid #e5e7eb;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      background: #fff;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    
+    .practice-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .feedback-area {
+      min-height: 2rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    
+    .feedback-area.correct {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      color: #166534;
+      border: 2px solid #22c55e;
+    }
+    
+    .feedback-area.error {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+    
+    .feedback-area.complete {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      color: #1e40af;
+      border: 2px solid #3b82f6;
+    }
+    
+    .stats-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .stat-item {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: #fff;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+    }
+    
+    .result-section {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 2rem;
+      padding: 3rem;
+      margin-top: 2rem;
+    }
+    
+    .result-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: #1f2937;
+      text-align: center;
+    }
+    
+    .result-content {
+      margin-bottom: 2rem;
+      line-height: 2;
+      font-size: 1.1rem;
+    }
+    
+    .result-stats {
+      background: #fff;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      border: 2px solid #e5e7eb;
+      margin-bottom: 2rem;
+    }
+    
+    .result-stats-title {
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+    
+    .result-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .stat-box {
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    
+    .stat-value.correct {
+      color: #16a34a;
+    }
+    
+    .stat-value.error {
+      color: #dc2626;
+    }
+    
+    .correct-word {
+      color: #16a34a;
+      font-weight: 600;
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      margin: 0.3rem;
+      display: inline-block;
+      border: 2px solid #22c55e;
+    }
+    
+    .wrong-word {
+      color: #dc2626;
+      font-weight: 600;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      margin: 0.3rem;
+      display: inline-block;
+      border: 2px solid #ef4444;
+    }
+    
+    .correct-char {
+      color: #16a34a;
+      font-weight: 600;
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      margin: 0.2rem;
+      display: inline-block;
+      border: 1px solid #22c55e;
+    }
+    
+    .wrong-char {
+      color: #dc2626;
+      font-weight: 600;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      margin: 0.2rem;
+      display: inline-block;
+      border: 1px solid #ef4444;
+    }
+    
+    .expected-char {
+      color: #9ca3af;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6b7280;
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+    }
+    
+    .empty-state-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #374151;
+    }
+    
+    .empty-state-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    /* 響應式設計 */
+    @media (max-width: 1200px) {
+      .mode-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      
+      .mode-card {
+        padding: 1.5rem 1rem;
+        min-height: 140px;
+      }
+      
+      .mode-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+      }
+      
+      .mode-title {
+        font-size: 1.1rem;
+      }
+      
+      .mode-description {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 1rem;
+      }
+      
+      .main-title {
+        font-size: 2rem;
+      }
+      
+      .main-subtitle {
+        font-size: 1rem;
+      }
+      
+      .admin-link {
+        top: 1rem;
+        right: 1rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.8rem;
+      }
+      
+      .mode-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+      
+      .mode-card {
+        padding: 1.25rem 0.75rem;
+        min-height: 120px;
+      }
+      
+      .mode-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .mode-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .mode-description {
+        font-size: 0.75rem;
+        line-height: 1.3;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-container {
+        padding: 0.75rem;
+      }
+      
+      .main-title {
+        font-size: 1.5rem;
+      }
+      
+      .main-subtitle {
+        font-size: 0.8rem;
+      }
+      
+      .admin-link {
+        top: 0.75rem;
+        right: 0.75rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.7rem;
+      }
+      
+      .mode-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      
+      .mode-card {
+        padding: 1.5rem;
+        min-height: 100px;
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+      }
+      
+      .mode-icon {
+        font-size: 2rem;
+        margin-right: 1rem;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      
+      .mode-title {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+      }
+      
+      .mode-description {
+        font-size: 0.8rem;
+        line-height: 1.3;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <button class="admin-link" onclick="openAdmin()" id="admin-btn">🔐 管理者登入</button>
+    
+    <div class="main-header">
+      <h1 class="main-title">打字練習</h1>
+      <div class="main-subtitle">提升打字速度與準確度的最佳工具</div>
+    </div>
+    
+    <div id="mode-section">
+      <div class="mode-grid">
+        <div class="mode-card" onclick="startPractice('chinese-words')">
+          <span class="mode-icon">📝</span>
+          <div class="mode-title">中文生字打字</div>
+          <div class="mode-description">練習中文單字輸入，提升中文打字速度</div>
+        </div>
+        
+        <div class="mode-card" onclick="startPractice('english-words')">
+          <span class="mode-icon">🔤</span>
+          <div class="mode-title">英文生字打字</div>
+          <div class="mode-description">練習英文單字輸入，提升英文打字速度</div>
+        </div>
+        
+        <div class="mode-card" onclick="startPractice('chinese-article')">
+          <span class="mode-icon">📄</span>
+          <div class="mode-title">中文文章打字</div>
+          <div class="mode-description">練習中文文章輸入，提升整體打字能力</div>
+        </div>
+        
+        <div class="mode-card" onclick="startPractice('english-article')">
+          <span class="mode-icon">📖</span>
+          <div class="mode-title">英文文章打字</div>
+          <div class="mode-description">練習英文文章輸入，提升整體打字能力</div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="practice-section" class="practice-section hidden"></div>
+  </div>
+
+  <script>
+    // 返回主系统按钮功能
+    (function() {
+        'use strict';
+        
+        // 创建返回主系统按钮的样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .back-to-main-btn {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 9999;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 50px;
+                padding: 12px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .back-to-main-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            }
+            
+            .back-to-main-btn:active {
+                transform: translateY(0);
+            }
+            
+            .back-to-main-btn .icon {
+                font-size: 16px;
+            }
+            
+            /* 响应式设计 */
+            @media (max-width: 768px) {
+                .back-to-main-btn {
+                    top: 15px;
+                    left: 15px;
+                    padding: 10px 16px;
+                    font-size: 12px;
+                }
+                
+                .back-to-main-btn .icon {
+                    font-size: 14px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .back-to-main-btn {
+                    top: 10px;
+                    left: 10px;
+                    padding: 8px 12px;
+                    font-size: 11px;
+                }
+                
+                .back-to-main-btn .icon {
+                    font-size: 12px;
+                }
+            }
+        `;
+        
+        // 添加样式到页面
+        document.head.appendChild(style);
+        
+        // 创建返回主系统按钮
+        function createBackButton() {
+            const button = document.createElement('button');
+            button.className = 'back-to-main-btn';
+            button.innerHTML = '<span class="icon">🏠</span>返回主系統';
+            button.title = '返回主系统';
+            
+            // 添加点击事件
+            button.addEventListener('click', function() {
+                // 尝试多种方式返回主系统
+                if (window.parent && window.parent !== window) {
+                    // 如果在iframe中，通知父窗口
+                    window.parent.postMessage({ action: 'backToMain' }, '*');
+                } else if (window.opener) {
+                    // 如果是通过window.open打开的，关闭当前窗口
+                    window.close();
+                } else {
+                    // 直接跳转到主系统
+                    window.location.href = '../index.html';
+                }
+            });
+            
+            return button;
+        }
+        
+        // 等待DOM加载完成后添加按钮
+        function initBackButton() {
+            // 检查是否已经存在返回按钮
+            if (document.querySelector('.back-to-main-btn')) {
+                return;
+            }
+            
+            const button = createBackButton();
+            document.body.appendChild(button);
+            
+            // 监听来自父窗口的消息
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.action === 'backToMain') {
+                    window.location.href = '../index.html';
+                }
+            });
+        }
+        
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initBackButton);
+        } else {
+            initBackButton();
+        }
+    })();
+  </script>
+  <script>
+// 預設題目
+const DEFAULT_CONTENT = {
+  'chinese-words': [
+    { id: 1, title: '生字1', content: '你好' },
+    { id: 2, title: '生字2', content: '世界' },
+    { id: 3, title: '生字3', content: '學習' },
+    { id: 4, title: '生字4', content: '電腦' },
+    { id: 5, title: '生字5', content: '網路' },
+    { id: 6, title: '生字6', content: '科技' },
+    { id: 7, title: '生字7', content: '資訊' },
+    { id: 8, title: '生字8', content: '系統' },
+    { id: 9, title: '生字9', content: '程式' },
+    { id: 10, title: '生字10', content: '資料' }
+  ],
+  'english-words': [
+    { id: 1, title: 'Word 1', content: 'hello' },
+    { id: 2, title: 'Word 2', content: 'world' },
+    { id: 3, title: 'Word 3', content: 'computer' },
+    { id: 4, title: 'Word 4', content: 'internet' },
+    { id: 5, title: 'Word 5', content: 'technology' },
+    { id: 6, title: 'Word 6', content: 'information' },
+    { id: 7, title: 'Word 7', content: 'system' },
+    { id: 8, title: 'Word 8', content: 'program' },
+    { id: 9, title: 'Word 9', content: 'data' },
+    { id: 10, title: 'Word 10', content: 'test' }
+  ],
+  'chinese-article': [
+    { id: 1, title: '中文短文', content: '人工智能正在改變世界。學習新技術有助於提升生活品質。' }
+  ],
+  'english-article': [
+    { id: 1, title: 'English Short Article', content: 'Artificial intelligence is changing the world. Learning new technology helps improve quality of life.' }
+  ]
+};
+
+function getPracticeData() {
+  let data = localStorage.getItem('typingPracticeData');
+  if (!data) {
+    localStorage.setItem('typingPracticeData', JSON.stringify(DEFAULT_CONTENT));
+    return JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+  }
+  try {
+    return JSON.parse(data);
+  } catch {
+    localStorage.setItem('typingPracticeData', JSON.stringify(DEFAULT_CONTENT));
+    return JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+  }
+}
+
+function setPracticeData(data) {
+  localStorage.setItem('typingPracticeData', JSON.stringify(data));
+}
+
+// 狀態
+let currentMode = null;
+let currentPractice = null;
+
+// UI 切換
+function hideAll() {
+  ['mode-section','practice-section'].forEach(id=>{
+    document.getElementById(id).classList.add('hidden');
+  });
+}
+
+// 學生練習
+function startPractice(mode) {
+  currentMode = mode;
+  currentPractice = 0;
+  hideAll();
+  renderPractice();
+}
+
+function renderPractice() {
+  const data = getPracticeData();
+  const list = data[currentMode]||[];
+  const section = document.getElementById('practice-section');
+  if (!section) return;
+  
+  if (list.length===0) {
+    section.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-title">目前沒有練習內容</div>
+        <div class="empty-state-description">請聯繫管理員添加練習題目</div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn-secondary" onclick="backToMenu()">返回主頁</button>
+      </div>
+    `;
+    section.classList.remove('hidden');
+    return;
+  }
+  
+  const item = list[currentPractice];
+  let html = `
+    <div class="practice-header">
+      <div class="practice-title">${item.title}</div>
+      <div class="practice-subtitle">第 ${currentPractice+1} / ${list.length} 題</div>
+    </div>
+  `;
+  
+  if(currentMode==='chinese-words'||currentMode==='english-words'){
+    // 生字練習：一個一個單字
+    const words = item.content.split(' ').filter(w=>w.trim());
+    html += `<div id="word-display" class="word-display">
+      <div class="word-text" id="word-text">${words[0]}</div>
+    </div>`;
+    html += `<input class="practice-input" id="practice-input" placeholder="輸入單字後按空白鍵">`;
+    html += `<div id="word-feedback" class="feedback-area"></div>`;
+    html += `<div class="stats-bar">
+      <div class="stat-item" id="practice-accuracy">正確率：0%</div>
+      <div class="stat-item">進度：1 / ${words.length}</div>
+    </div>`;
+    html += `<div class="action-buttons">
+      <button class="btn-primary" onclick="nextPractice()">下一題</button>`;
+    if(currentPractice > 0) {
+      html += `<button class="btn-secondary" onclick="prevPractice()">上一題</button>`;
+    }
+    html += `<button class="btn-danger" onclick="endPractice()">結束練習</button>
+      <button class="btn-secondary" onclick="backToMenu()">返回主頁</button>
+    </div>`;
+    
+    section.innerHTML = html;
+    section.classList.remove('hidden');
+    
+    let wordIdx = 0;
+    let correctCount = 0;
+    let userWords = [];
+    let input = document.getElementById('practice-input');
+    let wordText = document.getElementById('word-text');
+    let feedback = document.getElementById('word-feedback');
+    let accuracy = document.getElementById('practice-accuracy');
+    
+    function showWord() {
+      wordText.textContent = words[wordIdx];
+      input.value = '';
+      input.focus();
+      feedback.innerHTML = '';
+      feedback.className = 'feedback-area';
+      input.style.background = '#fff';
+      updateAccuracy();
+    }
+    
+    function updateAccuracy() {
+      const percent = wordIdx===0 ? 0 : Math.round(correctCount/wordIdx*100);
+      accuracy.textContent = `正確率：${percent}%`;
+    }
+    
+    function showWordResult() {
+      let wrongCount = 0;
+      let resultHtml = '<div class="result-title">📋 練習結果</div>';
+      resultHtml += '<div class="result-content">';
+      
+      for(let i=0;i<words.length;i++){
+        const user = userWords[i]||'';
+        if(user===words[i]){
+          resultHtml += `<span class="correct-word">${words[i]}</span> `;
+        }else{
+          resultHtml += `<span class="wrong-word">${user||'＿'}</span><span class="expected-char">(${words[i]})</span> `;
+          wrongCount++;
+        }
+      }
+      resultHtml += '</div>';
+      
+      const percent = Math.round((words.length-wrongCount)/words.length*100);
+      resultHtml += `<div class="result-stats">
+        <div class="result-stats-title">📊 統計結果</div>
+        <div class="result-stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">錯誤數</div>
+            <div class="stat-value error">${wrongCount}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">正確率</div>
+            <div class="stat-value correct">${percent}%</div>
+          </div>
+        </div>
+      </div>`;
+      resultHtml += `<div class="action-buttons">
+        <button class="btn-primary" onclick="nextPractice()">下一題</button> 
+        <button class="btn-secondary" onclick="backToMenu()">返回主頁</button>
+      </div>`;
+      
+      // 創建結果區塊
+      const resultSection = document.createElement('div');
+      resultSection.className = 'result-section';
+      resultSection.innerHTML = resultHtml;
+      section.appendChild(resultSection);
+    }
+    
+    showWord();
+    input.oninput = function(e) {
+      const val = input.value.trim();
+      if(val===words[wordIdx]){
+        userWords[wordIdx] = val;
+        window._userAnswers = window._userAnswers || {};
+        window._userAnswers[currentMode] = window._userAnswers[currentMode] || [];
+        window._userAnswers[currentMode][currentPractice] = val;
+        feedback.innerHTML = '✅ 正確！';
+        feedback.className = 'feedback-area correct';
+        input.style.background = '#dcfce7';
+        correctCount++;
+        input.disabled = true;
+        setTimeout(()=>{
+          if(userWords[wordIdx] === words[wordIdx]){
+            wordIdx++;
+            if(wordIdx<words.length){ 
+              input.disabled = false;
+              showWord(); 
+            } else {
+              updateAccuracy();
+              feedback.innerHTML = `🎉 本題完成！`;
+              feedback.className = 'feedback-area complete';
+              showWordResult();
+            }
+          }
+        },400);
+      } else if(val.length > 0) {
+        feedback.innerHTML = `❌ 錯誤！請輸入「${words[wordIdx]}」`;
+        feedback.className = 'feedback-area error';
+        input.style.background = '#fee2e2';
+      } else {
+        feedback.innerHTML = `請輸入單字「${words[wordIdx]}」`;
+        feedback.className = 'feedback-area error';
+        input.style.background = '#fff';
+      }
+    };
+  } else {
+    // 文章練習：逐字校對
+    html += `<div id="article-display" class="article-display"></div>`;
+    html += `<input class="practice-input" id="practice-input" placeholder="請依序輸入文章內容">`;
+    html += `<div id="article-feedback" class="feedback-area"></div>`;
+    html += `<div class="stats-bar">
+      <div class="stat-item" id="practice-accuracy">正確率：0%</div>
+      <div class="stat-item">進度：0 / ${item.content.length}</div>
+    </div>`;
+    html += `<div class="action-buttons">
+      <button class="btn-primary" onclick="nextPractice()">下一題</button>
+      <button class="btn-secondary" onclick="backToMenu()">返回主頁</button>
+    </div>`;
+    
+    section.innerHTML = html;
+    section.classList.remove('hidden');
+    
+    let chars = item.content.split('');
+    let input = document.getElementById('practice-input');
+    let area = document.getElementById('article-display');
+    let feedback = document.getElementById('article-feedback');
+    let accuracy = document.getElementById('practice-accuracy');
+    let isCompleted = false;
+    let currentInput = '';
+    
+    function renderArticle(val){
+      currentInput = val;
+      let html = '';
+      let correct = 0;
+      
+      for(let i=0;i<chars.length;i++){
+        if(val[i]===undefined) {
+          html += `<span style="color:#6b7280;">${chars[i]}</span>`;
+        } else if(val[i]===chars[i]) { 
+          html += `<span style="color:#16a34a;font-weight:600;">${chars[i]}</span>`; 
+          correct++; 
+        } else {
+          html += `<span style="color:#dc2626;font-weight:600;">${chars[i]}</span>`;
+        }
+      }
+      
+      area.innerHTML = html;
+      const percent = val.length===0 ? 0 : Math.round(correct/val.length*100);
+      accuracy.textContent = `正確率：${percent}%`;
+      
+      if(val.length === chars.length && correct === chars.length && !isCompleted){
+        isCompleted = true;
+        feedback.innerHTML = '🎉 完成！';
+        feedback.className = 'feedback-area complete';
+        input.disabled = true;
+        setTimeout(()=>showArticleResult(val), 800);
+      }
+    }
+    
+    function showArticleResult(val) {
+      let wrongCount = 0;
+      let resultHtml = '<div class="result-title">📋 練習結果</div>';
+      resultHtml += '<div class="result-content">';
+      
+      for(let i=0;i<chars.length;i++){
+        if(val[i]===chars[i]){
+          resultHtml += `<span class="correct-char">${chars[i]}</span>`;
+        }else{
+          resultHtml += `<span class="wrong-char">${val[i]||'＿'}</span><span class="expected-char">(${chars[i]})</span>`;
+          wrongCount++;
+        }
+      }
+      resultHtml += '</div>';
+      
+      const percent = Math.round((chars.length-wrongCount)/chars.length*100);
+      resultHtml += `<div class="result-stats">
+        <div class="result-stats-title">📊 統計結果</div>
+        <div class="result-stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">錯誤數</div>
+            <div class="stat-value error">${wrongCount}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">正確率</div>
+            <div class="stat-value correct">${percent}%</div>
+          </div>
+        </div>
+      </div>`;
+      resultHtml += `<div class="action-buttons">
+        <button class="btn-primary" onclick="nextPractice()">下一題</button> 
+        <button class="btn-secondary" onclick="backToMenu()">返回主頁</button>
+      </div>`;
+      
+      const resultSection = document.createElement('div');
+      resultSection.className = 'result-section';
+      resultSection.innerHTML = resultHtml;
+      section.appendChild(resultSection);
+    }
+    
+    input.oninput = function(){
+      if(!isCompleted){
+        renderArticle(input.value);
+      }
+    };
+    renderArticle('');
+  }
+}
+
+function nextPractice() {
+  const data = getPracticeData();
+  const list = data[currentMode]||[];
+  if (currentPractice<list.length-1) {
+    currentPractice++;
+    renderPractice();
+  } else {
+    alert('🎉 已完成所有題目！');
+    backToMenu();
+  }
+}
+
+function prevPractice() {
+  if(currentPractice > 0) {
+    currentPractice--;
+    renderPractice();
+  }
+}
+
+function endPractice() {
+  showAllPracticeResult();
+}
+
+function showAllPracticeResult() {
+  const data = getPracticeData();
+  const list = data[currentMode]||[];
+  let total = list.length;
+  let totalCorrect = 0;
+  let resultHtml = '<div class="result-title">📋 本次練習總結</div>';
+  resultHtml += '<div class="result-content">';
+  list.forEach((item, idx) => {
+    let userAns = window._userAnswers && window._userAnswers[currentMode] && window._userAnswers[currentMode][idx];
+    let correct = 0;
+    let wrong = 0;
+    let detail = '';
+    if(item.content.split(' ').length === 1) {
+      if(userAns === item.content) {
+        correct = 1;
+        detail = `<span class='correct-word'>${userAns||'＿'}</span>`;
+      } else {
+        wrong = 1;
+        detail = `<span class='wrong-word'>${userAns||'＿'}</span><span class='expected-char'>(${item.content})</span>`;
+      }
+    } else {
+      const words = item.content.split(' ').filter(w=>w.trim());
+      const userWords = (userAns||'').split(' ');
+      words.forEach((w, i) => {
+        if(userWords[i] === w) {
+          correct++;
+          detail += `<span class='correct-word'>${w}</span> `;
+        } else {
+          wrong++;
+          detail += `<span class='wrong-word'>${userWords[i]||'＿'}</span><span class='expected-char'>(${w})</span> `;
+        }
+      });
+    }
+    let percent = Math.round(correct/(correct+wrong)*100)||0;
+    totalCorrect += correct;
+    resultHtml += `<div style='margin-bottom:1rem;'><b>第${idx+1}題</b>：${item.title} <br> ${detail}<br>正確率：${percent}%</div>`;
+  });
+  resultHtml += '</div>';
+  let allPercent = Math.round(totalCorrect/total*100)||0;
+  resultHtml = `<div class='result-title'>📊 全部正確率：${allPercent}%</div>` + resultHtml;
+  const section = document.getElementById('practice-section');
+  section.innerHTML = `<div class='result-section'>${resultHtml}<div class='action-buttons'><button class='btn-secondary' onclick='backToMenu()'>返回主頁</button></div></div>`;
+}
+
+function backToMenu() {
+  hideAll();
+  document.getElementById('mode-section').classList.remove('hidden');
+}
+
+// 初始化
+hideAll();
+document.getElementById('mode-section').classList.remove('hidden');
+
+// 管理者登入函數
+function openAdmin() {
+  // 使用 Electron IPC 載入管理頁面
+  if (window.electronAPI && window.electronAPI.openSubsystem) {
+    window.electronAPI.openSubsystem('typeanything/admin.html');
+  } else {
+    window.location.href = 'admin.html';
+  }
+}
+  </script>
+</body>
+</html>
