@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>打字練習 - 管理者登入</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #555; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 16px; 
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .btn:hover { background: #5a6fd8; }
+        .btn-test { background: #28a745; }
+        .btn-test:hover { background: #218838; }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-top: 10px;
+            display: none;
+        }
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🔐 管理者登入</h1>
+        
+        <div class="form-group">
+            <label>密碼</label>
+            <input type="password" id="password" placeholder="請輸入密碼" onkeypress="if(event.key==='Enter') login()">
+        </div>
+        
+        <button class="btn" onclick="login()">登入</button>
+        <button class="btn btn-test" onclick="testBasic()">🧪 基本測試</button>
+        <button class="btn btn-test" onclick="testAlert()">🚨 Alert 測試</button>
+        <button class="btn btn-test" onclick="testConsole()">📝 Console 測試</button>
+        
+        <div id="error" class="error"></div>
+        <div id="success" class="success"></div>
+    </div>
+
+    <script>
+        console.log('=== Typeanything 登入頁面載入 ===');
+        
+        // 基本測試
+        function testBasic() {
+            console.log('基本測試執行');
+            document.getElementById('success').innerHTML = '基本測試成功 - JavaScript 正常執行';
+            document.getElementById('success').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        // Alert 測試
+        function testAlert() {
+            console.log('Alert 測試執行');
+            alert('Alert 測試成功！');
+        }
+        
+        // Console 測試
+        function testConsole() {
+            console.log('Console 測試執行');
+            document.getElementById('success').innerHTML = 'Console 測試完成 - 請檢查 F12';
+            document.getElementById('success').style.display = 'block';
+        }
+        
+        // 登入函數
+        function login() {
+            console.log('登入函數被調用');
+            
+            const password = document.getElementById('password').value;
+            console.log('輸入密碼:', password);
+            
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+            
+            // 隱藏之前的消息
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            if (password === 'admin@123') {
+                console.log('密碼正確');
+                successDiv.innerHTML = '登入成功！正在跳轉...';
+                successDiv.style.display = 'block';
+                
+                // 延遲跳轉
+                setTimeout(function() {
+                    console.log('跳轉到主頁');
+                    if (window.electronAPI && window.electronAPI.navigateToMain) {
+                        window.electronAPI.navigateToMain();
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                }, 1000);
+            } else {
+                console.log('密碼錯誤');
+                errorDiv.innerHTML = '密碼錯誤，請重新輸入';
+                errorDiv.style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }
+        
+        // 頁面載入完成
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 載入完成');
+            document.getElementById('password').focus();
+        });
+        
+        // 檢查環境
+        console.log('當前環境:');
+        console.log('- window.electronAPI:', typeof window.electronAPI);
+        console.log('- document.getElementById:', typeof document.getElementById);
+        console.log('- alert:', typeof alert);
+        console.log('- console.log:', typeof console.log);
+    </script>
+</body>
+</html>
+
