@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="數學四則運算練習">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <title>小學數學四則運算練習</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+                <header>
+            <h1>🎯 數學四則運算練習</h1>
+            <button id="admin-login-btn" class="btn-admin">
+              <span class="admin-icon">⚙️</span>
+              <span class="admin-text">管理登入</span>
+            </button>
+            <div class="progress-info">
+                <div class="progress-card">
+                    <div class="progress-label">得分</div>
+                    <div class="progress-value" id="score">0</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-label">連續正確</div>
+                    <div class="progress-value" id="streak">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div id="level-select" class="level-select fullscreen-select">
+            <div class="fullscreen-container">
+                <div class="fullscreen-header">
+                    <h2>🎯 數學四則運算練習</h2>
+                    <p class="subtitle">選擇您想要練習的數學類型</p>
+                </div>
+                
+                <div class="fullscreen-grid">
+                    <!-- 加減法練習 -->
+                    <div class="fullscreen-card addition" data-category="addition-subtraction-100">
+                        <div class="card-icon">➕➖</div>
+                        <h3>百位數加減</h3>
+                    </div>
+                    
+                    <div class="fullscreen-card addition" data-category="addition-subtraction-1000">
+                        <div class="card-icon">➕➖</div>
+                        <h3>千位數加減</h3>
+                    </div>
+                    
+                    <!-- 乘除法練習 -->
+                    <div class="fullscreen-card multiply" data-category="multiplication-division-ones">
+                        <div class="card-icon">✖️➗</div>
+                        <h3>個位數乘除</h3>
+                    </div>
+                    
+                    <div class="fullscreen-card multiply" data-category="multiplication-division-tens">
+                        <div class="card-icon">✖️➗</div>
+                        <h3>十位數乘除</h3>
+                    </div>
+                    
+                    <!-- 四則運算練習 -->
+                    <div class="fullscreen-card mixed" data-category="mixed-ones">
+                        <div class="card-icon">🎯</div>
+                        <h3>個位數四則</h3>
+                    </div>
+                    
+                    <div class="fullscreen-card mixed" data-category="mixed-tens">
+                        <div class="card-icon">🎯</div>
+                        <h3>十位數四則</h3>
+                    </div>
+                    
+                    <div class="fullscreen-card mixed" data-category="mixed-hundreds">
+                        <div class="card-icon">🎯</div>
+                        <h3>百位數四則</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-area" class="game-area hidden">
+            <div class="question-container">
+                <div class="question">
+                    <span id="num1">5</span>
+                    <span id="operator">+</span>
+                    <span id="num2">3</span>
+                    <span>=</span>
+                    <input type="number" id="answer" placeholder="?" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="submit-btn" class="btn btn-primary">提交答案</button>
+                <button id="skip-btn" class="btn btn-secondary">跳過</button>
+                <button id="back-btn" class="btn btn-secondary">返回選單</button>
+                <button id="back-to-mult-mode" class="btn btn-secondary hidden">返回到選擇要練習的乘數</button>
+            </div>
+
+            <div class="feedback hidden" id="feedback">
+                <div class="feedback-content">
+                    <span id="feedback-text"></span>
+                    <button id="next-btn" class="btn btn-primary">下一題</button>
+                </div>
+            </div>
+
+            <div class="timer">
+                <div class="timer-bar">
+                    <div id="timer-fill" class="timer-fill"></div>
+                </div>
+                <span id="time-left">60</span>秒
+                <button id="pause-btn" class="btn btn-secondary pause-btn">暫停</button>
+                <button id="resume-btn" class="btn btn-primary resume-btn">繼續</button>
+            </div>
+        </div>
+
+        <div id="level-complete" class="level-complete hidden">
+            <div class="complete-content">
+                <h2>🎉 練習完成！</h2>
+                <div class="stats">
+                    <p>正確答案: <span id="correct-count">0</span></p>
+                    <p>總題數: <span id="total-count">0</span></p>
+                    <p>準確率: <span id="accuracy">0%</span></p>
+                </div>
+                <div class="buttons">
+                    <button id="next-level-btn" class="btn btn-primary">繼續練習</button>
+                    <button id="retry-btn" class="btn btn-secondary">重新挑戰</button>
+                    <button id="menu-btn" class="btn btn-secondary">返回選單</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+    <script>
+        // 返回主系统按钮功能
+        (function() {
+            'use strict';
+            
+            // 创建返回主系统按钮的样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .back-to-main-btn {
+                    position: fixed;
+                    top: 20px;
+                    left: 20px;
+                    z-index: 9999;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 50px;
+                    padding: 12px 20px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    backdrop-filter: blur(10px);
+                    border: 2px solid rgba(255, 255, 255, 0.2);
+                }
+                
+                .back-to-main-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+                }
+                
+                .back-to-main-btn:active {
+                    transform: translateY(0);
+                }
+                
+                .back-to-main-btn .icon {
+                    font-size: 16px;
+                }
+                
+                /* 响应式设计 */
+                @media (max-width: 768px) {
+                    .back-to-main-btn {
+                        top: 15px;
+                        left: 15px;
+                        padding: 10px 16px;
+                        font-size: 12px;
+                    }
+                    
+                    .back-to-main-btn .icon {
+                        font-size: 14px;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .back-to-main-btn {
+                        top: 10px;
+                        left: 10px;
+                        padding: 8px 12px;
+                        font-size: 11px;
+                    }
+                    
+                    .back-to-main-btn .icon {
+                        font-size: 12px;
+                    }
+                }
+                
+                .pause-btn, .resume-btn {
+                    margin-left: 16px;
+                }
+                
+                .resume-btn {
+                    display: none;
+                }
+            `;
+            
+            // 添加样式到页面
+            document.head.appendChild(style);
+            
+            // 创建返回主系统按钮
+            function createBackButton() {
+                const button = document.createElement('button');
+                button.className = 'back-to-main-btn';
+                button.innerHTML = '<span class="icon">🏠</span>返回主系統';
+                button.title = '返回主系统';
+                
+                // 添加点击事件
+                button.addEventListener('click', function() {
+                    // 尝试多种方式返回主系统
+                    if (window.parent && window.parent !== window) {
+                        // 如果在iframe中，通知父窗口
+                        window.parent.postMessage({ action: 'backToMain' }, '*');
+                    } else if (window.opener) {
+                        // 如果是通过window.open打开的，关闭当前窗口
+                        window.close();
+                    } else {
+                        // 直接跳转到主系统
+                        window.location.href = '../index.html';
+                    }
+                });
+                
+                return button;
+            }
+            
+            // 等待DOM加载完成后添加按钮
+            function initBackButton() {
+                // 检查是否已经存在返回按钮
+                if (document.querySelector('.back-to-main-btn')) {
+                    return;
+                }
+                
+                const button = createBackButton();
+                document.body.appendChild(button);
+                
+                // 监听来自父窗口的消息
+                window.addEventListener('message', function(event) {
+                    if (event.data && event.data.action === 'backToMain') {
+                        window.location.href = '../index.html';
+                    }
+                });
+            }
+            
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initBackButton);
+            } else {
+                initBackButton();
+            }
+        })();
+    </script>
+    <script>
+    document.getElementById('admin-login-btn').onclick = function() {
+        window.location.href = 'admin.html';
+    };
+    </script>
+</body>
+</html> 
