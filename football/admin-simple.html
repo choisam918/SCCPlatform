@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>足球戰術系統 - 管理頁面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #1e3c72;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1e3c72;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h1>🔐 管理員登入</h1>
+            <div class="form-group">
+                <label for="adminPassword">管理員密碼</label>
+                <input type="password" id="adminPassword" placeholder="請輸入管理員密碼" onkeypress="handlePasswordKeyPress(event)">
+            </div>
+            <button class="login-btn" onclick="checkPassword()">登入</button>
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- 管理頁面內容 -->
+    <div id="adminPage" class="hidden">
+        <button class="back-btn" onclick="goBack()">← 返回主頁</button>
+        
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>⚽ 足球戰術系統管理</h1>
+                <p>系統管理與數據維護</p>
+            </div>
+            
+            <div class="admin-content">
+                <h2>✅ 登入成功！</h2>
+                <p>您已成功進入足球戰術系統管理頁面。</p>
+                <p>返回鍵位於左上角。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 管理員密碼
+        const ADMIN_PASSWORD = 'admin@123';
+        
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Football admin 頁面載入完成');
+            // 檢查是否已經登入
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                showAdminPage();
+            } else {
+                showLoginPage();
+            }
+        });
+
+        // 顯示登入頁面
+        function showLoginPage() {
+            console.log('顯示登入頁面');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+        }
+
+        // 顯示管理頁面
+        function showAdminPage() {
+            console.log('顯示管理頁面');
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.remove('hidden');
+        }
+
+        // 檢查密碼
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            console.log('檢查密碼:', password);
+            console.log('正確密碼:', ADMIN_PASSWORD);
+            
+            if (password === ADMIN_PASSWORD) {
+                console.log('密碼正確，顯示管理頁面');
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showAdminPage();
+                errorMessage.classList.add('hidden');
+            } else {
+                console.log('密碼錯誤');
+                errorMessage.textContent = '密碼錯誤，請重新輸入！';
+                errorMessage.classList.remove('hidden');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        // 處理密碼輸入框的 Enter 鍵
+        function handlePasswordKeyPress(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+
+        // 返回主頁
+        function goBack() {
+            console.log('返回主頁');
+            if (window.electronAPI) {
+                window.electronAPI.navigateToMain();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+
