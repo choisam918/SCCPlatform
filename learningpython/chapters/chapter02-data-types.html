@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 數據類型 - Python 學習平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/search.js" defer></script>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <h1>🐍 Python 學習平台</h1>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-box" id="search-input" placeholder="搜索章節內容...">
+        </div>
+        <button class="back-to-main-btn" onclick="window.location.href='../../index.html'">
+            <span class="btn-icon">🏠</span>
+            <span class="btn-text">返回主系統</span>
+        </button>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 側邊欄 -->
+        <aside class="sidebar">
+            <h2>📚 課程目錄</h2>
+            
+            <h3>Python 基礎</h3>
+            <ul>
+                <li><a href="../index.html">Python 基本語法</a></li>
+                <li><a href="chapter02-data-types.html" class="active">Python 數據類型</a></li>
+                <li><a href="chapter03-operators.html">Python 運算符</a></li>
+                <li><a href="chapter04-conditionals.html">條件語句</a></li>
+                <li><a href="chapter05-loops.html">循環語句</a></li>
+                <li><a href="chapter06-functions.html">函數</a></li>
+                <li><a href="chapter07-modules.html">模組</a></li>
+                <li><a href="chapter08-file-io.html">文件操作</a></li>
+                <li><a href="chapter09-exceptions.html">異常處理</a></li>
+            </ul>
+
+            <h3>Python 進階</h3>
+            <ul>
+                <li><a href="chapter10-oop.html">面向對象編程</a></li>
+                <li><a href="chapter11-iterators.html">迭代器和生成器</a></li>
+                <li><a href="chapter12-decorators.html">裝飾器</a></li>
+                <li><a href="chapter13-lambda.html">Lambda 函數</a></li>
+                <li><a href="chapter14-regular-expressions.html">正則表達式</a></li>
+                <li><a href="chapter15-database.html">數據庫操作</a></li>
+                <li><a href="chapter16-web-scraping.html">網絡爬蟲</a></li>
+                <li><a href="chapter17-api.html">API 開發</a></li>
+            </ul>
+        </aside>
+
+        <!-- 主內容區 -->
+        <main class="main-content">
+            <h1 class="chapter-title">Python 數據類型</h1>
+            
+            <div class="content-section">
+                <p>變量是存儲在內存中的值，這就意味著在創建變量時會在內存中開闢一個空間。基於變量的數據類型，解釋器會分配指定內存，並決定什麼數據可以被存儲在內存中。因此，變量可以指定不同的數據類型，這些變量可以存儲整數，小數或字符。</p>
+
+                <h2>變量賦值</h2>
+                <p>Python 中的變量賦值不需要類型聲明。每個變量在內存中創建，都包括變量的標識，名稱和數據這些信息。每個變量在使用前都必須賦值，變量賦值以後該變量才會被創建。等號 <code>=</code> 用來給變量賦值。等號 <code>=</code> 運算符左邊是一個變量名，等號 <code>=</code> 運算符右邊是存儲在變量中的值。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 1</span>
+                    <code>
+# 變量賦值示例<br>
+counter = 100          # 賦值整型變量<br>
+miles = 1000.0         # 浮點型<br>
+name = "John"          # 字符串<br>
+print(counter)<br>
+print(miles)<br>
+print(name)
+                    </code>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 輸出結果：</strong><br>
+                    100<br>
+                    1000.0<br>
+                    John
+                </div>
+
+                <h2>多個變量賦值</h2>
+                <p>Python 允許你同時為多個變量賦值。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 2</span>
+                    <code>
+# 創建一個整型對象，值為 1，三個變量被分配到相同的內存空間上<br>
+a = b = c = 1<br>
+print(a, b, c)  # 輸出：1 1 1<br>
+<br>
+# 為多個對象指定多個變量<br>
+a, b, c = 1, 2, "john"<br>
+print(a, b, c)  # 輸出：1 2 john
+                    </code>
+                </div>
+
+                <h2>標準數據類型</h2>
+                <p>在內存中存儲的數據可以有多種類型。例如，一個人的年齡可以用數字來存儲，他的名字可以用字符來存儲。Python 定義了一些標準類型，用於存儲各種類型的數據。Python 有五個標準的數據類型：</p>
+                <ul>
+                    <li><strong>Numbers（數字）</strong>：int、float、complex</li>
+                    <li><strong>String（字符串）</strong>：str</li>
+                    <li><strong>List（列表）</strong>：list</li>
+                    <li><strong>Tuple（元組）</strong>：tuple</li>
+                    <li><strong>Dictionary（字典）</strong>：dict</li>
+                </ul>
+
+                <h2>Python 數字</h2>
+                <p>數字數據類型用於存儲數值。他們是不可改變的數據類型，這意味著改變數字數據類型會分配一個新的對象。當你指定一個值時，Number 對象就會被創建。您也可以使用 <code>del</code> 語句刪除一些對象的引用。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 3</span>
+                    <code>
+var1 = 1<br>
+var2 = 10<br>
+<br>
+# 使用 del 語句刪除對象的引用<br>
+del var1<br>
+del var_a, var_b
+                    </code>
+                </div>
+
+                <p>Python 支持四種不同的數字類型：</p>
+                <ul>
+                    <li><strong>int（有符號整型）</strong></li>
+                    <li><strong>float（浮點型）</strong></li>
+                    <li><strong>complex（複數）</strong></li>
+                </ul>
+
+                <div class="code-example">
+                    <span class="code-label">數字類型實例</span>
+                    <code>
+# int（有符號整型）<br>
+a = 10<br>
+b = -786<br>
+c = 0x69      # 十六進制<br>
+<br>
+# float（浮點型）<br>
+x = 0.0<br>
+y = 15.20<br>
+z = -21.9<br>
+w = 32.3e+18  # 科學計數法<br>
+<br>
+# complex（複數）<br>
+i = 3.14j<br>
+j = 45.j<br>
+k = 9.322e-36j<br>
+l = 3e+26J<br>
+<br>
+print(type(a))  # &lt;class 'int'&gt;<br>
+print(type(y))  # &lt;class 'float'&gt;<br>
+print(type(i))  # &lt;class 'complex'&gt;
+                    </code>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 提示：</strong>Python 還支持複數，複數由實數部分和虛數部分構成，可以用 <code>a + bj</code> 或者 <code>complex(a,b)</code> 表示，複數的實部 <code>a</code> 和虛部 <code>b</code> 都是浮點型。
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 注意：</strong>在 Python 3.x 版本中，long 類型被移除，使用 int 替代。long 類型只存在於 Python 2.x 版本中。
+                </div>
+
+                <h2>Python 字符串</h2>
+                <p>字符串或串(String)是由數字、字母、下劃線組成的一串字符。一般記為：<code>s = "a1a2···an"</code> （n>=0）。它是編程語言中表示文本的數據類型。</p>
+
+                <p>python 的字串列表有 2 種取值順序：</p>
+                <ul>
+                    <li>從左到右索引默認 0 開始，最大範圍是字符串長度少 1</li>
+                    <li>從右到左索引默認 -1 開始，最大範圍是字符串開頭</li>
+                </ul>
+
+                <p>如果你要實現從字符串中獲取一段子字符串的話，可以使用 <code>[頭下標:尾下標]</code> 來截取相應的字符串，其中下標是從 0 開始算起，可以是正數或負數，下標可以為空表示取到頭或尾。<code>[頭下標:尾下標]</code> 獲取的子字符串包含頭下標的字符，但不包含尾下標的字符。</p>
+
+                <div class="code-example">
+                    <span class="code-label">字符串示例</span>
+                    <code>
+s = 'abcdef'<br>
+print(s[1:5])  # 輸出：bcde<br>
+<br>
+# 字符串的基本操作<br>
+str = 'Hello World!'<br>
+<br>
+print(str)              # 輸出完整字符串：Hello World!<br>
+print(str[0])           # 輸出字符串中的第一個字符：H<br>
+print(str[2:5])         # 輸出字符串中第三個至第六個之間的字符串：llo<br>
+print(str[2:])          # 輸出從第三個字符開始的字符串：llo World!<br>
+print(str * 2)          # 輸出字符串兩次：Hello World!Hello World!<br>
+print(str + "TEST")     # 輸出連接的字符串：Hello World!TEST<br>
+<br>
+# 字符串索引示例<br>
+print(str[-1])          # 輸出最後一個字符：!<br>
+print(str[-5:-1])       # 輸出：orld
+                    </code>
+                </div>
+
+                <h2>Python 列表（List）</h2>
+                <p>列表是 Python 中使用最頻繁的數據類型。列表可以完成大多數集合類的數據結構實現。列表中元素的類型可以不相同，它支持數字，字符串甚至可以包含列表（所謂嵌套）。</p>
+
+                <div class="code-example">
+                    <span class="code-label">列表示例</span>
+                    <code>
+list = ['runoob', 786, 2.23, 'john', 70.2]<br>
+tinylist = [123, 'john']<br>
+<br>
+print(list)              # 輸出完整列表：['runoob', 786, 2.23, 'john', 70.2]<br>
+print(list[0])           # 輸出列表的第一個元素：runoob<br>
+print(list[1:3])         # 輸出第二個至第三個元素：[786, 2.23]<br>
+print(list[2:])          # 輸出從第三個開始至列表末尾的所有元素：[2.23, 'john', 70.2]<br>
+print(tinylist * 2)      # 輸出列表兩次：[123, 'john', 123, 'john']<br>
+print(list + tinylist)   # 打印組合的列表：['runoob', 786, 2.23, 'john', 70.2, 123, 'john']<br>
+<br>
+# 修改列表<br>
+list[0] = 'hello'        # 修改第一個元素<br>
+list.append('world')     # 在列表末尾添加元素<br>
+print(list)              # ['hello', 786, 2.23, 'john', 70.2, 'world']
+                    </code>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 提示：</strong>列表的索引從 0 開始，可以使用負數索引從末尾開始訪問。列表是可變的，可以修改、添加、刪除元素。
+                </div>
+
+                <h2>Python 元組（Tuple）</h2>
+                <p>元組（tuple）與列表類似，不同之處在於元組的元素不能修改。元組寫在小括號 <code>()</code> 裡，元素之間用逗號隔開。元組中的元素類型也可以不相同。</p>
+
+                <div class="code-example">
+                    <span class="code-label">元組示例</span>
+                    <code>
+tuple = ('runoob', 786, 2.23, 'john', 70.2)<br>
+tinytuple = (123, 'john')<br>
+<br>
+print(tuple)             # 輸出完整元組：('runoob', 786, 2.23, 'john', 70.2)<br>
+print(tuple[0])          # 輸出元組的第一個元素：runoob<br>
+print(tuple[1:3])        # 輸出第二個至第三個元素：(786, 2.23)<br>
+print(tuple[2:])         # 輸出從第三個開始至列表末尾的所有元素：(2.23, 'john', 70.2)<br>
+print(tinytuple * 2)     # 輸出元組兩次：(123, 'john', 123, 'john')<br>
+print(tuple + tinytuple) # 打印組合的元組：('runoob', 786, 2.23, 'john', 70.2, 123, 'john')<br>
+<br>
+# 元組與字符串類似，可以被索引且下標索引從0開始，-1 為從末尾開始的位置。<br>
+# tuple[0] = 'hello'    # 錯誤！元組不能修改<br>
+<br>
+# 創建空元組<br>
+tup1 = ()<br>
+# 單個元素的元組需要逗號<br>
+tup2 = (50,)
+                    </code>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 注意：</strong>元組中的元素不能修改，這是元組與列表的主要區別。雖然元組的元素不可改變，但它可以包含可變的對象，比如列表。
+                </div>
+
+                <h2>Python 字典（Dictionary）</h2>
+                <p>字典（dictionary）是 Python 中另一個非常有用的內置數據類型。字典是一種映射類型（mapping type），它是一個無序的鍵 : 值對集合。關鍵字必須使用不可變類型，也就是說列表和包含可變類型的元組不能用作關鍵字。</p>
+
+                <div class="code-example">
+                    <span class="code-label">字典示例</span>
+                    <code>
+dict = {}<br>
+dict['one'] = "This is one"<br>
+dict[2] = "This is two"<br>
+<br>
+tinydict = {'name': 'john', 'code': 6734, 'dept': 'sales'}<br>
+<br>
+print(dict['one'])       # 輸出鍵為 'one' 的值：This is one<br>
+print(dict[2])           # 輸出鍵為 2 的值：This is two<br>
+print(tinydict)          # 輸出完整的字典：{'name': 'john', 'code': 6734, 'dept': 'sales'}<br>
+print(tinydict.keys())   # 輸出所有鍵：dict_keys(['name', 'code', 'dept'])<br>
+print(tinydict.values()) # 輸出所有值：dict_values(['john', 6734, 'sales'])<br>
+<br>
+# 修改字典<br>
+dict['one'] = "Updated one"  # 修改現有鍵的值<br>
+dict['three'] = "This is three"  # 添加新的鍵值對<br>
+print(dict)<br>
+<br>
+# 刪除鍵值對<br>
+del dict['one']  # 刪除鍵 'one'<br>
+# dict.clear()   # 清空字典<br>
+# del dict       # 刪除字典
+                    </code>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 提示：</strong>字典是一種映射類型，它的元素是鍵值對。字典的鍵必須是不可變類型（如字符串、數字、元組），且不能重複。
+                </div>
+
+                <h2>集合（Set）</h2>
+                <p>集合是一個無序的、不重複的元素集合，用花括號 <code>{}</code> 表示。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 7</span>
+                    <code>
+# 集合示例<br>
+numbers = {1, 2, 3, 4, 5}<br>
+letters = set('hello')  # 創建字符集合<br>
+<br>
+print(numbers)  # 輸出：{1, 2, 3, 4, 5}<br>
+print(letters)  # 輸出：{'o', 'h', 'e', 'l'}<br>
+<br>
+# 集合操作<br>
+numbers.add(6)  # 添加元素<br>
+numbers.discard(3)  # 刪除元素<br>
+print(numbers)  # 輸出：{1, 2, 4, 5, 6}
+                    </code>
+                </div>
+
+                <h2>布爾類型（Boolean）</h2>
+                <p>布爾類型只有兩個值：<code>True</code> 和 <code>False</code>。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 8</span>
+                    <code>
+# 布爾類型示例<br>
+is_student = True<br>
+is_working = False<br>
+<br>
+print(type(is_student))  # 輸出：&lt;class 'bool'&gt;<br>
+print(10 > 5)  # 輸出：True<br>
+print(10 < 5)  # 輸出：False
+                    </code>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 注意：</strong>布爾值的大小寫很重要，<code>True</code> 和 <code>False</code> 必須首字母大寫。
+                </div>
+
+                <h2>類型轉換</h2>
+                <p>Python 提供了內置函數來進行類型轉換。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 9</span>
+                    <code>
+# 類型轉換<br>
+x = "123"<br>
+y = int(x)  # 轉換為整數<br>
+<br>
+a = 3.14<br>
+b = int(a)  # 轉換為整數（會截斷小數部分）<br>
+<br>
+number = 42<br>
+text = str(number)  # 轉換為字符串<br>
+<br>
+print(type(y))  # 輸出：&lt;class 'int'&gt;<br>
+print(type(text))  # 輸出：&lt;class 'str'&gt;
+                    </code>
+                </div>
+
+                <h2>學習重點</h2>
+                <ul>
+                    <li>Python 有多種內置數據類型，每種都有其特定的用途</li>
+                    <li>列表是可變的有序序列，用方括號 <code>[]</code> 表示</li>
+                    <li>元組是不可變的有序序列，用圓括號 <code>()</code> 表示</li>
+                    <li>字典是鍵值對的集合，用花括號 <code>{}</code> 表示</li>
+                    <li>可以使用 <code>type()</code> 函數查看變量的類型</li>
+                    <li>可以使用各種內置函數進行類型轉換</li>
+                </ul>
+            </div>
+
+            <!-- 導航按鈕 -->
+            <div class="nav-buttons">
+                <a href="../index.html" class="btn">← 上一章：基本語法</a>
+                <a href="chapter03-operators.html" class="btn">下一章：運算符 →</a>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
+
