@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SCC Platform">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#667eea">
+  <title>SCC Platform</title>
+  <!-- 優化字體載入 -->
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap"></noscript>
+  <style>
+    /* 全局移動端優化 */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* CSS 變數統一管理 */
+    :root {
+      --primary-color: #6366f1;
+      --secondary-color: #a7c7f9;
+      --accent-color: #60a5fa;
+      --text-primary: #3b4252;
+      --text-secondary: #64748b;
+      --bg-primary: #fafdff;
+      --bg-secondary: #e8f0fa;
+      --border-color: #e0e7ff;
+      --shadow-light: 0 2px 8px rgba(60, 72, 88, 0.07);
+      --shadow-medium: 0 6px 18px rgba(60, 72, 88, 0.13);
+      --border-radius: 18px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-family: 'Roboto', 'Noto Sans SC', Arial, sans-serif;
+    }
+    
+    /* 深色主題變數 */
+    [data-theme="dark"] {
+      --primary-color: #818cf8;
+      --secondary-color: #4c1d95;
+      --accent-color: #60a5fa;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0aec0;
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #2d3748;
+      --border-color: #4a5568;
+      --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-medium: 0 6px 18px rgba(0, 0, 0, 0.3);
+    }
+    
+
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      height: 100vh;
+      overflow-x: hidden; /* 只隱藏水平滾動條 */
+      overflow-y: auto; /* 允許垂直滾動 */
+      color: var(--text-primary);
+      transition: var(--transition);
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container {
+      max-width: 100vw;
+      margin: 0 auto;
+      padding: 20px;
+      height: calc(100vh - 120px); /* 減去標題欄高度 */
+      overflow-y: auto; /* 只在需要時顯示滾動條 */
+    }
+    .hero-banner {
+      width: 100vw;
+      background: linear-gradient(90deg, var(--secondary-color) 0%, var(--border-color) 100%);
+      color: var(--text-primary);
+      padding: 32px 0 16px 0;
+      text-align: center;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-light);
+    }
+    .hero-banner h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      text-shadow: none;
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      opacity: 0.85;
+    }
+    /* 搜索框樣式 */
+    .search-container {
+      position: relative;
+      max-width: 400px;
+      margin: 0 auto 20px auto;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 25px;
+      font-size: 1rem;
+      background: var(--bg-primary);
+      transition: var(--transition);
+      box-shadow: var(--shadow-light);
+      color: var(--text-primary);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      pointer-events: none;
+    }
+    
+    [data-theme="dark"] .search-icon {
+      color: var(--text-secondary);
+    }
+    
+    .category-filters {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .category-btn {
+      background: linear-gradient(90deg, #e8f0fa 60%, #f0f4ff 100%);
+      color: #3b4252;
+      border: 2px solid #e0e7ff;
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .category-btn:hover {
+      background: linear-gradient(90deg, #dbeafe 60%, #e0e7ff 100%);
+      border-color: #6366f1;
+      transform: translateY(-1px);
+    }
+    .category-btn.active {
+      background: linear-gradient(90deg, #6366f1 60%, #60a5fa 100%);
+      color: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+    }
+    .subsystems {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      justify-content: center;
+      margin-top: 12px;
+      padding: 0 20px;
+    }
+    .card {
+      background: linear-gradient(135deg, #fafdff 60%, #e8f0fa 100%);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-light);
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 8px 12px 8px;
+      gap: 8px;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-align: center;
+      will-change: transform;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s ease;
+      z-index: 1;
+    }
+    
+    .card:hover::before {
+      left: 100%;
+    }
+    
+    .card:hover {
+      transform: translateY(-6px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+      background: linear-gradient(120deg, #e8f0fa 60%, #fafdff 100%);
+    }
+    
+    .card:active {
+      transform: translateY(-2px) scale(1.02);
+      transition: all 0.1s ease;
+    }
+    
+    .card.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    .card.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #6366f1;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 2;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* 優化過渡性能 - 只對需要動畫的元素設置過渡 */
+    .card,
+    .card-btn,
+    .category-btn,
+    .btn-admin {
+      transition-property: transform, opacity, box-shadow, background-color;
+      will-change: transform, opacity, box-shadow;
+    }
+    
+    /* 子系統網格過渡 */
+    .subsystems {
+      transition: all 0.3s ease;
+    }
+    
+    /* 卡片進入動畫 - 優化版本 */
+    .card {
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      animation: cardFadeIn 0.6s ease-out forwards;
+    }
+    
+    /* 為每個卡片設置不同的延遲，創造瀑布效果 */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.15s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+    .card:nth-child(4) { animation-delay: 0.25s; }
+    .card:nth-child(5) { animation-delay: 0.3s; }
+    .card:nth-child(6) { animation-delay: 0.35s; }
+    .card:nth-child(7) { animation-delay: 0.4s; }
+    .card:nth-child(8) { animation-delay: 0.45s; }
+    .card:nth-child(9) { animation-delay: 0.5s; }
+    .card:nth-child(10) { animation-delay: 0.55s; }
+    .card:nth-child(11) { animation-delay: 0.6s; }
+    .card:nth-child(12) { animation-delay: 0.65s; }
+    
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    /* 分類按鈕過渡優化 */
+    .category-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .category-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+    
+    .category-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+    .card-img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #f3f4f6;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: block;
+      transition: none;
+      border: none;
+    }
+    .card:hover .card-img {
+      box-shadow: 0 4px 16px #6366f133;
+      border: none;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #3b4252;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+      transition: color 0.16s;
+    }
+    .card:hover .card-title {
+      color: #2563eb;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 8px;
+      min-height: 28px;
+      line-height: 1.4;
+    }
+    .card-btn {
+      background: linear-gradient(90deg, #a7c7f9 60%, #b4e0fa 100%);
+      color: #3b4252;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .card-btn:hover::before {
+      left: 100%;
+    }
+    
+    .card-btn:hover {
+      background: linear-gradient(90deg, #b4e0fa 60%, #a7c7f9 100%);
+      box-shadow: 0 4px 12px rgba(99,102,241,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .card-btn:active {
+      transform: translateY(0px);
+      transition: all 0.1s ease;
+    }
+    
+    .card-btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    .btn-admin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 36px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      min-width: 200px;
+      text-decoration: none;
+    }
+    .btn-admin::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn-admin:hover::before {
+      left: 100%;
+    }
+    .btn-admin:hover, .btn-admin:focus {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+      transform: translateY(-3px) scale(1.02);
+    }
+    .btn-admin:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    .admin-icon {
+      font-size: 1.3rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      transition: transform 0.2s;
+    }
+    .btn-admin:hover .admin-icon {
+      transform: rotate(15deg) scale(1.1);
+    }
+    .admin-text {
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .footer {
+      width: 100vw;
+      background: #fafdff;
+      color: #6b7280;
+      text-align: center;
+      padding: 10px 0 4px 0;
+      font-size: 0.95rem;
+      margin-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+    /* 平板橫向模式專用優化 */
+    @media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+      .container {
+        height: auto;
+        min-height: calc(100vh - 60px);
+        padding-bottom: 60px;
+      }
+      
+      .subsystems {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+      
+      .card {
+        min-height: 160px;
+        padding: 16px 8px 12px 8px;
+      }
+      
+      .card-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        min-height: 36px;
+      }
+    }
+    
+    /* 平板模式專用優化 */
+    @media (min-width: 768px) and (max-width: 1200px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .container {
+        height: auto;
+        min-height: calc(100vh - 80px);
+        overflow-y: visible;
+        padding-bottom: 50px;
+        margin-bottom: 20px;
+      }
+      
+      .subsystems {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+      }
+      
+      .card {
+        min-height: 200px;
+        padding: 20px 12px 16px 12px;
+        margin-bottom: 10px;
+      }
+      
+      .card-btn {
+        margin-top: auto;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 1200px) {
+      .subsystems { 
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+      .container { 
+        padding: 15px;
+        height: auto;
+        min-height: calc(100vh - 100px);
+        overflow-y: visible;
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .subsystems { 
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+      }
+      .container { 
+        padding: 10px;
+        height: auto;
+        min-height: calc(100vh - 90px);
+        overflow-y: visible;
+      }
+    }
+    @media (max-width: 700px) {
+      .hero-banner h1 { font-size: 1.2rem; }
+      .hero-desc { font-size: 0.92rem; }
+      .footer { font-size: 0.85rem; }
+      .search-container {
+        max-width: 300px;
+        margin-bottom: 16px;
+      }
+      .search-input {
+        padding: 10px 36px 10px 14px;
+        font-size: 0.9rem;
+      }
+      .card-img { width: 36px; height: 36px; }
+      .card-title { font-size: 0.92rem; }
+      .card-desc { font-size: 0.82rem; }
+      .subsystems { gap: 8px; }
+      .card { padding: 8px 2px 6px 2px; }
+      .category-filters {
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .category-btn {
+        padding: 6px 16px;
+        font-size: 0.85rem;
+      }
+      .theme-toggle {
+        position: static;
+        margin: 10px auto;
+        display: flex;
+        justify-content: center;
+      }
+      .theme-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
+    }
+    @media (max-width: 480px) {
+      .hero-banner h1 { font-size: 1.1rem; }
+      .hero-desc { font-size: 0.85rem; }
+      .search-container {
+        max-width: 280px;
+        margin-bottom: 12px;
+      }
+      .search-input {
+        padding: 8px 32px 8px 12px;
+        font-size: 0.85rem;
+      }
+      .subsystems { 
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .card { 
+        min-height: 140px;
+        padding: 6px 2px 4px 2px;
+      }
+      .card-img { width: 32px; height: 32px; }
+      .card-title { font-size: 0.85rem; }
+      .card-desc { font-size: 0.75rem; min-height: 20px; }
+      .card-btn { 
+        font-size: 0.85rem;
+        padding: 5px 12px;
+      }
+      .category-filters {
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .category-btn {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+      }
+      .btn-admin {
+        padding: 12px 24px;
+        font-size: 1rem;
+        min-width: 160px;
+      }
+      .favorites-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .favorite-item {
+        padding: 6px;
+      }
+      .favorite-item-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 0.9rem;
+      }
+      .favorite-item-name {
+        font-size: 0.7rem;
+      }
+    }
+
+    /* 深色模式樣式 - 使用CSS變數 */
+    [data-theme="dark"] {
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+    }
+    
+    [data-theme="dark"] .hero-banner {
+      background: linear-gradient(90deg, var(--bg-secondary) 0%, var(--border-color) 100%);
+      color: var(--text-primary);
+    }
+    
+    [data-theme="dark"] .card {
+      background: linear-gradient(135deg, var(--bg-secondary) 60%, var(--bg-primary) 100%);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    [data-theme="dark"] .card:hover {
+      background: linear-gradient(120deg, var(--bg-primary) 60%, var(--bg-secondary) 100%);
+      box-shadow: 0 12px 30px rgba(129, 140, 248, 0.3);
+    }
+    
+    [data-theme="dark"] .card-title {
+      color: var(--text-primary);
+    }
+    
+    [data-theme="dark"] .card-desc {
+      color: var(--text-secondary);
+    }
+    
+    [data-theme="dark"] .card-btn {
+      background: linear-gradient(90deg, var(--primary-color) 60%, var(--accent-color) 100%);
+      color: white;
+    }
+    
+    [data-theme="dark"] .card-btn:hover {
+      background: linear-gradient(90deg, var(--accent-color) 60%, var(--primary-color) 100%);
+      box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4);
+    }
+    
+    [data-theme="dark"] .category-btn {
+      background: linear-gradient(90deg, var(--bg-secondary) 60%, var(--bg-primary) 100%);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    
+    [data-theme="dark"] .category-btn:hover {
+      background: linear-gradient(90deg, var(--bg-primary) 60%, var(--bg-secondary) 100%);
+      border-color: var(--primary-color);
+    }
+    
+    [data-theme="dark"] .category-btn.active {
+      background: linear-gradient(90deg, var(--primary-color) 60%, var(--accent-color) 100%);
+      color: white;
+    }
+    
+    [data-theme="dark"] .footer {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      border-top-color: var(--border-color);
+    }
+    
+    [data-theme="dark"] .search-input {
+      background: var(--bg-secondary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+    
+    [data-theme="dark"] .search-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(129, 140, 248, 0.2);
+    }
+    
+    /* 主題切換按鈕 */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .theme-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      box-shadow: var(--shadow-light);
+    }
+    
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    .theme-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* 深色模式下的主題按鈕 */
+    [data-theme="dark"] .theme-btn {
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+    }
+    
+    [data-theme="dark"] .theme-btn:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+
+    
+    /* 收藏功能樣式 */
+
+    
+
+    
+
+    
+
+
+    
+    /* 數據管理按鈕樣式 */
+    .data-manage-controls .admin-func-btn {
+      background: linear-gradient(90deg, #6366f1 60%, #8b5cf6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+      padding: 10px 16px;
+      margin: 0 2px;
+    }
+    .data-manage-controls .admin-func-btn:hover {
+      background: linear-gradient(90deg, #5b21b6 60%, #7c3aed 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    [data-theme="dark"] .data-manage-controls .admin-func-btn {
+      background: linear-gradient(90deg, var(--primary-color) 60%, var(--accent-color) 100%);
+    }
+    [data-theme="dark"] .data-manage-controls .admin-func-btn:hover {
+      background: linear-gradient(90deg, var(--accent-color) 60%, var(--primary-color) 100%);
+    }
+    /* 通知樣式 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: var(--transition);
+      max-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-success {
+      background: linear-gradient(90deg, #10b981, #059669);
+    }
+    
+    .notification-error {
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+    }
+    
+    .notification-info {
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+    
+    /* 主題選擇器 */
+    .theme-selector {
+      position: absolute;
+      top: 20px;
+      right: 120px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .theme-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .theme-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    /* 數據管理按鈕樣式 */
+    .data-management {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .data-btn {
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-light);
+    }
+    
+    .data-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+      background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+    }
+    
+    .data-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* 已移除管理功能相關CSS區塊 */
+  </style>
+</head>
+<body>
+  <div class="hero-banner">
+    <h1>SCC Platform</h1>
+    <!-- 描述文字 - 已隱藏 -->
+    <p class="hero-desc" style="display: none;">多元學習子系統整合平台</p>
+    <!-- 主題切換按鈕 -->
+    <div class="theme-toggle">
+      <button class="theme-btn" id="themeToggleBtn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span>
+        <span id="themeText">淺色</span>
+      </button>
+    </div>
+  </div>
+  <div class="container">
+    <!-- 管理者登入按鈕 -->
+    <div style="display:flex; justify-content:center; margin-bottom:24px;">
+      <button class="btn-admin" onclick="openAdminPage()">
+        <span class="admin-icon">⚙️</span>
+        <span class="admin-text">管理者登入</span>
+      </button>
+    </div>
+    
+    <!-- 搜索框 - 已隱藏 -->
+    <div class="search-container" style="display: none;">
+      <input type="text" id="searchInput" class="search-input" placeholder="搜索子系統..." autocomplete="off">
+      <div class="search-icon">🔍</div>
+    </div>
+    
+    <!-- 分類篩選按鈕 - 已隱藏 -->
+    <div class="category-filters" style="display: none;">
+      <button class="category-btn active" data-category="all">全部系統</button>
+      <button class="category-btn" data-category="knowledge">知識分類</button>
+      <button class="category-btn" data-category="tools">工具應用</button>
+    </div>
+    <!-- 數據管理按鈕已移除，僅管理者頁面保留 -->
+    
+    <div class="subsystems" id="subsystems"></div>
+    
+    <!-- 數據管理按鈕 - 已隱藏 -->
+    <div class="data-management" style="margin-top: 30px; text-align: center; display: none;">
+      <button onclick="dataManager.backupToCloud()" class="data-btn">
+        <span>☁️</span>
+        <span>雲端備份</span>
+      </button>
+      <button onclick="dataManager.restoreFromCloud()" class="data-btn">
+        <span>📥</span>
+        <span>恢復數據</span>
+      </button>
+      <button onclick="dataManager.exportData('json')" class="data-btn">
+        <span>📤</span>
+        <span>導出JSON</span>
+      </button>
+      <button onclick="dataManager.exportData('csv')" class="data-btn">
+        <span>📊</span>
+        <span>導出CSV</span>
+      </button>
+      <button onclick="testNotification()" class="data-btn">
+        <span>🔔</span>
+        <span>測試通知</span>
+      </button>
+    </div>
+    
+    <!-- 管理功能按鈕 -->
+    <!-- 已移除管理功能按鈕區塊 -->
+    
+    <!-- 管理登入按鈕 - 已隱藏 -->
+    <div style="display:flex; justify-content:center; margin-top:36px; display: none;">
+      <a class="btn-admin" href="admin.html" target="_blank">
+        <span class="admin-icon">⚙️</span>
+        <span class="admin-text">管理登入</span>
+      </a>
+    </div>
+  </div>
+  <!-- 頁腳 - 已隱藏 -->
+  <footer class="footer" style="display: none;">
+    <span>© 2024 CCS Edu Platform</span>
+  </footer>
+  <!-- 已移除管理功能模態框區塊 -->
+  <script>
+    // 子系統配置（加入分類）- 固定順序
+    const defaultSubsystems = [
+      { name: '打字練習', url: './typeanything/index.html', desc: '中英文打字練習', img: './typeanything/1.png', category: 'knowledge', visible: true },
+      { name: '四則運算數學練習', url: './math/index.html', desc: '四則運算數學練習', img: './math/Lovepik_com-380042738-math-calculator-symbol-compute.png', category: 'knowledge', visible: true },
+      { name: '7人足球戰術板', url: './football/index.html', desc: '7人足球戰術與管理系統<br><span style="color: #2196F3;">(電腦或平板使用)</span>', img: './football/football.png', category: 'knowledge', visible: true },
+      { name: '抽籤', url: './ramdom/index.html', desc: '學號抽籤系統', img: './ramdom/1.png', category: 'tools', visible: true },
+      { name: '分組工具', url: './group/group.html', desc: '小組分配與管理工具', img: './group/1.png', category: 'tools', visible: true },
+      { name: '計分排名', url: './Rank/index.html', desc: '計分排名系統', img: './Rank/1.png', category: 'tools', visible: true },
+      { name: 'Learning Python', url: './learningpython/index.html', desc: 'Python 學習系統', img: './learningpython/_.png', category: 'knowledge', visible: true }
+    ];
+
+    let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+    // 主題系統
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // 主題切換函數
+    function toggleTheme() {
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    }
+    
+    // 設置主題
+    function setTheme(theme) {
+      currentTheme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      
+      // 更新按鈕顯示
+      updateThemeButton(theme);
+      
+      // 兼容舊的深色模式
+      isDarkMode = theme === 'dark';
+      localStorage.setItem('darkMode', isDarkMode);
+    }
+    
+    // 更新主題按鈕顯示
+    function updateThemeButton(theme) {
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
+      
+      if (theme === 'dark') {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = '深色';
+      } else {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = '淺色';
+      }
+    }
+    
+    // 初始化主題
+    function initTheme() {
+      // 默認使用淺色模式
+      if (!localStorage.getItem('theme')) {
+        currentTheme = 'light';
+      }
+      
+      setTheme(currentTheme);
+    }
+    
+    // 兼容舊的深色模式函數
+    function toggleDarkMode() {
+      toggleTheme();
+    }
+    
+    function initDarkMode() {
+      initTheme();
+    }
+
+    // 數據驗證函數
+    function validateSubsystem(subsystem) {
+      const required = ['name', 'url'];
+      const missing = required.filter(field => !subsystem[field]);
+      if (missing.length > 0) {
+        throw new Error(`子系統缺少必要欄位: ${missing.join(', ')}`);
+      }
+      
+      if (subsystem.name.length > 50) {
+        throw new Error('子系統名稱過長');
+      }
+      
+      if (subsystem.url.length > 200) {
+        throw new Error('子系統網址過長');
+      }
+      
+      return true;
+    }
+    
+    // 載入子系統數據（首頁只做兼容，不再合併）
+    function loadSubsystemsData() {
+      // 檢查是否已經有保存的數據
+      const savedData = localStorage.getItem('subsystems');
+      if (!savedData) {
+        // 只有在沒有保存數據時才使用預設值
+        localStorage.setItem('subsystems', JSON.stringify(defaultSubsystems));
+      } else {
+        // 如果有保存的數據，檢查是否包含 Learning Python 系統
+        try {
+          const parsed = JSON.parse(savedData);
+          if (Array.isArray(parsed)) {
+            const hasLearningPython = parsed.some(sys => sys.name === 'Learning Python');
+            if (!hasLearningPython) {
+              // 如果沒有 Learning Python 系統，添加到末尾
+              const learningPython = defaultSubsystems.find(sys => sys.name === 'Learning Python');
+              if (learningPython) {
+                parsed.push(learningPython);
+                localStorage.setItem('subsystems', JSON.stringify(parsed));
+              }
+            }
+          }
+        } catch (e) {
+          // 如果解析失敗，使用默認值
+          localStorage.setItem('subsystems', JSON.stringify(defaultSubsystems));
+        }
+      }
+    }
+
+    // 保存子系統數據
+    function saveSubsystemsData() {
+      const subsystems = getSubsystemsForIndex();
+      localStorage.setItem('subsystems', JSON.stringify(subsystems));
+    }
+    
+    // 數據管理增強功能
+    class DataManager {
+      constructor() {
+        this.version = '2.0.0';
+        this.lastBackup = localStorage.getItem('lastBackup') || null;
+      }
+      
+      // 備份數據到雲端
+      async backupToCloud() {
+        try {
+          const data = {
+            subsystems: subsystems,
+            settings: {
+              darkMode: isDarkMode,
+              category: currentCategory,
+              lastVisit: new Date().toISOString()
+            },
+            stats: JSON.parse(localStorage.getItem('usageStats') || '{}'),
+            version: this.version,
+            timestamp: new Date().toISOString()
+          };
+          
+          // 模擬雲端備份（實際應用中會發送到真實API）
+          console.log('備份數據到雲端:', data);
+          
+          // 保存備份時間
+          this.lastBackup = new Date().toISOString();
+          localStorage.setItem('lastBackup', this.lastBackup);
+          
+          this.showNotification('備份成功', 'success');
+          return true;
+        } catch (error) {
+          console.error('備份失敗:', error);
+          this.showNotification('備份失敗', 'error');
+          return false;
+        }
+      }
+      
+      // 從雲端恢復數據
+      async restoreFromCloud() {
+        try {
+          // 模擬從雲端恢復數據
+          console.log('從雲端恢復數據');
+          
+          // 這裡會從真實API獲取數據
+          const restoredData = {
+            subsystems: subsystems,
+            settings: { darkMode: false, category: 'all' }
+          };
+          
+          // 應用恢復的數據
+          Object.assign(subsystems, restoredData.subsystems);
+          if (restoredData.settings) {
+            isDarkMode = restoredData.settings.darkMode;
+            currentCategory = restoredData.settings.category;
+          }
+          
+          saveSubsystemsData();
+          renderSubsystems();
+          initDarkMode();
+          
+          this.showNotification('恢復成功', 'success');
+          return true;
+        } catch (error) {
+          console.error('恢復失敗:', error);
+          this.showNotification('恢復失敗', 'error');
+          return false;
+        }
+      }
+      
+      // 導出數據
+      exportData(format = 'json') {
+        const data = {
+          subsystems: subsystems,
+          settings: {
+            darkMode: isDarkMode,
+            category: currentCategory
+          },
+          stats: JSON.parse(localStorage.getItem('usageStats') || '{}'),
+          exportDate: new Date().toISOString(),
+          version: this.version
+        };
+        
+        let content, filename, mimeType;
+        
+        switch (format) {
+          case 'json':
+            content = JSON.stringify(data, null, 2);
+            filename = `ccs-platform-backup-${new Date().toISOString().split('T')[0]}.json`;
+            mimeType = 'application/json';
+            break;
+          case 'csv':
+            content = this.convertToCSV(data.subsystems);
+            filename = `ccs-platform-subsystems-${new Date().toISOString().split('T')[0]}.csv`;
+            mimeType = 'text/csv';
+            break;
+          case 'xml':
+            content = this.convertToXML(data);
+            filename = `ccs-platform-backup-${new Date().toISOString().split('T')[0]}.xml`;
+            mimeType = 'application/xml';
+            break;
+          case 'yaml':
+            content = this.convertToYAML(data);
+            filename = `ccs-platform-backup-${new Date().toISOString().split('T')[0]}.yaml`;
+            mimeType = 'text/yaml';
+            break;
+          default:
+            throw new Error('不支援的格式');
+        }
+        
+        this.downloadFile(content, filename, mimeType);
+        this.showNotification(`已導出 ${format.toUpperCase()} 格式`, 'success');
+      }
+      
+      // 轉換為CSV格式
+      convertToCSV(subsystems) {
+        const headers = ['name', 'url', 'desc', 'img', 'category', 'visible'];
+        const csvContent = [
+          headers.join(','),
+          ...subsystems.map(sys => 
+            headers.map(header => {
+              const value = sys[header] || '';
+              return `"${value.toString().replace(/"/g, '""')}"`;
+            }).join(',')
+          )
+        ].join('\n');
+        
+        return csvContent;
+      }
+      
+      // 轉換為XML格式
+      convertToXML(data) {
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<ccs-platform>
+  <version>${data.version}</version>
+  <export-date>${data.exportDate}</export-date>
+  <settings>
+    <dark-mode>${data.settings.darkMode}</dark-mode>
+    <category>${data.settings.category}</category>
+  </settings>
+  <subsystems>
+    ${data.subsystems.map(sys => `
+    <subsystem>
+      <name>${sys.name}</name>
+      <url>${sys.url}</url>
+      <desc>${sys.desc || ''}</desc>
+      <img>${sys.img || ''}</img>
+      <category>${sys.category}</category>
+      <visible>${sys.visible}</visible>
+    </subsystem>`).join('')}
+  </subsystems>
+</ccs-platform>`;
+        
+        return xml;
+      }
+      
+      // 轉換為YAML格式
+      convertToYAML(data) {
+        const yaml = `version: ${data.version}
+export_date: ${data.exportDate}
+settings:
+  dark_mode: ${data.settings.darkMode}
+  category: ${data.settings.category}
+subsystems:
+${data.subsystems.map(sys => `  - name: ${sys.name}
+    url: ${sys.url}
+    desc: ${sys.desc || ''}
+    img: ${sys.img || ''}
+    category: ${sys.category}
+    visible: ${sys.visible}`).join('\n')}`;
+        
+        return yaml;
+      }
+      
+      // 下載文件
+      downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+      
+      // 顯示通知
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+      
+      // 系統健康檢查
+      async systemHealthCheck() {
+        const health = {
+          totalSystems: subsystems.length,
+          activeSystems: subsystems.filter(s => s.visible).length,
+          brokenLinks: [],
+          performance: {},
+          lastBackup: this.lastBackup,
+          storageUsage: this.getStorageUsage()
+        };
+        
+        // 檢查連結有效性
+        for (const sys of subsystems) {
+          try {
+            const response = await fetch(sys.url, { method: 'HEAD' });
+            if (!response.ok) {
+              health.brokenLinks.push(sys.name);
+            }
+          } catch (error) {
+            health.brokenLinks.push(sys.name);
+          }
+        }
+        
+        return health;
+      }
+      
+      // 獲取存儲使用情況
+      getStorageUsage() {
+        const used = new Blob([localStorage.getItem('subsystems') || '']).size;
+        const total = 5 * 1024 * 1024; // 5MB 限制
+        return {
+          used: used,
+          total: total,
+          percentage: (used / total * 100).toFixed(2)
+        };
+      }
+    }
+    
+    // 創建數據管理器實例
+    const dataManager = new DataManager();
+    
+    // 推送通知功能
+    async function requestNotificationPermission() {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log('推送通知權限已授予');
+          subscribeToPushNotifications();
+        } else {
+          console.log('推送通知權限被拒絕');
+        }
+      } catch (error) {
+        console.error('請求推送通知權限失敗:', error);
+      }
+    }
+    
+    
+    // 測試推送通知
+    function testNotification() {
+      // 使用瀏覽器原生通知
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('SCC Platform', {
+          body: '這是一個測試通知',
+          vibrate: [100, 50, 100],
+          data: {
+            dateOfArrival: Date.now(),
+            primaryKey: 1
+          }
+        });
+      } else if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            new Notification('SCC Platform', {
+              body: '這是一個測試通知',
+              vibrate: [100, 50, 100],
+              data: {
+                dateOfArrival: Date.now(),
+                primaryKey: 1
+              }
+            });
+          } else {
+            alert('通知權限被拒絕');
+          }
+        });
+      } else {
+        alert('通知功能不可用');
+      }
+    }
+
+
+
+
+
+    // 拖拽排序功能
+    let isDragMode = false;
+    let draggedElement = null;
+
+    function toggleDragMode() {
+      isDragMode = !isDragMode;
+      const cards = document.querySelectorAll('.card');
+      
+      cards.forEach(card => {
+        if (isDragMode) {
+          card.draggable = true;
+          card.style.cursor = 'grab';
+          card.addEventListener('dragstart', handleDragStart);
+          card.addEventListener('dragover', handleDragOver);
+          card.addEventListener('drop', handleDrop);
+          card.addEventListener('dragend', handleDragEnd);
+        } else {
+          card.draggable = false;
+          card.style.cursor = 'pointer';
+          card.classList.remove('dragging', 'drag-over');
+          card.removeEventListener('dragstart', handleDragStart);
+          card.removeEventListener('dragover', handleDragOver);
+          card.removeEventListener('drop', handleDrop);
+          card.removeEventListener('dragend', handleDragEnd);
+        }
+      });
+      
+      // 更新按鈕狀態
+      const btn = document.querySelector('[onclick="toggleDragMode()"]');
+      if (isDragMode) {
+        btn.innerHTML = '<span class="admin-func-icon">✅</span><span class="admin-func-text">完成排序</span>';
+        btn.style.background = 'linear-gradient(90deg, #10b981 60%, #059669 100%)';
+      } else {
+        btn.innerHTML = '<span class="admin-func-icon">📋</span><span class="admin-func-text">排序管理</span>';
+        btn.style.background = 'linear-gradient(90deg, #6366f1 60%, #8b5cf6 100%)';
+      }
+    }
+
+    function handleDragStart(e) {
+      draggedElement = e.target;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (e.target.classList.contains('card') && e.target !== draggedElement) {
+        e.target.classList.add('drag-over');
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      if (e.target.classList.contains('card') && e.target !== draggedElement) {
+        const draggedIndex = Array.from(draggedElement.parentNode.children).indexOf(draggedElement);
+        const dropIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
+        
+        // 重新排序子系統數組
+        const draggedSystem = subsystems.splice(draggedIndex, 1)[0];
+        subsystems.splice(dropIndex, 0, draggedSystem);
+        
+        // 保存新順序
+        saveSubsystemsData();
+        
+        // 重新渲染
+        renderSubsystems();
+        renderFavorites();
+      }
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.card').forEach(card => {
+        card.classList.remove('drag-over');
+      });
+    }
+
+    // 自定義圖標功能
+    function showCustomizeModal() {
+      const modal = document.getElementById('customizeModal');
+      const systemSelect = document.getElementById('systemSelect');
+      
+      // 填充子系統選項
+      systemSelect.innerHTML = '<option value="">請選擇子系統</option>';
+      subsystems.forEach(sys => {
+        const option = document.createElement('option');
+        option.value = sys.name;
+        option.textContent = sys.name;
+        systemSelect.appendChild(option);
+      });
+      
+      modal.classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function saveCustomIcon() {
+      const systemName = document.getElementById('systemSelect').value;
+      const iconPath = document.getElementById('iconPath').value;
+      
+      if (!systemName || !iconPath) {
+        alert('請選擇子系統並輸入圖標路徑');
+        return;
+      }
+      
+      const system = subsystems.find(sys => sys.name === systemName);
+      if (system) {
+        system.img = iconPath;
+        saveSubsystemsData();
+        renderSubsystems();
+        closeModal('customizeModal');
+        alert('圖標已更新');
+      }
+    }
+
+    // 批量操作功能
+    function showBatchOperations() {
+      const modal = document.getElementById('batchModal');
+      const batchList = document.getElementById('batchSystemsList');
+      
+      batchList.innerHTML = '';
+      subsystems.forEach(sys => {
+        const item = document.createElement('div');
+        item.className = 'batch-item';
+        item.innerHTML = `
+          <input type="checkbox" class="batch-checkbox" value="${sys.name}">
+          <div class="batch-info">
+            <div class="batch-name">${sys.name}</div>
+            <div class="batch-desc">${sys.desc}</div>
+          </div>
+        `;
+        batchList.appendChild(item);
+      });
+      
+      modal.classList.add('active');
+    }
+
+    function executeBatchOperation() {
+      const action = document.getElementById('batchAction').value;
+      const selectedSystems = Array.from(document.querySelectorAll('.batch-checkbox:checked'))
+        .map(cb => cb.value);
+      
+      if (!action || selectedSystems.length === 0) {
+        alert('請選擇操作和子系統');
+        return;
+      }
+      
+      selectedSystems.forEach(systemName => {
+        const system = subsystems.find(sys => sys.name === systemName);
+        if (system) {
+          switch (action) {
+            case 'favorite':
+              system.favorite = true;
+              break;
+            case 'unfavorite':
+              system.favorite = false;
+              break;
+          }
+        }
+      });
+      
+      saveSubsystemsData();
+      renderSubsystems();
+      closeModal('batchModal');
+      alert(`已對 ${selectedSystems.length} 個子系統執行 ${action} 操作`);
+    }
+
+    // 搜索功能（簡化版本，直接顯示所有子系統）
+    function filterBySearch(query) {
+      const cards = document.querySelectorAll('.card');
+      const searchQuery = query.toLowerCase().trim();
+      
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+        const isMatch = title.includes(searchQuery) || desc.includes(searchQuery);
+        
+        if (searchQuery === '') {
+          // 如果搜索框為空，顯示所有卡片
+          card.style.display = 'flex';
+        } else {
+          card.style.display = isMatch ? 'flex' : 'none';
+        }
+      });
+    }
+    
+    // 分類篩選功能 - 已移除（直接顯示所有子系統）
+
+    // 渲染子系統 - 優化版本（直接顯示所有可見子系統）
+    function renderSubsystems() {
+      const container = document.getElementById('subsystems');
+      const fragment = document.createDocumentFragment(); // 使用文檔片段提高性能
+      
+      // 批量處理DOM操作 - 直接顯示所有可見子系統
+      const visibleSystems = getSubsystemsForIndex();
+      
+      visibleSystems.forEach((sys, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        // 優化圖片載入
+        const imgElement = sys.img 
+          ? `<img src='${sys.img}' class='card-img' alt='${sys.name}' loading='lazy' decoding='async' onerror='this.style.display="none";this.nextElementSibling.style.display="flex"'>
+             <div class='card-img' style='display:none;align-items:center;justify-content:center;font-size:2.5rem;color:#bdbdbd;'>?</div>` 
+          : `<div class='card-img' style='display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:#bdbdbd;'>?</div>`;
+        
+        card.innerHTML = `
+          ${imgElement}
+          <div class="card-title">${sys.name}</div>
+          <div class="card-desc">${sys.desc || ''}</div>
+          <button class="card-btn">打開</button>
+        `;
+        
+        // 使用事件委託避免過多事件監聽器
+        card.dataset.url = sys.url;
+        
+        // 設置動畫延遲，確保每個卡片都有動畫
+        card.style.animationDelay = `${0.1 + index * 0.05}s`;
+        
+        fragment.appendChild(card);
+      });
+      
+      // 一次性更新DOM
+      container.innerHTML = '';
+      container.appendChild(fragment);
+      
+      // 觸發重繪以確保動畫正常播放
+      requestAnimationFrame(() => {
+        container.style.opacity = '1';
+      });
+    }
+
+    // 懶載入功能
+    function lazyLoadFeatures() {
+      // 只在需要時載入額外功能
+      const features = {
+        dataManager: null,
+        advancedSearch: null,
+        analytics: null
+      };
+      
+      return {
+        async loadDataManager() {
+          if (!features.dataManager) {
+            // 模擬動態載入
+            features.dataManager = await new Promise(resolve => {
+              setTimeout(() => {
+                resolve({
+                  exportData: () => console.log('數據導出功能'),
+                  importData: () => console.log('數據導入功能')
+                });
+              }, 100);
+            });
+          }
+          return features.dataManager;
+        },
+        
+        async loadAdvancedSearch() {
+          if (!features.advancedSearch) {
+            features.advancedSearch = await new Promise(resolve => {
+              setTimeout(() => {
+                resolve({
+                  fuzzySearch: (query) => console.log('模糊搜索:', query),
+                  filterByTags: (tags) => console.log('標籤篩選:', tags)
+                });
+              }, 100);
+            });
+          }
+          return features.advancedSearch;
+        }
+      };
+    }
+    
+    const lazyLoader = lazyLoadFeatures();
+
+    // 打開管理頁面
+    function openAdminPage() {
+      try {
+        console.log('打開管理頁面...');
+        window.location.href = 'admin.html';
+      } catch (error) {
+        console.error('打開管理頁面失敗:', error);
+        alert('無法打開管理頁面，請檢查文件是否存在');
+      }
+    }
+    
+    // 清除所有loading状态
+    function clearAllLoadingStates() {
+      // 清除所有卡片的loading状态
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.classList.remove('loading');
+        card.style.transform = '';
+        
+        // 清除按钮的loading状态
+        const btn = card.querySelector('.card-btn');
+        if (btn) {
+          btn.classList.remove('loading');
+          // 恢复按钮原始文字
+          const originalText = btn.dataset.originalText || '進入';
+          btn.textContent = originalText;
+        }
+      });
+      
+      console.log('已清除所有loading状态');
+    }
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 清除所有loading状态 - 解决从子系统返回后仍显示载入中的问题
+      clearAllLoadingStates();
+      
+      initTheme(); // 初始化主題系統
+      
+      loadSubsystemsData(); // 載入子系統數據
+      renderSubsystems();
+      
+      // 延遲預載入以提升初始載入速度
+      setTimeout(() => {
+        preloadAllSubsystems();
+      }, 3000);
+      
+      // 延遲動畫優化
+      setTimeout(() => {
+        optimizeAnimations();
+      }, 5000);
+      
+      // 添加事件委託處理卡片點擊 - 優化版本
+      document.getElementById('subsystems').addEventListener('click', function(e) {
+        const card = e.target.closest('.card');
+        if (card && card.dataset.url) {
+          if (e.target.classList.contains('card-btn')) {
+            smoothNavigateToSubsystem(card, card.dataset.url);
+          }
+        }
+      });
+      
+
+      
+      // 添加即時同步機制
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'subsystems') {
+          console.log('檢測到子系統數據變更，重新載入...');
+          loadSubsystemsData();
+          renderSubsystems();
+        }
+      });
+      
+      // 添加搜索功能（防抖優化）- 已隱藏
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            filterBySearch(e.target.value);
+          }, 300); // 300ms 防抖
+        });
+      }
+      
+      // 添加快捷鍵支援（簡化版本）
+      document.addEventListener('keydown', (e) => {
+        // 主題切換快捷鍵 (Ctrl/Cmd + T)
+        if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+          e.preventDefault();
+          toggleTheme();
+          console.log('已切換主題');
+        }
+      });
+      
+      // 推送通知功能 - 只在支援的環境下啟用
+      if ('Notification' in window) {
+        requestNotificationPermission();
+      }
+      
+      // 页面可见性变化时清除loading状态
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          // 页面变为可见时，清除所有loading状态
+          clearAllLoadingStates();
+        }
+      });
+      
+    // 顯示控制功能 - 已簡化（直接顯示所有子系統）
+    
+    // 性能監控
+    if ('performance' in window) {
+      window.addEventListener('load', () => {
+        const loadTime = performance.now();
+        console.log(`頁面載入時間: ${loadTime.toFixed(2)}ms`);
+        
+        // 監控資源載入
+        const resources = performance.getEntriesByType('resource');
+        const slowResources = resources.filter(r => r.duration > 1000);
+        if (slowResources.length > 0) {
+          console.warn('慢速資源:', slowResources);
+        }
+      });
+    }
+      
+      // 添加全局錯誤處理
+      window.addEventListener('error', (e) => {
+        console.error('應用錯誤:', e.error);
+        // 可以發送到錯誤追蹤服務
+      });
+      
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('未處理的 Promise 拒絕:', e.reason);
+        e.preventDefault();
+      });
+    });
+
+    // 點擊模態框外部關閉
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+
+    // 順暢跳轉功能 - 純HTML版本
+    function smoothNavigateToSubsystem(card, url) {
+      // 防止重複點擊
+      if (card.classList.contains('loading')) {
+        return;
+      }
+      
+      // 添加載入狀態
+      card.classList.add('loading');
+      const btn = card.querySelector('.card-btn');
+      if (btn) {
+        // 保存原始文字
+        if (!btn.dataset.originalText) {
+          btn.dataset.originalText = btn.textContent;
+        }
+        btn.classList.add('loading');
+        btn.textContent = '載入中...';
+      }
+      
+      // 使用 requestAnimationFrame 優化動畫性能
+      requestAnimationFrame(() => {
+        card.style.transform = 'scale(0.95)';
+      });
+      
+      // 減少延遲時間，提升響應速度
+      setTimeout(() => {
+        try {
+          console.log('打開子系統:', url);
+          
+          // 直接跳轉到子系統
+          window.location.href = url;
+        } catch (error) {
+          console.error('跳轉失敗:', error);
+          showNavigationFeedback(card, 'error');
+        }
+      }, 150);
+    }
+    
+    // 顯示跳轉反饋 - 優化版本
+    function showNavigationFeedback(card, type) {
+      // 移除載入狀態
+      card.classList.remove('loading');
+      const btn = card.querySelector('.card-btn');
+      if (btn) {
+        btn.classList.remove('loading');
+        // 使用保存的原始文字或默认文字
+        const originalText = btn.dataset.originalText || '進入';
+        btn.textContent = type === 'success' ? '已打開' : originalText;
+      }
+      
+      // 使用 requestAnimationFrame 優化動畫性能
+      requestAnimationFrame(() => {
+        if (type === 'success') {
+          card.style.transform = 'scale(1.05)';
+          card.style.boxShadow = '0 8px 25px rgba(34, 197, 94, 0.3)';
+        } else {
+          card.style.transform = 'scale(0.98)';
+          card.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.3)';
+        }
+        
+        // 使用更短的動畫時間
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+          });
+        }, 300); // 減少到300ms
+      });
+    }
+    
+    // 預載入子系統頁面
+    function preloadSubsystem(url) {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url;
+      document.head.appendChild(link);
+    }
+    
+    // 批量預載入所有子系統
+    function preloadAllSubsystems() {
+      const subsystems = getSubsystemsForIndex(); // 只預載入可見的子系統
+      subsystems.forEach(sys => {
+        preloadSubsystem(sys.url);
+      });
+    }
+    
+    // 動畫性能優化
+    function optimizeAnimations() {
+      // 使用 Intersection Observer 優化動畫性能
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.willChange = 'transform, opacity, box-shadow';
+            } else {
+              entry.target.style.willChange = 'auto';
+            }
+          });
+        }, {
+          threshold: 0.1
+        });
+        
+        // 觀察所有卡片
+        document.querySelectorAll('.card').forEach(card => {
+          observer.observe(card);
+        });
+      }
+    }
+    
+    // 分類篩選功能
+    function getSubsystemsForIndex() {
+      const savedData = localStorage.getItem('subsystems');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          if (Array.isArray(parsed)) {
+            // 只返回可見的子系統
+            return parsed.filter(sys => sys.visible !== false);
+          }
+        } catch (e) {}
+      }
+      // 沒有就用預設，也要過濾隱藏的
+      return defaultSubsystems.filter(sys => sys.visible !== false);
+    }
+  </script>
+  <script>
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'subsystems') {
+      // 重新載入子系統數據並重新渲染，而不是整個頁面重載
+      loadSubsystemsData();
+      renderSubsystems();
+      console.log('子系統數據已更新，重新渲染完成');
+    }
+  });
+  </script>
+</body>
+</html> 
