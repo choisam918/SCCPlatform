@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>迭代器和生成器 - Python 學習平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/search.js" defer></script>
+    <script src="../js/mobile-menu.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="menu-toggle" id="menu-toggle" aria-label="切換菜單">☰</button>
+        <h1>🐍 Python 學習平台</h1>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-box" id="search-input" placeholder="搜索章節內容...">
+        </div>
+        <a class="back-to-main-btn" href="../../index.html" aria-label="返回主系統">
+            <span class="btn-icon">🏠</span>
+            <span class="btn-text">返回主系統</span>
+        </a>
+    </nav>
+    
+    <!-- 移動端遮罩層 -->
+    <div class="sidebar-overlay"></div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>課程目錄</h2>
+            <h3>Python 基礎</h3>
+            <ul>
+                <li><a href="../index.html">Python 基本語法</a></li>
+                <li><a href="chapter02-data-types.html">Python 數據類型</a></li>
+                <li><a href="chapter03-operators.html">Python 運算符</a></li>
+                <li><a href="chapter04-conditionals.html">條件語句</a></li>
+                <li><a href="chapter05-loops.html">循環語句</a></li>
+                <li><a href="chapter06-functions.html">函數</a></li>
+                <li><a href="chapter07-modules.html">模組</a></li>
+                <li><a href="chapter08-file-io.html">文件操作</a></li>
+                <li><a href="chapter09-exceptions.html">異常處理</a></li>
+            </ul>
+            <h3>Python 進階</h3>
+            <ul>
+                <li><a href="chapter10-oop.html">面向對象編程</a></li>
+                <li><a href="chapter11-iterators.html" class="active">迭代器和生成器</a></li>
+                <li><a href="chapter12-decorators.html">裝飾器</a></li>
+                <li><a href="chapter13-lambda.html">Lambda 函數</a></li>
+                <li><a href="chapter14-regular-expressions.html">正則表達式</a></li>
+                <li><a href="chapter15-database.html">數據庫操作</a></li>
+                <li><a href="chapter16-web-scraping.html">網絡爬蟲</a></li>
+                <li><a href="chapter17-api.html">API 開發</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="chapter-title">迭代器和生成器</h1>
+            
+            <div class="content-section">
+                <p>迭代器和生成器是 Python 中高效處理數據流的重要工具。</p>
+
+                <h2>迭代器</h2>
+                <p>迭代器是一個可以記住遍歷位置的對象。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 1</span>
+                    <code>
+my_list = [1, 2, 3]<br>
+my_iter = iter(my_list)<br>
+<br>
+print(next(my_iter))  # 1<br>
+print(next(my_iter))  # 2<br>
+print(next(my_iter))  # 3
+                    </code>
+                </div>
+
+                <h2>生成器</h2>
+                <p>生成器是使用 yield 語句的特殊函數。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 2</span>
+                    <code>
+def countdown(n):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while n > 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yield n<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n -= 1<br>
+<br>
+for i in countdown(5):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print(i)
+                    </code>
+                </div>
+
+                <h2>生成器表達式</h2>
+
+                <div class="code-example">
+                    <span class="code-label">示例 3</span>
+                    <code>
+squares = (x**2 for x in range(10))<br>
+for square in squares:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print(square)
+                    </code>
+                </div>
+
+                <h2>學習重點</h2>
+                <ul>
+                    <li>迭代器用於遍歷序列</li>
+                    <li>生成器節省內存</li>
+                    <li>使用 yield 創建生成器</li>
+                    <li>生成器表達式更簡潔</li>
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="chapter10-oop.html" class="btn">← 上一章：面向對象編程</a>
+                <a href="chapter12-decorators.html" class="btn">下一章：裝飾器 →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/search.js" defer></script>
+</body>
+</html>
+
