@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Python 基本語法 - Python 學習平台</title>
+    <meta name="description" content="從縮進、註釋到命名規則的 Python 基本語法入門。">
+    <meta property="og:title" content="Python 基本語法 - Python 學習平台">
+    <meta property="og:description" content="從縮進、註釋到命名規則的 Python 基本語法入門。">
+    <meta property="og:type" content="article">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/search.js" defer></script>
+    <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">跳至主內容</a>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <button class="menu-toggle" id="menu-toggle" aria-label="切換菜單" aria-expanded="false" aria-controls="sidebar">☰</button>
+        <h1>🐍 Python 學習平台</h1>
+        <div class="search-container" role="search">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-box" id="search-input" placeholder="搜索章節內容..." aria-label="搜索章節內容">
+        </div>
+        <a class="back-to-main-btn" href="../index.html" aria-label="返回主系統">
+            <span class="btn-icon">🏠</span>
+            <span class="btn-text">返回主系統</span>
+        </a>
+    </nav>
+    
+    <!-- 移動端遮罩層 -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 側邊欄 -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="課程目錄">
+            <h2>📚 課程目錄</h2>
+            
+            <h3>Python 基礎</h3>
+            <ul>
+                <li><a href="index.html" class="active" aria-current="page">Python 基本語法</a></li>
+                <li><a href="chapters/chapter02-data-types.html">Python 數據類型</a></li>
+                <li><a href="chapters/chapter03-operators.html">Python 運算符</a></li>
+                <li><a href="chapters/chapter04-conditionals.html">條件語句</a></li>
+                <li><a href="chapters/chapter05-loops.html">循環語句</a></li>
+                <li><a href="chapters/chapter06-functions.html">函數</a></li>
+                <li><a href="chapters/chapter07-modules.html">模組</a></li>
+                <li><a href="chapters/chapter08-file-io.html">文件操作</a></li>
+                <li><a href="chapters/chapter09-exceptions.html">異常處理</a></li>
+            </ul>
+
+            <h3>Python 進階</h3>
+            <ul>
+                <li><a href="chapters/chapter10-oop.html">面向對象編程</a></li>
+                <li><a href="chapters/chapter11-iterators.html">迭代器和生成器</a></li>
+                <li><a href="chapters/chapter12-decorators.html">裝飾器</a></li>
+                <li><a href="chapters/chapter13-lambda.html">Lambda 函數</a></li>
+                <li><a href="chapters/chapter14-regular-expressions.html">正則表達式</a></li>
+                <li><a href="chapters/chapter15-database.html">數據庫操作</a></li>
+                <li><a href="chapters/chapter16-web-scraping.html">網絡爬蟲</a></li>
+                <li><a href="chapters/chapter17-api.html">API 開發</a></li>
+            </ul>
+        </aside>
+
+        <!-- 主內容區 -->
+        <main id="main" class="main-content">
+            <h1 class="chapter-title">Python 基本語法</h1>
+            
+            <div class="content-section">
+                <p>Python 是一種簡單易學的編程語言，具有清晰的語法結構。本章節將介紹 Python 的基本語法規則，包括縮進、註釋、變量命名等基礎知識。</p>
+
+                <h2>Python 縮進</h2>
+                <p>與其他編程語言（如 C++ 或 Java）不同，Python 使用縮進來表示代碼塊，而不是使用大括號。這是 Python 最顯著的特點之一。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 1</span>
+                    <pre><code>if True:
+    print("這是縮進的代碼塊")
+    print("這一行也屬於同一個代碼塊")
+print("這一行不在條件語句內")</code></pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 注意：</strong>縮進必須一致！如果一個代碼塊使用 4 個空格，則整個代碼塊都應該使用 4 個空格。不要混用空格和製表符（Tab）。
+                </div>
+
+                <h2>Python 註釋</h2>
+                <p>註釋用於解釋代碼的功能，不會被 Python 解釋器執行。Python 支持單行註釋和多行註釋。</p>
+
+                <h3>單行註釋</h3>
+                <p>使用 <code>#</code> 符號開始單行註釋。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 2</span>
+                    <pre><code># 這是一個單行註釋
+print("Hello, World!")  # 這是行尾註釋</code></pre>
+                </div>
+
+                <h3>多行註釋</h3>
+                <p>使用三個引號 <code>"""</code> 或 <code>'''</code> 來創建多行註釋。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 3</span>
+                    <pre><code>"""
+這是一個多行註釋
+可以寫多行內容
+用於文檔說明
+"""</code></pre>
+                </div>
+
+                <h2>Python 多行語句</h2>
+                <p>Python 通常一行寫完一個語句，但如果語句太長，可以使用反斜杠 <code>\</code> 來分行。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 4</span>
+                    <pre><code>total = item_one + \
+        item_two + \
+        item_three</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 提示：</strong>在列表、元組或字典中，Python 會自動識別多行，不需要使用反斜杠。
+                </div>
+
+                <h2>Python 引號</h2>
+                <p>Python 可以使用單引號 <code>'</code>、雙引號 <code>"</code> 和三引號 <code>"""</code> 來表示字符串。</p>
+
+                <div class="code-example">
+                    <span class="code-label">示例 5</span>
+                    <pre><code>word = 'word'
+sentence = "這是一個句子"
+paragraph = """這是一個段落，
+可以包含多行，
+非常方便！"""</code></pre>
+                </div>
+
+                <h2>Python 變量命名規則</h2>
+                <ul>
+                    <li>變量名必須以字母（a-z, A-Z）或下劃線 <code>_</code> 開頭</li>
+                    <li>變量名可以包含字母、數字和下劃線</li>
+                    <li>變量名是區分大小寫的（如 <code>name</code> 和 <code>Name</code> 是不同的變量）</li>
+                    <li>不能使用 Python 的保留字作為變量名</li>
+                </ul>
+
+                <div class="code-example">
+                    <span class="code-label">示例 6</span>
+                    <pre><code># 有效的變量名
+name = "張三"
+age = 25
+_is_student = True
+student_name = "李四"
+
+# 無效的變量名
+# 2name = "王五"  # 不能以數字開頭
+# my-name = "趙六"  # 不能包含連字符
+# if = 10  # 不能使用保留字</code></pre>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 命名建議：</strong>使用有意義的變量名，遵循命名慣例（如使用下劃線分隔單詞，類名使用駝峰命名法等）。
+                </div>
+
+                <h2>Python 保留字</h2>
+                <p>以下是在 Python 中有特殊意義的保留字，不能用作變量名：</p>
+                <div class="code-example">
+                    <span class="code-label">保留字列表（Python 3）</span>
+                    <pre><code>False  None  True  and  as  assert  async  await
+break  class  continue  def  del  elif  else  except
+finally  for  from  global  if  import  in  is  lambda
+nonlocal  not  or  pass  raise  return  try  while  with
+yield  match  case</code></pre>
+                </div>
+
+                <h2>學習重點</h2>
+                <ul>
+                    <li>Python 使用縮進而不是大括號來定義代碼塊</li>
+                    <li>使用 <code>#</code> 進行單行註釋，使用三引號進行多行註釋</li>
+                    <li>變量名必須遵循命名規則，不能使用保留字</li>
+                    <li>字符串可以使用單引號、雙引號或三引號</li>
+                    <li>保持代碼整潔和一致的縮進風格非常重要</li>
+                </ul>
+            </div>
+
+            <!-- 導航按鈕 -->
+            <div class="nav-buttons">
+                <div></div>
+                <a href="chapters/chapter02-data-types.html" class="btn">下一章：數據類型 →</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+

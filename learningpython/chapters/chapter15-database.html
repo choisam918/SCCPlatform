@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>數據庫操作 - Python 學習平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/search.js" defer></script>
+    <script src="../js/mobile-menu.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="menu-toggle" id="menu-toggle" aria-label="切換菜單">☰</button>
+        <h1>🐍 Python 學習平台</h1>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-box" id="search-input" placeholder="搜索章節內容...">
+        </div>
+        <a class="back-to-main-btn" href="../../index.html" aria-label="返回主系統">
+            <span class="btn-icon">🏠</span>
+            <span class="btn-text">返回主系統</span>
+        </a>
+    </nav>
+    
+    <!-- 移動端遮罩層 -->
+    <div class="sidebar-overlay"></div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>課程目錄</h2>
+            <h3>Python 基礎</h3>
+            <ul>
+                <li><a href="../index.html">Python 基本語法</a></li>
+                <li><a href="chapter02-data-types.html">Python 數據類型</a></li>
+                <li><a href="chapter03-operators.html">Python 運算符</a></li>
+                <li><a href="chapter04-conditionals.html">條件語句</a></li>
+                <li><a href="chapter05-loops.html">循環語句</a></li>
+                <li><a href="chapter06-functions.html">函數</a></li>
+                <li><a href="chapter07-modules.html">模組</a></li>
+                <li><a href="chapter08-file-io.html">文件操作</a></li>
+                <li><a href="chapter09-exceptions.html">異常處理</a></li>
+            </ul>
+            <h3>Python 進階</h3>
+            <ul>
+                <li><a href="chapter10-oop.html">面向對象編程</a></li>
+                <li><a href="chapter11-iterators.html">迭代器和生成器</a></li>
+                <li><a href="chapter12-decorators.html">裝飾器</a></li>
+                <li><a href="chapter13-lambda.html">Lambda 函數</a></li>
+                <li><a href="chapter14-regular-expressions.html">正則表達式</a></li>
+                <li><a href="chapter15-database.html" class="active">數據庫操作</a></li>
+                <li><a href="chapter16-web-scraping.html">網絡爬蟲</a></li>
+                <li><a href="chapter17-api.html">API 開發</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="chapter-title">數據庫操作</h1>
+            
+            <div class="content-section">
+                <p>Python 可以連接和操作各種數據庫，常用的有 SQLite、MySQL、PostgreSQL 等。</p>
+
+                <h2>SQLite</h2>
+
+                <div class="code-example">
+                    <span class="code-label">示例 1</span>
+                    <code>
+import sqlite3<br>
+<br>
+# 連接數據庫<br>
+conn = sqlite3.connect('example.db')<br>
+cursor = conn.cursor()<br>
+<br>
+# 創建表<br>
+cursor.execute('''CREATE TABLE users<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(id INTEGER PRIMARY KEY, name TEXT)''')<br>
+<br>
+# 插入數據<br>
+cursor.execute("INSERT INTO users (name) VALUES (?)", ("張三",))<br>
+conn.commit()<br>
+conn.close()
+                    </code>
+                </div>
+
+                <h2>查詢數據</h2>
+
+                <div class="code-example">
+                    <span class="code-label">示例 2</span>
+                    <code>
+conn = sqlite3.connect('example.db')<br>
+cursor = conn.cursor()<br>
+<br>
+cursor.execute("SELECT * FROM users")<br>
+rows = cursor.fetchall()<br>
+<br>
+for row in rows:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print(row)<br>
+<br>
+conn.close()
+                    </code>
+                </div>
+
+                <h2>學習重點</h2>
+                <ul>
+                    <li>使用 sqlite3 模組</li>
+                    <li>connect() 連接數據庫</li>
+                    <li>execute() 執行 SQL</li>
+                    <li>commit() 提交事務</li>
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="chapter14-regular-expressions.html" class="btn">← 上一章：正則表達式</a>
+                <a href="chapter16-web-scraping.html" class="btn">下一章：網絡爬蟲 →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/search.js" defer></script>
+</body>
+</html>
+
