@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中英生字翻譯系統 - 管理者專頁</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body style="position:relative;">
+    <button class="back-btn" onclick="goBack()" title="回到首頁">🏠</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>中英生字管理</h1>
+            <p class="subtitle">請先登入管理者帳號</p>
+        </div>
+
+        <!-- 登入表單 -->
+        <div class="login-form active" id="loginForm">
+            <div class="question-card" style="max-width: 400px; margin: 0 auto;">
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="管理者密碼" 
+                    class="answer-input"
+                    autocomplete="off"
+                >
+                <button class="btn btn-primary" onclick="login()" style="width: 100%; margin-top: 16px;">登入</button>
+            </div>
+        </div>
+
+        <!-- 管理者專頁 -->
+        <div class="admin-panel" id="adminPanel">
+            <!-- 統計資訊 -->
+            <div class="stats stats-centered" style="flex-shrink: 0;">
+                <div class="stat-item">
+                    <h3>📚 總生字數</h3>
+                    <div class="number" id="totalWords">0</div>
+                </div>
+                <div class="stat-item">
+                    <h3>🆕 今日新增</h3>
+                    <div class="number" id="todayAdded">0</div>
+                </div>
+                <div class="stat-item">
+                    <h3>📊 系統狀態</h3>
+                    <div class="number" id="systemStatus" style="font-size: 1.5rem;">正常</div>
+                </div>
+            </div>
+
+            <!-- 主要功能區域 -->
+            <div class="admin-main-stack" style="flex: 1; min-height: 0;">
+                <!-- 新增生字區域 -->
+                <div class="add-word-section">
+                    <h3>➕ 新增生字</h3>
+                    
+                    <div class="add-single">
+                        <input type="text" id="newChinese" placeholder="中文" autocomplete="off">
+                        <input type="text" id="newEnglish" placeholder="英文" autocomplete="off">
+                        <button class="btn btn-success" onclick="addWord()">新增單個</button>
+                    </div>
+
+                    <div class="add-batch">
+                        <h4>📝 批量新增</h4>
+                        <textarea 
+                            id="batchInput" 
+                            placeholder="請輸入生字，格式：中文,英文&#10;例如：&#10;蘋果,apple&#10;書,book&#10;汽車,car" 
+                            rows="5"
+                        ></textarea>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary" onclick="addBatchWords()">批量新增</button>
+                            <button class="btn btn-secondary" onclick="clearBatchInput()">清空</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生字列表 -->
+                <div class="word-list" id="wordList">
+                    <h3>📋 生字列表</h3>
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        載入中...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div class="panel-actions panel-actions-bottom" style="flex-shrink: 0;">
+                <button class="btn btn-primary" onclick="saveWords()">💾 儲存變更</button>
+                <button class="btn btn-secondary" onclick="logout()">🚪 登出</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 預設生字庫
+        let words = [];
+        let wordsData = null;
+
+        // 從 localStorage 載入生字
+        function loadWords() {
+            const savedWords = localStorage.getItem('vocabulary_words');
+            if (savedWords) {
+                try {
+                    const data = JSON.parse(savedWords);
+                    // 兼容舊格式和新格式
+                    if (data.words && Array.isArray(data.words)) {
+                        words = data.words;
+                        wordsData = data;
+                    } else if (Array.isArray(data)) {
+                        words = data;
+                        wordsData = { words: data };
+                    }
+                } catch (e) {
+                    console.error('載入失敗:', e);
+                    loadDefaultWords();
+                }
+            } else {
+                loadDefaultWords();
+            }
+            updateStats();
+        }
+
+        function loadDefaultWords() {
+            words = [
+                { chinese: '蘋果', english: 'apple' },
+                { chinese: '書', english: 'book' },
+                { chinese: '汽車', english: 'car' },
+                { chinese: '狗', english: 'dog' },
+                { chinese: '房子', english: 'house' },
+                { chinese: '貓', english: 'cat' },
+                { chinese: '鳥', english: 'bird' },
+                { chinese: '花', english: 'flower' },
+                { chinese: '樹', english: 'tree' },
+                { chinese: '水', english: 'water' }
+            ];
+            wordsData = { words: words };
+        }
+
+        // 儲存生字到 localStorage
+        function saveWords() {
+            try {
+                // 使用 vocabularyManager 的格式
+                const data = {
+                    words: words,
+                    categories: extractCategories(),
+                    difficulties: ['easy', 'medium', 'hard'],
+                    lastUpdated: new Date().toISOString().split('T')[0],
+                    version: '1.0'
+                };
+                localStorage.setItem('vocabulary_words', JSON.stringify(data));
+                wordsData = data;
+                alert('✅ 生字已儲存！');
+                updateStats();
+                renderWordList();
+            } catch (e) {
+                alert('❌ 儲存失敗：' + e.message);
+            }
+        }
+
+        function extractCategories() {
+            const categories = new Set();
+            words.forEach(word => {
+                if (word.category) categories.add(word.category);
+            });
+            return Array.from(categories);
+        }
+
+        // 更新統計資訊
+        function updateStats() {
+            const totalWordsEl = document.getElementById('totalWords');
+            if (totalWordsEl) {
+                totalWordsEl.textContent = words.length;
+            }
+            const todayAddedEl = document.getElementById('todayAdded');
+            if (todayAddedEl) {
+                todayAddedEl.textContent = '0';
+            }
+            const systemStatusEl = document.getElementById('systemStatus');
+            if (systemStatusEl) {
+                systemStatusEl.textContent = '正常';
+            }
+        }
+
+        // 管理者登入
+        function login() {
+            const password = document.getElementById('password').value;
+            if (password === 'admin@123') {
+                // 設置登入狀態
+                sessionStorage.setItem('admin_logged_in', 'true');
+                sessionStorage.setItem('admin_login_time', Date.now().toString());
+                
+                document.getElementById('loginForm').classList.remove('active');
+                document.getElementById('adminPanel').classList.add('active');
+                loadWords();
+                renderWordList();
+                updateStats();
+            } else {
+                alert('❌ 密碼錯誤！');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }
+
+        // 登出
+        function logout() {
+            if (confirm('確定要登出嗎？')) {
+                // 清除登入狀態
+                sessionStorage.removeItem('admin_logged_in');
+                sessionStorage.removeItem('admin_login_time');
+                
+                document.getElementById('loginForm').classList.add('active');
+                document.getElementById('adminPanel').classList.remove('active');
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // 渲染生字列表
+        function renderWordList() {
+            const wordListEl = document.getElementById('wordList');
+            if (!wordListEl) return;
+
+            if (words.length === 0) {
+                wordListEl.innerHTML = `
+                    <h3>📋 生字列表</h3>
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-light);">
+                        <p style="font-size: 1.1rem; margin-bottom: 16px;">還沒有生字</p>
+                        <p>請在上方新增生字</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            const title = document.createElement('h3');
+            title.textContent = '📋 生字列表';
+            fragment.appendChild(title);
+
+            words.forEach((word, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-item';
+                
+                const wordInfo = document.createElement('div');
+                wordInfo.className = 'word-info';
+                wordInfo.innerHTML = `
+                    <div class="chinese">${escapeHtml(word.chinese)}</div>
+                    <div class="english">${escapeHtml(word.english)}</div>
+                `;
+                
+                const wordActions = document.createElement('div');
+                wordActions.className = 'word-actions';
+                wordActions.innerHTML = `
+                    <button class="edit-btn" onclick="editWord(${index})">編輯</button>
+                    <button class="delete-btn" onclick="deleteWord(${index})">刪除</button>
+                `;
+                
+                wordItem.appendChild(wordInfo);
+                wordItem.appendChild(wordActions);
+                fragment.appendChild(wordItem);
+            });
+
+            wordListEl.innerHTML = '';
+            wordListEl.appendChild(fragment);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 新增生字
+        function addWord() {
+            const chinese = document.getElementById('newChinese').value.trim();
+            const english = document.getElementById('newEnglish').value.trim();
+            
+            if (!chinese || !english) {
+                alert('⚠️ 請填寫完整的中文和英文！');
+                return;
+            }
+
+            // 檢查是否重複
+            const exists = words.some(w => 
+                w.chinese === chinese && w.english.toLowerCase() === english.toLowerCase()
+            );
+            
+            if (exists) {
+                alert('⚠️ 這個生字已經存在！');
+                return;
+            }
+
+            words.push({ chinese, english });
+            document.getElementById('newChinese').value = '';
+            document.getElementById('newEnglish').value = '';
+            updateStats();
+            renderWordList();
+            
+            // 自動儲存
+            saveWords();
+        }
+
+        // 批量新增生字
+        function addBatchWords() {
+            const batchInput = document.getElementById('batchInput').value.trim();
+            if (!batchInput) {
+                alert('⚠️ 請輸入要新增的生字！');
+                return;
+            }
+
+            const lines = batchInput.split('\n').filter(line => line.trim());
+            let addedCount = 0;
+            let errorCount = 0;
+            const errors = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const parts = line.split(',').map(part => part.trim());
+                if (parts.length >= 2 && parts[0] && parts[1]) {
+                    const chinese = parts[0];
+                    const english = parts[1];
+                    
+                    // 檢查是否重複
+                    const exists = words.some(w => 
+                        w.chinese === chinese && w.english.toLowerCase() === english.toLowerCase()
+                    );
+                    
+                    if (!exists) {
+                        words.push({ chinese, english });
+                        addedCount++;
+                    } else {
+                        errors.push(`第 ${i + 1} 行：已存在`);
+                    }
+                } else {
+                    errors.push(`第 ${i + 1} 行：格式錯誤`);
+                    errorCount++;
+                }
+            }
+
+            if (addedCount > 0 || errorCount > 0) {
+                let message = `成功新增 ${addedCount} 個生字`;
+                if (errors.length > 0) {
+                    message += `\n${errors.length} 個項目有問題`;
+                }
+                alert(message);
+                document.getElementById('batchInput').value = '';
+                updateStats();
+                renderWordList();
+                saveWords();
+            } else {
+                alert('⚠️ 沒有成功新增任何生字，請檢查格式！');
+            }
+        }
+
+        // 清空批量輸入
+        function clearBatchInput() {
+            if (confirm('確定要清空輸入內容嗎？')) {
+                document.getElementById('batchInput').value = '';
+            }
+        }
+
+        // 編輯生字
+        function editWord(index) {
+            if (index < 0 || index >= words.length) return;
+            
+            const word = words[index];
+            const newChinese = prompt('請輸入新的中文：', word.chinese);
+            if (newChinese === null) return;
+            
+            const newEnglish = prompt('請輸入新的英文：', word.english);
+            if (newEnglish === null) return;
+
+            if (newChinese.trim() && newEnglish.trim()) {
+                words[index] = { 
+                    chinese: newChinese.trim(), 
+                    english: newEnglish.trim() 
+                };
+                renderWordList();
+                saveWords();
+            }
+        }
+
+        // 刪除生字
+        function deleteWord(index) {
+            if (index < 0 || index >= words.length) return;
+            
+            const word = words[index];
+            if (confirm(`確定要刪除「${word.chinese} / ${word.english}」嗎？`)) {
+                words.splice(index, 1);
+                updateStats();
+                renderWordList();
+                saveWords();
+            }
+        }
+
+        // 回到首頁
+        function goBack() {
+            if (confirm('確定要回到首頁嗎？未儲存的變更將會遺失。')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // 檢查是否已登入
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('admin_logged_in');
+            const loginTime = sessionStorage.getItem('admin_login_time');
+            
+            // 檢查登入狀態和時間（30分鐘內有效）
+            if (isLoggedIn === 'true' && loginTime) {
+                const timeDiff = Date.now() - parseInt(loginTime);
+                const thirtyMinutes = 30 * 60 * 1000; // 30分鐘的毫秒數
+                
+                if (timeDiff < thirtyMinutes) {
+                    // 自動登入
+                    document.getElementById('loginForm').classList.remove('active');
+                    document.getElementById('adminPanel').classList.add('active');
+                    loadWords();
+                    renderWordList();
+                    updateStats();
+                    return true;
+                } else {
+                    // 登入過期，清除狀態
+                    sessionStorage.removeItem('admin_logged_in');
+                    sessionStorage.removeItem('admin_login_time');
+                }
+            }
+            return false;
+        }
+
+        // 鍵盤事件處理
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm && loginForm.classList.contains('active')) {
+                    login();
+                }
+            }
+            if (e.key === 'Escape') {
+                const loginForm = document.getElementById('loginForm');
+                if (!loginForm.classList.contains('active')) {
+                    logout();
+                }
+            }
+        });
+
+        // 初始化：檢查登入狀態
+        if (!checkLoginStatus()) {
+            // 如果沒有登入，顯示登入表單
+            loadWords(); // 仍然需要載入數據用於顯示統計
+        }
+    </script>
+</body>
+</html>
