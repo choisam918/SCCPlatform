@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片管理系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 登入頁面樣式 */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            width: auto;
+            margin: 0 5px;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        /* 管理頁面樣式 */
+        .admin-container {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-container.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .admin-header h1 {
+            color: #2d3748;
+            font-size: 2rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card-item {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .card-item-id {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .card-item-content {
+            margin-bottom: 15px;
+        }
+
+        .card-item-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .card-item-text {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .card-item-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .card-item-meta span {
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .card-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2d3748;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 5px 10px;
+        }
+
+        .close-btn:hover {
+            color: #2d3748;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker {
+            width: 60px;
+            height: 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 20px;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .admin-actions {
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+            
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 0.625rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回</a>
+    
+    <!-- 登入頁面 -->
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <h2>🔐 管理員登入</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" placeholder="請輸入管理員密碼" required autofocus>
+                </div>
+                <button type="submit" class="btn">登入</button>
+                <div class="error-message" id="error-message">密碼錯誤，請重新輸入</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理頁面 -->
+    <div class="admin-container" id="admin-container">
+        <div class="admin-header">
+            <h1>📋 卡片管理系統</h1>
+            <div class="admin-actions">
+                <button class="btn btn-success btn-small" onclick="showAddModal()">➕ 新增卡片</button>
+                <button class="btn btn-secondary btn-small" onclick="exportCards()">💾 匯出 JSON</button>
+                <button class="btn btn-secondary btn-small" onclick="loadCardsFromFile()">📥 載入 JSON</button>
+                <button class="btn btn-secondary btn-small" onclick="refreshCards()">🔄 重新載入</button>
+            </div>
+        </div>
+
+        <div class="success-message" id="success-message"></div>
+
+        <div id="cards-container">
+            <!-- 卡片列表將動態載入 -->
+        </div>
+    </div>
+
+    <!-- 新增/編輯卡片模態框 -->
+    <div class="modal" id="card-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">新增卡片</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <form id="card-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-group">
+                    <label for="card-text">卡片文字 *</label>
+                    <textarea id="card-text" placeholder="輸入勵志語句..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="card-category">分類 *</label>
+                        <select id="card-category" required>
+                            <option value="鼓勵">鼓勵</option>
+                            <option value="學習">學習</option>
+                            <option value="生活">生活</option>
+                            <option value="成長">成長</option>
+                            <option value="名言">名言</option>
+                            <option value="堅持">堅持</option>
+                            <option value="自信">自信</option>
+                            <option value="夢想">夢想</option>
+                            <option value="希望">希望</option>
+                            <option value="家庭">家庭</option>
+                            <option value="感恩">感恩</option>
+                            <option value="健康">健康</option>
+                            <option value="使命">使命</option>
+                            <option value="創造力">創造力</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="card-icon">圖標 *</label>
+                        <input type="text" id="card-icon" placeholder="💪" required maxlength="2">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="card-color">顏色 *</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="card-color" value="#FF6B6B" class="color-picker">
+                        <input type="text" id="card-color-text" value="#FF6B6B" placeholder="#FF6B6B" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success">儲存</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 隱藏的檔案輸入 -->
+    <input type="file" id="file-input" accept=".json" style="display: none;" onchange="handleFileLoad(event)">
+
+    <script>
+        let cards = [];
+        let editingId = null;
+
+        // 登入功能
+        function handleLogin(event) {
+            event.preventDefault();
+            const passwordInput = document.getElementById('password');
+            const password = passwordInput.value.trim();
+            const errorMsg = document.getElementById('error-message');
+            
+            if (password === 'admin@123') {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('admin-container').classList.add('active');
+                loadCards();
+            } else {
+                errorMsg.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+                setTimeout(() => {
+                    errorMsg.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // 預設卡片數據（內嵌在 HTML 中，避免 CORS 問題）
+        const defaultCardsData = [
+{"id":1,"text":"不要害怕走得慢，害怕的是一直站着不走。——中國諺語","category":"堅持","color":"#FF6B6B","icon":"🚶"},
+{"id":2,"text":"失敗不是失敗，只是暫時的挫折，堅持就是勝利。——亞伯拉罕·林肯","category":"堅持","color":"#4ECDC4","icon":"💪"},
+{"id":3,"text":"堅持做你認為對的事情，即使別人說不好也不要輕易放棄。——德瑞克·納特","category":"堅持","color":"#FFE66D","icon":"🎯"},
+{"id":4,"text":"世上沒有失敗，只有放棄；沒有絕望的境地，只有對生活的看法。——貝爾·安德森","category":"堅持","color":"#A8E6CF","icon":"🌟"},
+{"id":5,"text":"不要害怕去嘗試，你永遠不知道你會發現什麼。——喬治·庫珀","category":"成長","color":"#FFD93D","icon":"🔍"},
+{"id":6,"text":"失敗不是你的失敗，而是你學習的機會。——松下幸之助","category":"學習","color":"#6BCB77","icon":"📚"},
+{"id":7,"text":"珍惜眼前人，好好生活。——來源不詳","category":"家庭","color":"#4D96FF","icon":"❤️"},
+{"id":8,"text":"成功就是跌倒七次，站起來八次。——中國諺語","category":"堅持","color":"#FF8B94","icon":"🏃"},
+{"id":9,"text":"你不能控制別人，你唯一能控制的是你自己。——德爾·卡耐基","category":"成長","color":"#A29BFE","icon":"🎯"},
+{"id":10,"text":"堅定的信念能贏得強者的心，并使他們變得更堅強。——約翰·卡拉洛克","category":"夢想","color":"#FD79A8","icon":"💎"},
+{"id":11,"text":"堅定的信念能夠贏得任何一場比賽，任何一個挑戰，任何一次冒險。 —— 魯道夫·勞倫","category":"夢想","color":"#FDCB6E","icon":"🏆"},
+{"id":12,"text":"每一個決定都會有風險，但是拒絕冒險也是一種風險。 —— 希拉里·克林頓","category":"成長","color":"#6C5CE7","icon":"⚡"},
+{"id":13,"text":"要想實現自己的夢想，就必須先相信自己能夠做到。 —— 奧黛麗·赫本","category":"夢想","color":"#55EFC4","icon":"✨"},
+{"id":14,"text":"當你身處黑暗之中，要做的不是等待光明的到來，而是點燃希望之火。 —— 埃德蒙·伯克","category":"希望","color":"#FED766","icon":"🕯️"},
+{"id":15,"text":"做一個讓自己驕傲的人，而不是一個讓別人滿意的人。 —— 洛克菲勒","category":"成長","color":"#95E1D3","icon":"👑"},
+{"id":16,"text":"只要你還活著，你就還有機會。 —— 埃米爾·賈庫瑪克","category":"希望","color":"#F38181","icon":"🌅"},
+{"id":17,"text":"每一個成功者都有一個開始的時候。勇於開始，才能找到成功的路。 —— 瑪克·吐溫","category":"堅持","color":"#AA96DA","icon":"🚀"},
+{"id":18,"text":"如果你想要成功，就不要讓失敗打敗你。 —— 羅伯特·泰勒","category":"堅持","color":"#FCBAD3","icon":"🛡️"},
+{"id":19,"text":"真正的勇氣不是不害怕，而是在害怕時仍然去做你該做的事。 —— 高爾斯沃西","category":"成長","color":"#A8DADC","icon":"⚔️"},
+{"id":20,"text":"無論你遇到什麼情況，只要相信自己，你就能夠克服它。 —— 阿諾德·施瓦辛格","category":"自信","color":"#FFB6C1","icon":"💪"},
+{"id":21,"text":"堅持不懈是成功的關鍵。 —— 查尔斯·道尔文","category":"堅持","color":"#DDA0DD","icon":"🔑"},
+{"id":22,"text":"最大的失敗莫過於從未嘗試。 —— 艾迪·拉貝爾","category":"成長","color":"#98D8C8","icon":"🎲"},
+{"id":23,"text":"堅信自己，別人就會信任你。 —— 歐普拉·溫弗瑞","category":"自信","color":"#F7DC6F","icon":"🤝"},
+{"id":24,"text":"記得，每一次失敗都意味著離成功更進一步。 —— 納瑟爾·曼德拉","category":"堅持","color":"#BB8FCE","icon":"📈"},
+{"id":25,"text":"不要害怕失敗，它是成功的必經之路。 —— 福特","category":"成長","color":"#85C1E2","icon":"🛤️"},
+{"id":26,"text":"沒有什麼比堅持更重要了。 —— 溫斯頓·丘吉爾","category":"堅持","color":"#F8B500","icon":"💎"},
+{"id":27,"text":"失敗只是暫時的，只有放棄才是永久的。 —— 未知","category":"堅持","color":"#FF6F91","icon":"⏰"},
+{"id":28,"text":"道路再遠，只要方向是對的，就要一步步走下去。 —— 不詳","category":"堅持","color":"#C7CEEA","icon":"🗺️"},
+{"id":29,"text":"如果你相信你自己，你會有力量去做任何事情。 —— 瑞妮·布朗","category":"自信","color":"#B5EAD7","icon":"⚡"},
+{"id":30,"text":"我不是天才，我只是在別人放棄時還在堅持。 —— 伯特·巴赫拉赫","category":"堅持","color":"#FFD89B","icon":"🔥"},
+{"id":31,"text":"你的信念會變成你的思想，你的思想會變成你的話語，你的話語會變成你的行為，你的行為會變成你的習慣，你的習慣會變成你的價值觀，而你的價值觀會塑造你的命運。 —— 未知","category":"成長","color":"#FF6B6B","icon":"🌱"},
+{"id":32,"text":"成功需要付出艱苦的努力、堅定不移的信念和無畏的決心。 —— 坦妮婭·布朗","category":"堅持","color":"#4ECDC4","icon":"💪"},
+{"id":33,"text":"要成功，必須先相信自己可以成功。 —— 瑞妮·布朗","category":"自信","color":"#FFE66D","icon":"⭐"},
+{"id":34,"text":"沒有人能在保持平靜的情況下實現自己的夢想。 —— 未知","category":"夢想","color":"#A8E6CF","icon":"✨"},
+{"id":35,"text":"我們需要的不是一個完美的計劃，而是一個好的計劃和足夠的勇氣去執行它。 —— 未知","category":"成長","color":"#FFD93D","icon":"🎯"},
+{"id":36,"text":"生命中最重要的決定之一就是你是否認為你能夠成功。 —— 愛德華·特勒","category":"自信","color":"#6BCB77","icon":"⭐"},
+{"id":37,"text":"成功需要堅韌不拔的信念和毅力。 —— 瑪麗蓮·曼森","category":"堅持","color":"#4D96FF","icon":"💪"},
+{"id":38,"text":"如果你想要成功，不要去追求成功；去成為一個價值百萬美元的人，那麼成功就會自然而然地來到你的身邊。—— 傑姆斯·艾倫","category":"成長","color":"#FF8B94","icon":"💎"},
+{"id":39,"text":"只有當你相信自己有能力達到目標時，你才會開始行動。 —— 拉爾夫·瓦爾多·埃默森","category":"自信","color":"#A29BFE","icon":"⚡"},
+{"id":40,"text":"每個人都是自己命運的良師益友。 —— 奧普拉·溫弗瑞","category":"成長","color":"#FD79A8","icon":"🌱"},
+{"id":41,"text":"成功不是偶然，而是一種習慣。 —— 艾爾伯特·格雷","category":"成長","color":"#FDCB6E","icon":"📈"},
+{"id":42,"text":"堅持就是勝利。 —— 納撒尼爾·海瑟威","category":"堅持","color":"#6C5CE7","icon":"💪"},
+{"id":43,"text":"偉大的事業需要決心、信心和毅力。 —— 貝多芬","category":"堅持","color":"#55EFC4","icon":"🎯"},
+{"id":44,"text":"堅持到底，一切皆有可能。 —— 愛迪生","category":"堅持","color":"#FED766","icon":"🔥"},
+{"id":45,"text":"只有當你越過那條起點線，你才會知道自己的能力。—— 迈克尔·乔丹","category":"成長","color":"#95E1D3","icon":"⚡"},
+{"id":46,"text":"人生最大的失敗不是跌倒，而是拒絕爬起來。 – 奧布拉迪恩·馬丁","category":"堅持","color":"#F38181","icon":"🏃"},
+{"id":47,"text":"沒有什麼比堅持更重要的了，世界上所有美好的事物都是通過堅持得到的。 – 费城勇士队教练 – 達格·彼得斯","category":"堅持","color":"#AA96DA","icon":"💎"},
+{"id":48,"text":"不論你身在何處，請記住著力實踐自己的夢想。 – 卡洛斯·古铁雷斯","category":"夢想","color":"#FCBAD3","icon":"✨"},
+{"id":49,"text":"堅信自己的信仰，抓住機會，然後去實現它。 – 奧黛麗·赫本","category":"夢想","color":"#A8DADC","icon":"🎯"},
+{"id":50,"text":"珍惜你的夢想，因為它們是你的靈魂的指引。 – 奧普拉·溫芙瑞","category":"夢想","color":"#FFB6C1","icon":"✨"},
+{"id":51,"text":"信念是克服困難的力量之源。 – 馬克·吐溫","category":"堅持","color":"#DDA0DD","icon":"💪"},
+{"id":52,"text":"堅持下去，不要被打倒，每一次失敗都是邁向成功所需的一步。 – 邁克爾·喬丹","category":"堅持","color":"#98D8C8","icon":"🏀"},
+{"id":53,"text":"記住，你所經歷的每個困難都是鍛煉你意志力和勇氣的良機。 – 盧梭","category":"成長","color":"#F7DC6F","icon":"⚔️"},
+{"id":54,"text":"只要你相信，你就可以做到。 – 布蘭妮·斯皮爾斯","category":"自信","color":"#BB8FCE","icon":"⭐"},
+{"id":55,"text":"有夢想，有勇氣，抓住機會，不斷挑戰自己，你就能夠實現任何事情。 – 卡羅琳·肯尼迪","category":"夢想","color":"#85C1E2","icon":"✨"},
+{"id":56,"text":"學習不是填滿水桶，而是點燃火焰。 —— 威廉·莎士比亞","category":"學習","color":"#F8B500","icon":"🔥"},
+{"id":57,"text":"為了學習而犧牲是暫時的，但不學習的代價是永遠的。 —— 約翰·F·甘迺迪","category":"學習","color":"#FF6F91","icon":"⏳"},
+{"id":58,"text":"任何時候，學習都不晚。 —— 卡利爾·吉布朗","category":"學習","color":"#C7CEEA","icon":"📖"},
+{"id":59,"text":"每個人都有成為自己所想成為的能力。 —— 瑪麗·凱莉","category":"成長","color":"#B5EAD7","icon":"🌟"},
+{"id":60,"text":"學習是一個沒有結束的旅程，所以不斷前進吧。 —— 克里斯蒂娜·戈多伊","category":"學習","color":"#FFD89B","icon":"🚶"},
+{"id":61,"text":"人類唯一的上限就是他們的想象力。 —— 卡爾·威廉姆斯","category":"創造力","color":"#FF6B6B","icon":"🎨"},
+{"id":62,"text":"成功的關鍵是不斷努力和持續學習。 —— 史蒂夫·納什","category":"學習","color":"#4ECDC4","icon":"🔑"},
+{"id":63,"text":"一旦你開始學習，就永遠不會再像以前那樣回到原來的自己。 —— 布魯斯·李","category":"學習","color":"#FFE66D","icon":"🔄"},
+{"id":64,"text":"唯一能夠阻止你成長的是你自己的想法。 —— 莫亞·迪安","category":"成長","color":"#A8E6CF","icon":"🧠"},
+{"id":65,"text":"成長需要勇氣和毅力，但收獲的果實是無與倫比的。 —— 瑪麗亞·雪莉","category":"成長","color":"#FFD93D","icon":"🌳"},
+{"id":66,"text":"成長需要勇氣，但勇氣不是不害怕，而是感覺害怕時仍然行動。—— 魯丹","category":"成長","color":"#6BCB77","icon":"⚔️"},
+{"id":67,"text":"每一個失敗的背後，都藏著一個成長的機會。—— 奧普拉·溫芙瑞","category":"成長","color":"#4D96FF","icon":"💎"},
+{"id":68,"text":"沒有人能夠阻止你成為自己想成為的人，只要你相信自己能行。—— 萊昂納多·達芬奇","category":"自信","color":"#FF8B94","icon":"🎭"},
+{"id":69,"text":"學習是燃燒內心的激情，讓我們變得更加聰明，更加有智慧。—— 約翰·亞當斯","category":"學習","color":"#A29BFE","icon":"🔥"},
+{"id":70,"text":"當你的能力遇到挑戰時，會產生一種神奇的力量，可以讓你突破自己的極限。—— 艾伯特·愛因斯坦","category":"成長","color":"#FD79A8","icon":"⚡"},
+{"id":71,"text":"做對的事情很重要，但比這更重要的是從錯誤中學習。—— 希拉蕊·柯林頓","category":"學習","color":"#FDCB6E","icon":"📚"},
+{"id":72,"text":"當你學習新東西時，不要只是學習它的外表，要去探索它的內在本質。—— 約翰·史密斯","category":"學習","color":"#6C5CE7","icon":"🔍"},
+{"id":73,"text":"學習不是為了與別人競爭，而是為了與自己競爭，成為更好的自己。—— 馬克·吐温","category":"學習","color":"#55EFC4","icon":"🏆"},
+{"id":74,"text":"無論你選擇什麼樣的道路，都要付出努力和犧牲，這才是成長和成功的關鍵。—— 露西爾·鮑曼","category":"成長","color":"#FED766","icon":"🌱"},
+{"id":75,"text":"每一個人都是獨一無二的，每一個人都有自己的旅程和成長之路。—— 薩特雅·納迪拉","category":"成長","color":"#95E1D3","icon":"🌟"},
+{"id":76,"text":"人生最大的成就不在於從不失敗，而在於每次失敗後都能重新振作。—— 瑪麗莎·梅耶","category":"成長","color":"#F38181","icon":"💎"},
+{"id":77,"text":"學習就像鍛煉，每一次的磨練都是讓自己變得更強大。—— 理查德·布蘭森","category":"學習","color":"#AA96DA","icon":"💪"},
+{"id":78,"text":"成功取決於你對未來的期望，而非過去的經歷。—— 魯汶·伊貝拉","category":"成長","color":"#FCBAD3","icon":"📊"},
+{"id":79,"text":"學習是讓你拓展視野的一個過程，是一個深度了解自己和世界的過程。—— 亞歷山大·丹尼爾斯","category":"學習","color":"#A8DADC","icon":"🔍"},
+{"id":80,"text":"成功的關鍵不在於你的天賦和能力，而在於你的勤奮和決心。—— 埃米莉·布朗","category":"成長","color":"#FFB6C1","icon":"🔑"},
+{"id":81,"text":"成長就是不斷破除自己的舒適區，接受新挑戰的過程。—— 約翰·卡維諾","category":"成長","color":"#DDA0DD","icon":"🌿"},
+{"id":82,"text":"跌倒並不可怕，可怕的是不敢再站起來。—— 曼德拉","category":"堅持","color":"#98D8C8","icon":"🏃"},
+{"id":83,"text":"學習不是為了比別人更好，而是為了讓自己更好。—— 貝多芬","category":"學習","color":"#F7DC6F","icon":"📚"},
+{"id":84,"text":"成長不僅僅是為了讓自己更好，還要讓自己有所貢獻。—— 歐普拉·溫芙瑞","category":"使命","color":"#BB8FCE","icon":"🎯"},
+{"id":85,"text":"學習永無止境，但不要讓自己迷失在學習中，學會享受過程，珍惜當下。—— 大衛·霍克尼","category":"學習","color":"#85C1E2","icon":"📖"},
+{"id":86,"text":"學習不是一個瞬間的事情，而是一個持續的過程。 —— 卡爾·亞當斯","category":"學習","color":"#F8B500","icon":"📚"},
+{"id":87,"text":"失敗並不是失去，而是學習。 —— 海倫·凱勒","category":"學習","color":"#FF6F91","icon":"💡"},
+{"id":88,"text":"最危險的信念是沒有危險的信念。 —— 約瑟夫·坎貝爾","category":"成長","color":"#C7CEEA","icon":"⚡"},
+{"id":89,"text":"我們不是在為明天做準備，而是在為現在做準備。 —— 朱迪思·沃格特","category":"成長","color":"#B5EAD7","icon":"📅"},
+{"id":90,"text":"一個人可以學到很多東西，但是最重要的是學會如何學習。 —— 傑基·肯普","category":"學習","color":"#FFD89B","icon":"📚"},
+{"id":91,"text":"任何時候都不要停止學習，因為生命永遠不會停止教育。 —— 布魯斯·李","category":"學習","color":"#FF6B6B","icon":"🔄"},
+{"id":92,"text":"成功的秘訣在於每天都要做些微小的事情，這樣你就能夠看到自己的進步。 —— 羅勃特·考菲爾德","category":"成長","color":"#4ECDC4","icon":"📈"},
+{"id":93,"text":"學習是一種旅程，而不是目的地。 —— 李察·德雷福斯","category":"學習","color":"#FFE66D","icon":"🚶"},
+{"id":94,"text":"成功並不是順利過程，而是如何克服困難。 —— 萊恩·霍利迪","category":"成長","color":"#A8E6CF","icon":"⚔️"},
+{"id":95,"text":"學習和成長是不斷挑戰自己，並克服自己的過程。 —— 約翰·C·馬克斯威爾","category":"成長","color":"#FFD93D","icon":"🌱"},
+{"id":96,"text":"錯誤是成長的機會，因為它們能讓你學到一些你不知道的東西。 —— 比爾·蓋茨","category":"學習","color":"#6BCB77","icon":"💡"},
+{"id":97,"text":"成功來自於在挫折和失敗中學習，然後繼續前進。 —— 肯·羅賓遜","category":"學習","color":"#4D96FF","icon":"📚"},
+{"id":98,"text":"不斷學習和成長是改善自己生活的最佳方法。 —— 迪倫·馬爾斯","category":"成長","color":"#FF8B94","icon":"🌱"},
+{"id":99,"text":"能夠對自己的行為和想法保持開放，這樣你就可以不斷學習和成長。 —— 艾琳·麥克考基","category":"成長","color":"#A29BFE","icon":"🔍"},
+{"id":100,"text":"只有通過努力和犧牲，你才能夠成為你想成為的人，並達到你的目標。 —— 湯姆·莫雷尔","category":"成長","color":"#FD79A8","icon":"💪"},
+{"id":101,"text":"成長是一個不斷突破舒適區的過程。 —— 約翰·C·馬克斯威爾","category":"成長","color":"#FDCB6E","icon":"🌿"},
+{"id":102,"text":"沒有哪一種風險比錯過機會更危險。 —— 馬克·祖克伯格","category":"成長","color":"#6C5CE7","icon":"⚡"},
+{"id":103,"text":"學習和成長需要不斷地挑戰自己和面對恐懼。 —— 羅賓·夏馬","category":"成長","color":"#55EFC4","icon":"⚔️"},
+{"id":104,"text":"成功並不是終點，而是一段沒完沒了的旅程。 —— 蕾切爾·霍茲","category":"成長","color":"#FED766","icon":"🛤️"},
+{"id":105,"text":"每個人都有成長和學習的潛力，只要你願意努力。 —— 米歇爾·奧巴馬","category":"成長","color":"#95E1D3","icon":"🌟"},
+{"id":106,"text":"相信自己，你就能做到任何事情。 – Johann Wolfgang von Goethe (若望·沃爾夫岡·馮·歌德)","category":"自信","color":"#F38181","icon":"⭐"},
+{"id":107,"text":"無論你做什麼，都要先相信自己能夠做到。 – Audrey Hepburn (奧黛麗·赫本)","category":"自信","color":"#AA96DA","icon":"✨"},
+{"id":108,"text":"如果你相信自己，你就會有自信。 – Mandy Hale (曼蒂·海爾)","category":"自信","color":"#FCBAD3","icon":"💪"},
+{"id":109,"text":"每個人都是有價值的，每個人都有自己的美麗之處。 – Sophia Loren (索菲亞·羅蘭)","category":"自信","color":"#A8DADC","icon":"💎"},
+{"id":110,"text":"自信不是拿出來的，而是自然流露的。 – 塔勒布 (Nassim Nicholas Taleb)","category":"自信","color":"#FFB6C1","icon":"🌺"},
+{"id":111,"text":"不要讓別人的意見左右你對自己的看法。 – Virginia Satir (維吉尼亞·薩提爾)","category":"自信","color":"#DDA0DD","icon":"🛡️"},
+{"id":112,"text":"每個人都是獨特的，沒有人能取代你的價值和地位。 – Unknown (未知)","category":"自信","color":"#98D8C8","icon":"🌟"},
+{"id":113,"text":"價值並不是由外界決定的，而是由自己決定的。 – Jean-Paul Sartre (讓-保羅·薩特)","category":"自信","color":"#F7DC6F","icon":"👑"},
+{"id":114,"text":"有自信是成功的第一步。 – Unknown (未知)","category":"自信","color":"#BB8FCE","icon":"⭐"},
+{"id":115,"text":"在人生的每個階段，都要相信自己，自己就是最好的。 – Unknown (未知)","category":"自信","color":"#85C1E2","icon":"💫"},
+{"id":116,"text":"沒有人可以讓你覺得自己不夠好，除非你自己同意。 —— 奧普拉·溫弗瑞","category":"自信","color":"#F8B500","icon":"🛡️"},
+{"id":117,"text":"沒有什麼比自信心更美麗的化妝品了。 —— 娜拉·羅伯茨","category":"自信","color":"#FF6F91","icon":"💄"},
+{"id":118,"text":"不要在乎別人如何看待你，重要的是你如何看待自己。 —— 瑪莎·華盛頓","category":"自信","color":"#C7CEEA","icon":"👁️"},
+{"id":119,"text":"當你相信自己，你就能夠讓任何事情成為可能。 —— 米高奧巴馬","category":"自信","color":"#B5EAD7","icon":"⚡"},
+{"id":120,"text":"你值得更好的人和事，所以不要停留在那些只會傷害你的地方。- 未知","category":"自信","color":"#FFD89B","icon":"💎"},
+{"id":121,"text":"相信自己，你擁有無限的潛力。- 奧斯汀·法爾","category":"自信","color":"#FF6B6B","icon":"⭐"},
+{"id":122,"text":"你的價值不是由他人來評定的，而是由你自己創造的。- 珍妮特·傅立葉","category":"自信","color":"#4ECDC4","icon":"👑"},
+{"id":123,"text":"失敗並不代表你就是個失敗者，相反地，失敗是你向成功邁進的必經之路。- 费迪南德·保罗","category":"成長","color":"#FFE66D","icon":"💡"},
+{"id":124,"text":"不要試圖去滿足別人的期望，而是要追求自己真正想要的東西。- 卡特琳·古登","category":"自信","color":"#A8E6CF","icon":"🎯"},
+{"id":125,"text":"你不需要得到所有人的喜愛，只需要得到那些重要的人的肯定。- 布赖恩·特雷西","category":"自信","color":"#FFD93D","icon":"💫"},
+{"id":126,"text":"不要對失去的過去沉迷，而是要專注於你未來可能獲得的機會。- 米切爾·卡普蘭","category":"成長","color":"#6BCB77","icon":"🔮"},
+{"id":127,"text":"沒有人可以阻止你成為最好的自己。- 喬治·艾略特","category":"自信","color":"#4D96FF","icon":"⭐"},
+{"id":128,"text":"價值和自信來自於內心的自我肯定，而不是外界的讚美和稱讚。- 卡蘿·瑪利亞·奇波拉","category":"自信","color":"#FF8B94","icon":"💎"},
+{"id":129,"text":"你必須先愛自己，才能真正地去愛他人。- 飛鳥集","category":"自信","color":"#A29BFE","icon":"❤️"},
+{"id":130,"text":"你必須相信自己才能有別人對你的信任。 —— 卡洛斯·加爾松","category":"自信","color":"#FD79A8","icon":"🤝"},
+{"id":131,"text":"沒有任何人能夠擊敗你，除非你自己放棄了。 —— 埃里克·湯姆森","category":"堅持","color":"#FDCB6E","icon":"🛡️"},
+{"id":132,"text":"當你開始懷疑自己的時候，別人就會開始質疑你。 —— 麥克·莫瑞","category":"自信","color":"#6C5CE7","icon":"💪"},
+{"id":133,"text":"你是唯一的你，並且你值得被愛，被尊重，被欣賞，被追求。 —— 未知","category":"自信","color":"#55EFC4","icon":"🌟"},
+{"id":134,"text":"如果你相信自己，你將擁有無窮的力量，無窮的勇氣，無窮的毅力。 —— 瑪麗亞·羅賓遜","category":"自信","color":"#FED766","icon":"⚡"},
+{"id":135,"text":"自信的人從不會試圖取悅所有人，因為他們知道這是不可能的。 —— 艾倫·科恩","category":"自信","color":"#95E1D3","icon":"💫"},
+{"id":136,"text":"真正的自信不是膨脹自己，而是在不確定的時候保持冷靜和堅定。 —— 哈羅德·加迪斯","category":"自信","color":"#F38181","icon":"🛡️"},
+{"id":137,"text":"不要小看自己，因為你的能力比你想象的更加強大。 —— 未知","category":"自信","color":"#AA96DA","icon":"💪"},
+{"id":138,"text":"自信來自於內在的信念，並且你必須有勇氣展示出來。 —— 艾比·韋格納","category":"自信","color":"#FCBAD3","icon":"⭐"},
+{"id":139,"text":"當你相信自己，整個世界都會向你敞開大門。 —— 奧斯汀·卡爾特斯","category":"自信","color":"#A8DADC","icon":"✨"},
+{"id":140,"text":"自信是成功的秘訣。 —— 梅瑟·梅奧","category":"自信","color":"#FFB6C1","icon":"🔑"},
+{"id":141,"text":"要有自信，就要有能力；要有能力，就要有行動。 —— 菲利普·杜克","category":"成長","color":"#DDA0DD","icon":"💪"},
+{"id":142,"text":"每個人都是獨特的，沒有人像你，所以你的價值也是獨特的。 —— 珍妮特·詹森","category":"自信","color":"#98D8C8","icon":"💎"},
+{"id":143,"text":"你必須先相信自己才能成為你想成為的人。 —— 奧黛麗·赫本","category":"自信","color":"#F7DC6F","icon":"⭐"},
+{"id":144,"text":"要成為一個成功的人，首先要有自信；要有自信，首先要有勇氣。 —— 約翰·費舍","category":"自信","color":"#BB8FCE","icon":"💪"},
+{"id":145,"text":"沒有自信的人，往往無法把握機會。 —— 沃爾特·安德森","category":"自信","color":"#85C1E2","icon":"🎯"},
+{"id":146,"text":"價值不在於你擁有多少東西，而在於你的內在價值。 —— 約書亞·貝克","category":"自信","color":"#F8B500","icon":"💎"},
+{"id":147,"text":"信任你自己，你就會知道如何生活。 —— 瓊·克勞馥","category":"自信","color":"#FF6F91","icon":"❤️"},
+{"id":148,"text":"你所擁有的自信會決定你的生活水平。 —— 薩蒂亞·納德拉","category":"自信","color":"#C7CEEA","icon":"📊"},
+{"id":149,"text":"自信不是所有事情都做得好，而是相信自己可以做得更好。 —— 艾琳·凱勒","category":"自信","color":"#B5EAD7","icon":"⭐"},
+{"id":150,"text":"自信是最美麗的服裝，穿上它會讓你更自信。 —— 艾薇塔·朗博","category":"自信","color":"#FFD89B","icon":"💄"},
+{"id":151,"text":"不要害怕失敗，因為失敗只是成功的一個步驟。 —— 迈克尔·乔丹","category":"成長","color":"#FF6B6B","icon":"💡"},
+{"id":152,"text":"勇氣不是從缺乏恐懼中產生，而是從克服恐懼中產生。 —— 约瑟夫·普特南","category":"成長","color":"#4ECDC4","icon":"⚔️"},
+{"id":153,"text":"沒有什麼比你所相信的更強大。 —— 艾琳·卡利","category":"自信","color":"#FFE66D","icon":"💪"},
+{"id":154,"text":"當你開始相信自己的能力時，你會發現自己可以做任何事情。 —— 布蘭妮·布朗","category":"自信","color":"#A8E6CF","icon":"⚡"},
+{"id":155,"text":"自信是一種技能，可以學會和培養。 —— 卡洛琳·戴博","category":"自信","color":"#FFD93D","icon":"📚"},
+{"id":156,"text":"只有當你相信自己的價值時，別人才會相信你的價值。 —— 約翰·C·馬克斯威爾","category":"自信","color":"#6BCB77","icon":"⭐"},
+{"id":157,"text":"無論你遇到什麼困難，都要相信自己有克服困難的能力。 —— 塞繆爾·約翰遜","category":"自信","color":"#4D96FF","icon":"🛡️"},
+{"id":158,"text":"珍惜自己的價值，否則別人也不會珍惜你。 —— 亞曼達·梅瑞迪斯","category":"自信","color":"#FF8B94","icon":"💎"},
+{"id":159,"text":"不要試圖讓別人滿意，只需要讓自己滿意。 —— 珍妮特·詹姆森","category":"自信","color":"#A29BFE","icon":"💫"},
+{"id":160,"text":"沒有人可以讓你感到不足，除非你自己允許。──艾琳·凱勒","category":"自信","color":"#FD79A8","icon":"🛡️"},
+{"id":161,"text":"要成為你自己最好的朋友，先要對自己誠實，然後學會接受自己。──史黛西·查理斯","category":"自信","color":"#FDCB6E","icon":"🤝"},
+{"id":162,"text":"不要因為某些人無法看到你的價值而浪費你自己的時間和能量，因為他們不配擁有你。──費爾南多·佩索阿","category":"自信","color":"#6C5CE7","icon":"💎"},
+{"id":163,"text":"真正的自信不是讓你覺得你比別人優秀，而是讓你覺得你可以接受自己的不足和不完美。──薩爾馬·海克","category":"自信","color":"#55EFC4","icon":"💫"},
+{"id":164,"text":"珍惜自己，因為你是唯一一個可以陪伴自己走完一生的人。──貝利·貝爾","category":"自信","color":"#FED766","icon":"❤️"},
+{"id":165,"text":"如果你有勇氣開始，你就有勇氣繼續下去。──瑪麗安·威廉斯","category":"堅持","color":"#95E1D3","icon":"🚀"},
+{"id":166,"text":"沒有任何人可以使你感到自卑，除非你允許他們這樣做。──馬克·特維恩","category":"自信","color":"#F38181","icon":"🛡️"},
+{"id":167,"text":"做你自己，因為其他人都已經有人了。──歐斯卡·王爾德","category":"自信","color":"#AA96DA","icon":"⭐"},
+{"id":168,"text":"自信不是所有人都有的品質，但是它是所有人都可以練習和發展的品質。──布莉姬特·巴克曼","category":"自信","color":"#FCBAD3","icon":"💪"},
+{"id":169,"text":"無論你過去經歷了什麼，你都值得擁有一個美好的未來。──里斯·布朗","category":"希望","color":"#A8DADC","icon":"🌈"},
+{"id":170,"text":"夢想不是遙不可及的，而是離你更近的未來。","category":"夢想","color":"#FFB6C1","icon":"✨"},
+{"id":171,"text":"真正的夢想不是你能不能實現，而是你願不願意為之努力奮鬥。","category":"夢想","color":"#DDA0DD","icon":"🎯"},
+{"id":172,"text":"夢想是一道閃耀的指引，引領我們向前追求。","category":"夢想","color":"#98D8C8","icon":"🌟"},
+{"id":173,"text":"追尋夢想的道路並不會輕鬆，但每一步都值得我們去努力。","category":"夢想","color":"#F7DC6F","icon":"🛤️"},
+{"id":174,"text":"沒有夢想的人生，就像沒有陽光的花園一樣枯萎。","category":"夢想","color":"#BB8FCE","icon":"🌻"},
+{"id":175,"text":"夢想是蛻變的開始，努力是成就的關鍵。","category":"夢想","color":"#85C1E2","icon":"🔥"},
+{"id":176,"text":"隨著你的夢想而去，你就能發現自己想要的生活。","category":"夢想","color":"#F8B500","icon":"✨"},
+{"id":177,"text":"當你將夢想變成目標，再加上努力和決心，你就在路上。","category":"夢想","color":"#FF6F91","icon":"🎯"},
+{"id":178,"text":"追尋夢想的過程，不僅僅是目標的實現，更是自我價值的提升。","category":"夢想","color":"#C7CEEA","icon":"💎"},
+{"id":179,"text":"如果你的夢想讓你心跳加速，那麼你就應該為之奮鬥。","category":"夢想","color":"#B5EAD7","icon":"❤️"},
+{"id":180,"text":"做你熱愛的事情，你永遠不會工作一天。 —— 馬克·吐溫","category":"夢想","color":"#FFD89B","icon":"❤️"},
+{"id":181,"text":"夢想是一個沒有尺寸的地方。 —— 布魯斯·斯普林斯汀","category":"夢想","color":"#FF6B6B","icon":"✨"},
+{"id":182,"text":"每一個夢想都有一個時刻，需要你去為之奮鬥。 —— 麥特·卡特尼","category":"夢想","color":"#4ECDC4","icon":"🎯"},
+{"id":183,"text":"我們必須要有勇氣跟隨自己的心。 —— 史提夫·喬布斯","category":"夢想","color":"#FFE66D","icon":"❤️"},
+{"id":184,"text":"追尋夢想是唯一一種能夠真正瞭解自己的方法。 —— 貝尼·阿福列德","category":"夢想","color":"#A8E6CF","icon":"🔍"},
+{"id":185,"text":"夢想不是你看到的，而是你需要看到的。 —— 艾倫·阿姆斯壯","category":"夢想","color":"#FFD93D","icon":"👁️"},
+{"id":186,"text":"不要讓任何人告訴你，你不能做某件事情。如果你有夢想，就要保持奮鬥，繼續追求，不斷前進。 —— 迪卡普里奧","category":"夢想","color":"#6BCB77","icon":"🚀"},
+{"id":187,"text":"夢想，就是要你從未有過的地方開始做一個人。 —— 克里斯多福·諾蘭","category":"夢想","color":"#4D96FF","icon":"🌟"},
+{"id":188,"text":"追求夢想需要我們付出努力、時間和汗水，但每一個付出都是值得的。 —— 麥可·菲爾普斯","category":"夢想","color":"#FF8B94","icon":"💪"},
+{"id":189,"text":"做自己夢想中的人，而不是別人眼中的人。 —— 理查德·布蘭森","category":"夢想","color":"#A29BFE","icon":"✨"},
+{"id":190,"text":"夢想就是一個有生命的存在，只要你給它肥沃的土壤，它就會生根發芽，最終結出美好的果實。 – 凱瑟琳·帕特森","category":"夢想","color":"#FD79A8","icon":"🌱"},
+{"id":191,"text":"夢想是生命的動力，是人類最有創造力和進步性的思維。 – 丹尼斯·維特利","category":"夢想","color":"#FDCB6E","icon":"💫"},
+{"id":192,"text":"每個人的夢想都是不同的，這是值得慶幸的事情。我們可以通過追求自己的夢想，實現自我價值，並為這個世界帶來真正的改變。 – 艾琳·貝克","category":"夢想","color":"#6C5CE7","icon":"🌟"},
+{"id":193,"text":"人生最偉大的成就，不是從來沒有失敗，而是在不斷失敗中，從未丟失追求夢想的勇氣。 – 湯瑪斯·愛迪生","category":"夢想","color":"#55EFC4","icon":"🔥"},
+{"id":194,"text":"追求夢想並不容易，但是如果我們不去追求，那麼夢想就永遠只是夢想。 – 艾琳·卡拉曼","category":"夢想","color":"#FED766","icon":"🎯"},
+{"id":195,"text":"夢想是生命的燃料，是一股驅動力，讓你能夠持續不斷地往前走。 – 艾爾伯特·史維策","category":"夢想","color":"#95E1D3","icon":"🚀"},
+{"id":196,"text":"不論你的夢想是什麼，只要你足夠勇敢地去追求，它就會成真。 – 蘇珊·布朗","category":"夢想","color":"#F38181","icon":"✨"},
+{"id":197,"text":"追求夢想的過程中，你可能會遇到許多障礙和困難，但是只要你能夠保持信念，並不斷努力奮鬥，最終一定會實現自己的目標。","category":"夢想","color":"#AA96DA","icon":"🛤️"},
+{"id":198,"text":"夢想不是在你睡覺時出現的，而是在你醒著的時候在心中生根發芽的。- Jesse Jackson","category":"夢想","color":"#FCBAD3","icon":"💤"},
+{"id":199,"text":"跟隨你的夢想，它知道去哪裡。- Kobe Bryant","category":"夢想","color":"#A8DADC","icon":"🏀"},
+{"id":200,"text":"夢想是人生的駕照，有了它，你就可以走向任何地方。- Lil Wayne","category":"夢想","color":"#FFB6C1","icon":"🗺️"},
+{"id":201,"text":"夢想不是遠方的彼岸，而是心中的方向。- 張德芬","category":"夢想","color":"#DDA0DD","icon":"🧭"},
+{"id":202,"text":"夢想是你心靈最深處的渴望，永遠不要放棄它。- Rudy Ruettiger","category":"夢想","color":"#98D8C8","icon":"❤️"},
+{"id":203,"text":"不要害怕追逐你的夢想，因為你的夢想就是你內在最深處的聲音。- Bernard Shaw","category":"夢想","color":"#F7DC6F","icon":"🎵"},
+{"id":204,"text":"追求夢想的過程，就是一步步將夢想變成現實的過程。- 馬斯克","category":"夢想","color":"#BB8FCE","icon":"🚀"},
+{"id":205,"text":"永遠不要停下追求夢想的腳步，因為你永遠不知道，下一步就是成功的關鍵。- Mark Cuban","category":"夢想","color":"#85C1E2","icon":"👣"},
+{"id":206,"text":"夢想是一個獨特的地方，是在你的心靈深處，等著你去發現。- Elizabeth Mitchell","category":"夢想","color":"#F8B500","icon":"🔍"},
+{"id":207,"text":"不管多麼艱辛，不管多麼遙遠，只要你有夢想，你就一定會成功。- 馬雲","category":"夢想","color":"#FF6F91","icon":"💪"},
+{"id":208,"text":"夢想的實現不在於遠方的等待，而在於腳下的努力奮鬥。——陳嘉映","category":"夢想","color":"#C7CEEA","icon":"🛤️"},
+{"id":209,"text":"不要害怕追求你的夢想，它們是你生命中最真實的願望。——Susan Polis Schutz","category":"夢想","color":"#B5EAD7","icon":"✨"},
+{"id":210,"text":"如果你有夢想，就要去追尋它，因為沒有人會為你實現它。——Unknown","category":"夢想","color":"#FFD89B","icon":"🎯"},
+{"id":211,"text":"追求夢想的過程，其實就是一種成長的過程。——謝安琪","category":"成長","color":"#FF6B6B","icon":"🌱"},
+{"id":212,"text":"每一個追求夢想的人都值得尊重，因為他們勇敢地走在自己的路上，而不是跟隨別人的腳步。——Unknown","category":"夢想","color":"#4ECDC4","icon":"👏"},
+{"id":213,"text":"如果你不去追求夢想，你永遠也不知道你能成為什麼樣的人。——Michael Phelps","category":"夢想","color":"#FFE66D","icon":"🏊"},
+{"id":214,"text":"如果你懂得追求夢想，就會發現生命中有很多美好的事情。——Unknown","category":"夢想","color":"#A8E6CF","icon":"🌸"},
+{"id":215,"text":"夢想是你對未來的希望，但只有你自己才能夠實現它。——Unknown","category":"夢想","color":"#FFD93D","icon":"🌟"},
+{"id":216,"text":"夢想就像是一顆星星，它總是閃耀著，提醒著我們前進的方向。——Unknown","category":"夢想","color":"#6BCB77","icon":"⭐"},
+{"id":217,"text":"追求夢想的過程中，不要忘記享受這段旅程，因為它才是最珍貴的寶藏。——Unknown","category":"夢想","color":"#4D96FF","icon":"💎"},
+{"id":218,"text":"夢想不是讓你睡覺的東西，夢想是讓你無法入睡的東西。(Dolly Parton)","category":"夢想","color":"#FED766","icon":"💤"},
+{"id":219,"text":"執著自己的夢想，無論有多少困難，都要勇往直前。(Marta)","category":"堅持","color":"#FF8B94","icon":"💪"},
+{"id":220,"text":"只有那些敢於追逐自己夢想的人，才能夠實現夢想。(Paulo Coelho)","category":"夢想","color":"#A29BFE","icon":"🚀"},
+{"id":221,"text":"夢想不是你看到的東西，而是你看不到的東西。(Helen Keller)","category":"夢想","color":"#FD79A8","icon":"👁️"},
+{"id":222,"text":"越是艱辛的路，才越能體現夢想的價值。(J.K. Rowling)","category":"夢想","color":"#FDCB6E","icon":"💎"},
+{"id":223,"text":"夢想不是遙不可及的東西，而是一步步地實現。(Lao Tzu)","category":"夢想","color":"#6C5CE7","icon":"👣"},
+{"id":224,"text":"夢想就像陽光，總在你努力的地方。(Unknown)","category":"夢想","color":"#55EFC4","icon":"☀️"},
+{"id":225,"text":"不要害怕去做你想做的事情，夢想是值得你付出一切的。(Unknown)","category":"夢想","color":"#FED766","icon":"💪"},
+{"id":226,"text":"夢想是你自己的，不要讓別人來告訴你不能實現它。(Unknown)","category":"夢想","color":"#95E1D3","icon":"🎯"},
+{"id":227,"text":"執著於夢想，迎接未來的每一個挑戰，你將會實現你的夢想。(Unknown)","category":"夢想","color":"#F38181","icon":"⚔️"},
+{"id":228,"text":"希望是擁有力量的源泉，能讓你做到你想要做的一切。——杜魯門（Harry S. Truman）","category":"希望","color":"#FCBAD3","icon":"💫"},
+{"id":229,"text":"樂觀是一種信念，信仰自己和未來，並且即使在最黑暗的時刻也不會放棄。——多明尼克（Dominique）","category":"希望","color":"#A8DADC","icon":"🕯️"},
+{"id":230,"text":"像孩子一樣保持好奇心，並相信每天都有新的奇跡等待著你。——朱莉安娜·瑪格麗特（Juliana Margulies）","category":"希望","color":"#FFB6C1","icon":"🔮"},
+{"id":231,"text":"事情不一定會一帆風順，但是如果你持續前進，最後一定會到達目的地。——李小龍（Bruce Lee）","category":"希望","color":"#DDA0DD","icon":"🏁"},
+{"id":232,"text":"常常告訴自己：「我現在做的一切，都是為了我未來的自己。」這能夠幫助你保持希望和動力。——不知名作者","category":"希望","color":"#98D8C8","icon":"📅"},
+{"id":233,"text":"無論你遇到多少次挫折，都要相信自己有能力克服它們。——布雷迪（Tom Brady）","category":"希望","color":"#F7DC6F","icon":"🏈"},
+{"id":234,"text":"樂觀的思考方式是一種選擇，是一種每天都可以做出的決定。——露茜（Lucy）","category":"希望","color":"#BB8FCE","icon":"🌈"},
+{"id":235,"text":"相信自己，相信自己有能力克服障礙，並最終實現夢想。——伊隆·馬斯克（Elon Musk）","category":"希望","color":"#85C1E2","icon":"🚀"},
+{"id":236,"text":"在你的生命中，總有些值得期待的事情正在發生。——諾瓦克（Novak Djokovic）","category":"希望","color":"#F8B500","icon":"🌟"},
+{"id":237,"text":"每當你感到迷茫或不安時，請相信一件事：這一切都會過去，並且你會變得更加堅強。——泰德（Ted）","category":"希望","color":"#FF6F91","icon":"💪"},
+{"id":238,"text":"希望是堅強的力量，帶領人們克服各種艱難險阻，走向成功的彼岸。 – 亨利·福特（Henry Ford）","category":"希望","color":"#C7CEEA","icon":"🛤️"},
+{"id":239,"text":"擁有希望是非常重要的，它可以改變一個人的生活，也能改變整個社會的走向。 – 費德里克·杜格拉斯（Frederick Douglass）","category":"希望","color":"#B5EAD7","icon":"🌍"},
+{"id":240,"text":"沒有人能預知未來，但是只要心中充滿希望，就能朝著光明的方向前進。 – 哈林·埃利森（Ralph Ellison）","category":"希望","color":"#FFD89B","icon":"🧭"},
+{"id":241,"text":"每個人都可以創造自己的未來，只需要相信自己和自己的能力，充滿希望和勇氣，不斷前行。 – 奧普拉·溫弗瑞（Oprah Winfrey）","category":"希望","color":"#FF6B6B","icon":"🌟"},
+{"id":242,"text":"希望是勇氣的源泉，是無限的動力，讓我們勇往直前，超越自我，創造更加美好的未來。 – 約瑟夫·阿特勒（Joseph Atler）","category":"希望","color":"#4ECDC4","icon":"⚡"},
+{"id":243,"text":"希望是一把鑰匙，可以打開未來的門，讓我們走向更加美好的明天。 – 丹尼爾·哈維斯（Daniel Haves）","category":"希望","color":"#FFE66D","icon":"🔑"},
+{"id":244,"text":"當我們擁有希望和夢想時，即使是最黑暗的時刻也會變得明亮和美好。 – 露易絲·梅（Louise May）","category":"希望","color":"#A8E6CF","icon":"🕯️"},
+{"id":245,"text":"希望是無價之寶，是人類前進的動力，它可以讓我們走出陰霾，迎接光明。 – 馬丁·路德·金（Martin Luther King Jr.）","category":"希望","color":"#FFD93D","icon":"💎"},
+{"id":246,"text":"沒有希望，就沒有前進的動力，也就沒有成功的可能。所以，讓我們堅持自己的夢想，充滿希望，迎接美好的未來。 – 約翰·F·肯尼迪（John F. Kennedy）","category":"希望","color":"#6BCB77","icon":"🚀"},
+{"id":247,"text":"希望是生命的陽光，是我們前行的指南針，讓我們一起相信未來，相信自己，追逐夢想。 – 海倫·凱勒（Helen Keller）","category":"希望","color":"#4D96FF","icon":"🌈"},
+{"id":248,"text":"常保一顆希望的心，即使經歷風雨，也能穿越長夜，照亮前行的路。（來源：不詳）","category":"希望","color":"#FF8B94","icon":"💡"},
+{"id":249,"text":"希望是一種力量，它能讓你看到障礙後的那一片天空，也能帶給你重新開始的勇氣。（來源：不詳）","category":"希望","color":"#A29BFE","icon":"🌅"},
+{"id":250,"text":"樂觀的心態能夠化解生活中的煩惱和不如意，讓人看到更多的美好和可能。（來源：不詳）","category":"希望","color":"#FD79A8","icon":"😊"},
+{"id":251,"text":"每一個困難的背後，都隱藏著一個機會，只有樂觀的人才能看到這個機會。（來源：不詳）","category":"希望","color":"#FDCB6E","icon":"💡"},
+{"id":252,"text":"當你感到迷茫和沮喪時，請不要失去希望，因為希望是可以重新燃起的。（來源：不詳）","category":"希望","color":"#6C5CE7","icon":"🕯️"},
+{"id":253,"text":"希望是一個微小的火花，可以在黑暗中照亮前行的路，讓你繼續前進。（來源：不詳）","category":"希望","color":"#55EFC4","icon":"✨"},
+{"id":254,"text":"勇氣和希望是兩個最重要的品質，有了它們，你就能克服一切困難和挑戰。（來源：不詳）","category":"希望","color":"#FED766","icon":"🛡️"},
+{"id":255,"text":"生命中最重要的一件事情，就是擁有希望和勇氣，這樣才能在困難的時刻保持前進的方向。（來源：不詳）","category":"希望","color":"#95E1D3","icon":"🧭"},
+{"id":256,"text":"像種子一樣，希望需要時間才能生根發芽，但只要持續用心灌溉，它就會茁壯成長。（來源：不詳）","category":"希望","color":"#F38181","icon":"🌱"},
+{"id":257,"text":"希望是長久不滅的火焰，即使風雨飄搖，仍能在黑暗中照亮前路。（卡蜜爾·葛布蘭）","category":"希望","color":"#AA96DA","icon":"🔥"},
+{"id":258,"text":"樂觀的人在面對困難時，能夠看到希望，而不是絕望。（尼爾·阿姆斯壯）","category":"希望","color":"#FCBAD3","icon":"🌈"},
+{"id":259,"text":"永遠不要放棄你的夢想，因為這個世界上總有人需要你的光芒，需要你繼續前進。（莎拉·班克斯）","category":"希望","color":"#A8DADC","icon":"🌟"},
+{"id":260,"text":"有希望的人，看到的是無限的可能性；沒有希望的人，只看到的是無盡的黑暗。（李嘉誠）","category":"希望","color":"#FFB6C1","icon":"☀️"},
+{"id":261,"text":"在黑暗中，一盞微弱的燈光可以帶給人們希望；在人生的低谷中，一份微薄的支持也可以讓人們重新站起來。（瑪麗·安·拉德馬克）","category":"希望","color":"#DDA0DD","icon":"💡"},
+{"id":262,"text":"樂觀的人會把每一個挑戰都當做一個機會，一個成長的機會。（馬克·古德曼）","category":"希望","color":"#98D8C8","icon":"🎯"},
+{"id":263,"text":"人生就像一場馬拉松，要想贏得比賽，必須始終保持樂觀和希望。（畢·麥克馬洪）","category":"希望","color":"#F7DC6F","icon":"🏃"},
+{"id":264,"text":"希望是可以創造的，樂觀是可以維持的，只要你有信心和毅力。（安妮·貝爾德）","category":"希望","color":"#BB8FCE","icon":"💪"},
+{"id":265,"text":"在困難的時刻，不要放棄希望，因為希望是唯一可以引導你走出困境的力量。（維克多·雨果）","category":"希望","color":"#85C1E2","icon":"🕯️"},
+{"id":266,"text":"只要你保持一顆希望的心，那麼即使路途再漫長、再艱辛，你也能勇往直前，走向成功的彼岸。（貝麗雅）","category":"希望","color":"#F8B500","icon":"🛤️"},
+{"id":267,"text":"希望是生命的陽光，樂觀是前進的動力。—— 卡耐基","category":"希望","color":"#FF6F91","icon":"☀️"},
+{"id":268,"text":"不管前方有多少荊棘，心中始終有一盞燈塔，指引你往前走。—— 賴馬克","category":"希望","color":"#C7CEEA","icon":"🗼"},
+{"id":269,"text":"永遠不要失去信心，因為失去信心就意味著失去了一切。——高爾斯華維","category":"希望","color":"#B5EAD7","icon":"💪"},
+{"id":270,"text":"希望是一隻永遠飛翔的鳥，它的翅膀永遠不會停歇。——塞涅卡","category":"希望","color":"#FFD89B","icon":"🕊️"},
+{"id":271,"text":"當黑暗來臨時，不要懼怕，因為每個黑暗都會被燃燒而盡，照亮未來的是希望和信仰。——馬丁路德金","category":"希望","color":"#FF6B6B","icon":"🕯️"},
+{"id":272,"text":"希望是生命的泉源，它給予我們力量去面對一切困難和挑戰。——巴斯德","category":"希望","color":"#4ECDC4","icon":"💧"},
+{"id":273,"text":"生命的風景就像一張照片，當你心情愉快時，照片裡的景色也會更加美麗。——瑪麗蓮·夢露","category":"希望","color":"#FFE66D","icon":"📷"},
+{"id":274,"text":"當你對未來充滿信心時，未來也會回報你。——保羅·柯艾略","category":"希望","color":"#A8E6CF","icon":"🌟"},
+{"id":275,"text":"不要因為自己的夢想太大而放棄，每一個偉大的事業都是從懷抱一個小小的夢想開始的。——吉卜林","category":"希望","color":"#FFD93D","icon":"✨"},
+{"id":276,"text":"生活中最重要的是保持希望和樂觀的心態，因為這將使你充滿力量和勇氣去面對生命中的每一個挑戰。——亞伯拉罕·林肯","category":"希望","color":"#6BCB77","icon":"🌈"},
+{"id":277,"text":"希望是生命的陽光，樂觀是心靈的彩虹。——傅雷","category":"希望","color":"#4D96FF","icon":"🌈"},
+{"id":278,"text":"即使黑夜漫長而漆黑，黎明總會到來，世界又會變得光明。——卡耐基","category":"希望","color":"#FF8B94","icon":"🌅"},
+{"id":279,"text":"失敗並不是失去，而是你慢了一步迈向成功。——尼克・福斯特","category":"希望","color":"#A29BFE","icon":"📈"},
+{"id":280,"text":"如果你不能改變現狀，就改變你的態度。——維克多・弗蘭克爾","category":"希望","color":"#FD79A8","icon":"🔄"},
+{"id":281,"text":"希望讓人自由，樂觀使人快樂，信心讓人堅強。——海倫·凱勒","category":"希望","color":"#FDCB6E","icon":"🔓"},
+{"id":282,"text":"失敗只是暫時的，只要你堅持下去，成功就在不遠處等待著你。——羅伯特·勒菲","category":"希望","color":"#6C5CE7","icon":"⏰"},
+{"id":283,"text":"擁有希望和樂觀的心態，即使在最黑暗的日子裡，也能看到曙光。——卡罗琳·阿德曼","category":"希望","color":"#55EFC4","icon":"🌅"},
+{"id":284,"text":"樂觀是一種信念，是一種對未來的信心，是一種堅定的意志力。——多明戈·曼","category":"希望","color":"#FED766","icon":"💪"},
+{"id":285,"text":"人生就像是一朵蓮花，即使在污泥裡也能盛開出美麗的花朵，因為它擁有希望和堅強的力量。——蒂姆·肯普","category":"希望","color":"#95E1D3","icon":"🌸"},
+{"id":286,"text":"每當你感到絕望時，請記住，生命總會有轉機，相信自己，相信未來，相信希望。——約瑟夫・福伊奇","category":"希望","color":"#F38181","icon":"💫"},
+{"id":287,"text":"家是心靈的港灣，友情是溫暖的陪伴。","category":"家庭","color":"#AA96DA","icon":"🏠"},
+{"id":288,"text":"沒有家人和朋友的陪伴，人生會顯得孤獨而失色。","category":"家庭","color":"#FCBAD3","icon":"👨‍👩‍👧‍👦"},
+{"id":289,"text":"家庭是一個值得你不斷投資的東西，回饋也是無可估量的。","category":"家庭","color":"#A8DADC","icon":"💝"},
+{"id":290,"text":"友誼是一個種子，需要細心灌溉，才能茁壯成長。","category":"家庭","color":"#FFB6C1","icon":"🌱"},
+{"id":291,"text":"家庭不是建築物，而是一群人的聚集地。—— 賈伯斯","category":"家庭","color":"#DDA0DD","icon":"👪"},
+{"id":292,"text":"在經歷過人生的風雨後，唯有家庭和友情才是最值得珍惜的財富。—— 克里斯·加德納","category":"家庭","color":"#98D8C8","icon":"💎"},
+{"id":293,"text":"家庭和友情是生命的支柱，它們能夠為人生帶來幸福和力量。","category":"家庭","color":"#F7DC6F","icon":"🏛️"},
+{"id":294,"text":"每個人都需要一個家，還需要一群朋友。—— 蒂姆·麥格勞","category":"家庭","color":"#BB8FCE","icon":"🤝"},
+{"id":295,"text":"家庭和友情是彼此扶持的存在，彼此相互幫助，能夠一起走過人生的旅途。","category":"家庭","color":"#85C1E2","icon":"🛤️"},
+{"id":296,"text":"有家人和朋友的陪伴，才能夠讓人的心靈得到真正的安慰和力量。—— 詹姆斯·波爾森","category":"家庭","color":"#F8B500","icon":"💝"},
+{"id":297,"text":"生命中最美好的事情之一，就是在家人和朋友的陪伴下，分享人生的點滴。—— 莎士比亞","category":"家庭","color":"#FF6F91","icon":"💕"},
+{"id":298,"text":"家庭和友情是給人生帶來溫暖和快樂的力量。—— 約瑟夫·艾迪生","category":"家庭","color":"#C7CEEA","icon":"☀️"},
+{"id":299,"text":"友情和家庭能夠讓人感受到被接納、被愛和被關心的感覺。—— 迪士尼","category":"家庭","color":"#B5EAD7","icon":"❤️"},
+{"id":300,"text":"在人生的旅途中，家人和朋友是最可靠的支持者和助手。—— 沃爾特·溫德爾","category":"家庭","color":"#FFD89B","icon":"🤗"},
+{"id":301,"text":"家庭是一個溫暖的避風港，是人生中最重要的經歷之一。—— 湯姆·佛斯特","category":"家庭","color":"#FF6B6B","icon":"🏠"},
+{"id":302,"text":"真正的友誼和家庭是不計較得失的，而是懷著無私的愛和支持。—— 奧斯卡·王爾德","category":"家庭","color":"#4ECDC4","icon":"💝"},
+{"id":303,"text":"家庭和友情是生命中最珍貴的資產，它們能夠給予人們安慰和力量。—— 麥特·卡梅倫","category":"家庭","color":"#FFE66D","icon":"💎"},
+{"id":304,"text":"友誼和家庭是人生的寶藏，需要珍惜和維護。—— 卡洛斯·桑塔納","category":"家庭","color":"#A8E6CF","icon":"💎"},
+{"id":305,"text":"家庭和友情是人生中最甜美的音符，能夠為生命注入美好和歡樂。","category":"家庭","color":"#FFD93D","icon":"🎵"},
+{"id":306,"text":"當我們遇到人生中的低谷和挑戰時，家人和朋友是我們最堅強的後盾。—— 道格拉斯·亞當斯","category":"家庭","color":"#6BCB77","icon":"🛡️"},
+{"id":307,"text":"每個人的人生都需要有家人和朋友的陪伴，才能夠走得更遠更穩健。—— 王健林","category":"家庭","color":"#4D96FF","icon":"🛤️"},
+{"id":308,"text":"無論你走得多遠，家庭和友情永遠是你回來的地方。—— 麥特·弗雷澤","category":"家庭","color":"#FF8B94","icon":"🏠"},
+{"id":309,"text":"有一個溫馨的家庭和一群可靠的朋友，才是人生最大的財富。—— 華特·文森特·普拉斯科","category":"家庭","color":"#A29BFE","icon":"💎"},
+{"id":310,"text":"有了家人和朋友的支持，我們才能夠勇敢面對人生的挑戰。—— 奧普拉·溫弗瑞","category":"家庭","color":"#FD79A8","icon":"💪"},
+{"id":311,"text":"家庭和友情是人生最美好的禮物，我們應該好好珍惜和保護它們。—— 艾倫·德珍尼斯","category":"家庭","color":"#FDCB6E","icon":"🎁"},
+{"id":312,"text":"每個人都有自己的故事，有家人和朋友的陪伴才能夠將這些故事變得更加美好。","category":"家庭","color":"#6C5CE7","icon":"📖"},
+{"id":313,"text":"家庭和友情能夠讓我們感受到真正的情感和溫暖，是人生中最重要的一部分。—— 薩莉·菲爾德","category":"家庭","color":"#55EFC4","icon":"❤️"},
+{"id":314,"text":"沒有家庭和友情的支持，我們很難在逆境中挺得住，也很難享受到生命中的美好。—— 貝蒂·懷特","category":"家庭","color":"#FED766","icon":"💝"},
+{"id":315,"text":"家庭和友情是人生中最好的保障，當我們遇到困難時，他們總是會在我們身邊。—— 馬克·吐溫","category":"家庭","color":"#95E1D3","icon":"🛡️"},
+{"id":316,"text":"人生中最重要的不是我們擁有多少財富和權力，而是我們身邊有多少家人和朋友。—— 約瑟夫·艾略特","category":"家庭","color":"#F38181","icon":"💎"},
+{"id":317,"text":"家庭是愛的溫床，友情是靈魂的寄託。—— 鄭愁予","category":"家庭","color":"#AA96DA","icon":"🛏️"},
+{"id":318,"text":"家庭和友情是人生的燈塔，指引著我們前進的方向。","category":"家庭","color":"#FCBAD3","icon":"🗼"},
+{"id":319,"text":"沒有家庭和友情的人生，就像沒有陽光和空氣一樣，會變得黯淡無光。—— 凱瑟琳·潘德","category":"家庭","color":"#A8DADC","icon":"☀️"},
+{"id":320,"text":"家庭和友情是給予人生力量的源泉，讓我們勇敢地面對人生的挑戰。","category":"家庭","color":"#FFB6C1","icon":"💪"},
+{"id":321,"text":"家庭是一個溫馨的小天地，友情是一份珍貴的禮物，我們需要好好珍惜。","category":"家庭","color":"#DDA0DD","icon":"🎁"},
+{"id":322,"text":"在生活的歷程中，我們需要家人的陪伴，更需要朋友的支持和鼓勵。—— 馬克·吐溫","category":"家庭","color":"#98D8C8","icon":"🤝"},
+{"id":323,"text":"友情是一盞燈，能夠照亮前方的路途，讓人們不再孤單和迷茫。—— 蘇菲亞·洛倫","category":"家庭","color":"#F7DC6F","icon":"💡"},
+{"id":324,"text":"家庭和友情是彼此依存的，當我們需要幫助時，它們總會在身邊，給予我們支持和幫助。","category":"家庭","color":"#BB8FCE","icon":"🤗"},
+{"id":325,"text":"友情和家庭是人生中最珍貴的財富，它們能夠帶來真正的快樂和幸福。","category":"家庭","color":"#85C1E2","icon":"💎"},
+{"id":326,"text":"沒有家庭和友情，人生就像一片荒漠，乾涸無比，渴望著水源的滋潤。—— 萊昂納德·尼莫伊","category":"家庭","color":"#F8B500","icon":"🏜️"},
+{"id":327,"text":"每個人都需要一個溫暖的家和一個可靠的朋友圈，來支撐他們度過生命中的高峰和低谷。—— 弗雷德·羅傑斯","category":"家庭","color":"#FF6F91","icon":"🏠"},
+{"id":328,"text":"家庭是生命的起點，而友情是生命的佐料，它們一起幫助我們塑造出美好的人生。","category":"家庭","color":"#C7CEEA","icon":"🌟"},
+{"id":329,"text":"家庭和友情都是稀有的寶石，它們需要不斷地磨練才能變得更加耀眼。—— 馬克·吐溫","category":"家庭","color":"#B5EAD7","icon":"💎"},
+{"id":330,"text":"在你面臨挑戰時，家庭和友情會成為你最堅實的後盾，為你提供幫助和支持。—— 瑪麗·瑪修斯","category":"家庭","color":"#FFD89B","icon":"🛡️"},
+{"id":331,"text":"沒有任何東西可以代替家庭和友情所帶來的喜悅和滿足感，它們是我們生命中最珍貴的禮物。","category":"家庭","color":"#FF6B6B","icon":"🎁"},
+{"id":332,"text":"家庭和友情讓我們的生命更加有趣、更加豐富，也更加有意義。—— 雷·布拉德伯里","category":"家庭","color":"#4ECDC4","icon":"🌈"},
+{"id":333,"text":"家庭和友情可以幫助我們從疲憊和挫折中走出來，重新燃起生命中的火焰。—— 卡莉·克勞斯","category":"家庭","color":"#FFE66D","icon":"🔥"},
+{"id":334,"text":"家庭和友情不僅僅是一種情感，更是一種責任和承諾，我們需要用心去珍惜它們。","category":"家庭","color":"#A8E6CF","icon":"💝"},
+{"id":335,"text":"家庭和友情是我們生命中最重要的財富，沒有任何錢財和物質可以取代它們的價值。","category":"家庭","color":"#FFD93D","icon":"💎"},
+{"id":336,"text":"家庭和友情都需要用心去經營和照顧，只有這樣才能使它們茁壯成長，為我們帶來更多的幸福和快樂。","category":"家庭","color":"#6BCB77","icon":"🌱"},
+{"id":337,"text":"沒有家庭和朋友的陪伴，我們就無法真正體驗生命的美好。- 比爾·瑞德","category":"家庭","color":"#4D96FF","icon":"🌟"},
+{"id":338,"text":"家庭是最簡單和最重要的事情，它們為我們提供了一個根基，讓我們成為自己想要成為的人。- 迪恩·克倫齊","category":"家庭","color":"#FF8B94","icon":"🌳"},
+{"id":339,"text":"在我們生命中的每個階段，我們都需要家庭和朋友的陪伴。他們是我們的支持系統，讓我們感到安全和愛。- 凱特·瑪拉","category":"家庭","color":"#A29BFE","icon":"🤗"},
+{"id":340,"text":"家庭和朋友是我們在這個世界上真正的財富。他們為我們帶來了無盡的愛和支持，讓我們更有信心地走向未來。- 希拉里·克林頓","category":"家庭","color":"#FD79A8","icon":"💎"},
+{"id":341,"text":"一個幸福的家庭是一個人生最重要的事情之一，而真正的友誼也是維繫幸福家庭的關鍵之一。- 茱莉亞·沃德","category":"家庭","color":"#FDCB6E","icon":"💝"},
+{"id":342,"text":"友誼和家庭不僅是生命中最重要的東西，也是最美好的事情。- 貝蒂·懷特","category":"家庭","color":"#6C5CE7","icon":"✨"},
+{"id":343,"text":"珍惜你的家庭和朋友，因為他們是你生命中最重要的人。他們為你帶來了無盡的愛和支持，讓你感到快樂和幸福。- 約瑟夫·阿瑟·邦德","category":"家庭","color":"#55EFC4","icon":"❤️"},
+{"id":344,"text":"家庭和朋友是我們生命中最重要的人，他們為我們帶來了無盡的愛和支持。不管發生什麼事情，他們都會在我們身邊。- 奧普拉·溫弗瑞","category":"家庭","color":"#FED766","icon":"🤝"},
+{"id":345,"text":"家庭和朋友是我們生命中最珍貴的寶藏，他們為我們提供了支持和激勵。讓我們好好珍惜他們，並維繫這份美好的情誼。- 瑪麗亞·夏拉普諾娃","category":"家庭","color":"#95E1D3","icon":"💎"},
+{"id":346,"text":"家庭和朋友是我們生命中最重要的人，他們是我們的安全港，讓我們在風浪中找到方向。- 丹尼爾·拉德克利夫","category":"家庭","color":"#F38181","icon":"⚓"},
+{"id":347,"text":"慷慨是心靈的春天，感恩是幸福的源泉。 – 佚名","category":"感恩","color":"#AA96DA","icon":"🌸"},
+{"id":348,"text":"當你慷慨時，你不是失去，而是獲得了更多。 – 佚名","category":"感恩","color":"#FCBAD3","icon":"💝"},
+{"id":349,"text":"感恩之心，存於我們的內心深處，即使外在的環境改變了，它也不會被消失。- 奧普拉·溫芙瑞（Oprah Winfrey）","category":"感恩","color":"#A8DADC","icon":"❤️"},
+{"id":350,"text":"在生活的路上，多一份感恩，多一份善意，多一份慷慨，就會多一份幸福。 – 佚名","category":"感恩","color":"#FFB6C1","icon":"✨"},
+{"id":351,"text":"如果你想得到更多，就得先給予更多。- 馬蒂·麥克庫洛伊（Marty McConnell）","category":"感恩","color":"#DDA0DD","icon":"💝"},
+{"id":352,"text":"慷慨是讓你成為更好版本的自己，感恩是讓你更接近真正的幸福。- 布萊恩·特雷西（Brian Tracy）","category":"感恩","color":"#98D8C8","icon":"💎"},
+{"id":353,"text":"當你慷慨地給予時，你不僅幫助了別人，也幫助了自己成長。","category":"感恩","color":"#F7DC6F","icon":"🌱"},
+{"id":354,"text":"感恩是打開心扉的一把鑰匙，讓幸福之門緩緩開啟。","category":"感恩","color":"#BB8FCE","icon":"🔑"},
+{"id":355,"text":"慷慨是種美德，讓你能夠關注他人的需要，並盡力滿足他們。- 奧古斯汀（St. Augustine）","category":"感恩","color":"#85C1E2","icon":"💝"},
+{"id":356,"text":"每當我們感到快樂時，就要感恩並將這份快樂與他人分享，因為這樣才能使快樂倍增。- 卡爾·巴爾斯（Carl Barks）","category":"感恩","color":"#F8B500","icon":"🎁"},
+{"id":357,"text":"感恩是幸福的種子，而慷慨是讓幸福蔓延的陽光。（Susan Lyons）","category":"感恩","color":"#FF6F91","icon":"☀️"},
+{"id":358,"text":"當你把感恩之心轉化為行動，你的世界就會變得更加美好。（Steve Maraboli）","category":"感恩","color":"#C7CEEA","icon":"✨"},
+{"id":359,"text":"你給予的越多，你就會得到越多。你給予的愛與善意就像是一團火焰，它可以照亮你和他人的道路。（Brian Tracy）","category":"感恩","color":"#B5EAD7","icon":"🔥"},
+{"id":360,"text":"我們所擁有的，不僅僅是自己的財富，也包括我們的能力、時間和關愛。讓我們慷慨地分享這一切吧。（Anna Monnar）","category":"感恩","color":"#FFD89B","icon":"🤗"},
+{"id":361,"text":"每個人都有自己的價值和特別之處，因此我們應該慷慨地給予和接納他們。（Unknown）","category":"感恩","color":"#FF6B6B","icon":"💝"},
+{"id":362,"text":"當你付出愛和關懷時，你的心靈就會充滿愛和關懷。這是一種回報，也是一種愛的循環。（Unknown）","category":"感恩","color":"#4ECDC4","icon":"❤️"},
+{"id":363,"text":"慷慨並不意味著你必須擁有豐富的財富，它是一種心態和態度，是對別人和自己的一種尊重。（Unknown）","category":"感恩","color":"#FFE66D","icon":"💎"},
+{"id":364,"text":"生命中最美好的事情，是你付出愛與善意的時候，看到對方的臉上充滿著快樂和感激。（Unknown）","category":"感恩","color":"#A8E6CF","icon":"😊"},
+{"id":365,"text":"感恩和慷慨是一對孿生姐妹，當你學會感恩時，就會自然而然地變得慷慨。（Unknown）","category":"感恩","color":"#FFD93D","icon":"👭"},
+{"id":366,"text":"唯有慷慨的心，才能帶來真正的豐收，並讓你的生命充滿著豐富和光輝。（Eleanor Roosevelt）","category":"感恩","color":"#6BCB77","icon":"🌾"},
+{"id":367,"text":"感恩是生命的底色，慷慨是人生的亮色。 —— 李宗盛","category":"感恩","color":"#4D96FF","icon":"🌈"},
+{"id":368,"text":"對於我們現在擁有的一切，都要心存感激，因為它們都是上天給予我們的禮物。 —— 茱蒂·加蘭","category":"感恩","color":"#FF8B94","icon":"🎁"},
+{"id":369,"text":"給予是一種善行，不但可以讓他人受益，同時也能帶來自己的滿足感。 —— 羅伯特·韓德曼","category":"感恩","color":"#A29BFE","icon":"💝"},
+{"id":370,"text":"慷慨是一種美德，不但能夠增加我們自身的價值，同時也能夠幫助他人。 —— 奧斯卡·王爾德","category":"感恩","color":"#FD79A8","icon":"💎"},
+{"id":371,"text":"感恩之心是一種美德，能夠讓我們更加珍惜和愛護自己所擁有的一切。 —— 叔本华","category":"感恩","color":"#FDCB6E","icon":"❤️"},
+{"id":372,"text":"當你能夠心存感激，你就會發現你的生命中有很多值得感恩的事情。 —— 梅格·萊恩","category":"感恩","color":"#6C5CE7","icon":"🌟"},
+{"id":373,"text":"慷慨的行為不僅可以讓他人感受到你的關懷，同時也可以讓你自己感受到更多的喜悅。 —— 亨利·沃茲沃斯","category":"感恩","color":"#55EFC4","icon":"😊"},
+{"id":374,"text":"感恩是一種美德，能夠讓我們在生命的道路上找到更多的快樂和滿足。 —— 奧普拉·溫弗瑞","category":"感恩","color":"#FED766","icon":"🌈"},
+{"id":375,"text":"慷慨是一種美德，不但能夠豐富我們的內心世界，同時也能夠讓我們在他人心中留下美好的印象。 —— 賽門·魏斯利","category":"感恩","color":"#95E1D3","icon":"💎"},
+{"id":376,"text":"只有當我們真正懂得感恩，才能夠開始懂得慷慨。 —— 李光耀","category":"感恩","color":"#F38181","icon":"💝"},
+{"id":377,"text":"每一份感恩的心，都是心靈最好的養料。(引自《感恩，改變人生的力量》)","category":"感恩","color":"#AA96DA","icon":"🌱"},
+{"id":378,"text":"慷慨是心靈的美德，它能化解苦難，讓世界充滿愛。(引自哈倫·哈利勒)","category":"感恩","color":"#FCBAD3","icon":"❤️"},
+{"id":379,"text":"好人總是慷慨的，因為他們知道，自己所擁有的不是為自己而有，而是要與身邊的人分享。(引自莎士比亞)","category":"感恩","color":"#A8DADC","icon":"🤝"},
+{"id":380,"text":"感恩是一種生活態度，當你感恩時，你就會發現自己周圍的世界也充滿了美好。(引自佚名)","category":"感恩","color":"#FFB6C1","icon":"🌸"},
+{"id":381,"text":"用慷慨的心來對待身邊的人，你就會發現，生活也變得更加美好。(引自史蒂夫·馬奇尼)","category":"感恩","color":"#DDA0DD","icon":"✨"},
+{"id":382,"text":"感恩是一種美德，它可以讓我們在困難時找到希望，在幸福時感受更多的喜悅。(引自尼古拉斯·史帝爾斯)","category":"感恩","color":"#98D8C8","icon":"🌈"},
+{"id":383,"text":"只要有愛和感恩，每個人都可以成為世界的太陽，照亮周圍的人。(引自德國詩人維特根斯坦)","category":"感恩","color":"#F7DC6F","icon":"☀️"},
+{"id":384,"text":"世界上最珍貴的禮物，不是你所擁有的，而是你所給予的。(引自巴勃羅·畢卡索)","category":"感恩","color":"#BB8FCE","icon":"🎁"},
+{"id":385,"text":"慷慨的人總是有很多朋友，因為他們的心是充滿愛的。(引自凱文·霍爾特)","category":"感恩","color":"#85C1E2","icon":"🤝"},
+{"id":386,"text":"感恩和慷慨是人性的兩個重要品質，它們可以使我們更加謙虛、更加富有，也可以使我們的生活更加充實、更加有意義。(引自丹尼爾·高曼)","category":"感恩","color":"#F8B500","icon":"💎"},
+{"id":387,"text":"慷慨的人不會在意他所給予的，因為他們知道善良的回饋是不可估量的。——珍妮特·李","category":"感恩","color":"#FF6F91","icon":"💝"},
+{"id":388,"text":"感恩之心是一種心靈的洗禮，它能洗滌我們的煩惱，使我們感到內心的寧靜和平靜。——欣蒂亞","category":"感恩","color":"#C7CEEA","icon":"🛁"},
+{"id":389,"text":"慷慨的行為是一種愛的表現，它能幫助我們建立更加親密的關係，同時也使我們更加幸福和滿足。——史蒂夫·馬奇尼","category":"感恩","color":"#B5EAD7","icon":"❤️"},
+{"id":390,"text":"感恩是一種能夠激發我們內心力量的力量，它能幫助我們克服挑戰，並在逆境中找到勇氣和力量。——迪布拉·普魯伊特","category":"感恩","color":"#FFD89B","icon":"💪"},
+{"id":391,"text":"當我們懷著感恩的心情對待他人時，我們不僅能夠讓他們感受到我們的愛和關懷，同時也能為自己帶來更多的幸福和滿足。——曼德拉","category":"感恩","color":"#FF6B6B","icon":"🤗"},
+{"id":392,"text":"慷慨是一種生活的態度，它能幫助我們擺脫自私和小氣的心態，同時也能為我們帶來更多的快樂和自豪。——萊特·利文斯頓","category":"感恩","color":"#4ECDC4","icon":"💎"},
+{"id":393,"text":"感恩不僅是一種態度，更是一種行動，它需要我們用實際行動來表達我們的感激之情，讓那些對我們付出的人知道他們的辛勞得到了我們的認可和贊揚。——凱文·奧爾德","category":"感恩","color":"#FFE66D","icon":"👏"},
+{"id":394,"text":"當我們愈是慷慨地給予，我們就愈能感受到生命的豐盛和豐富，同時也愈能體驗到愛的奇妙力量。——馬伊·威爾斯","category":"感恩","color":"#A8E6CF","icon":"💫"},
+{"id":395,"text":"感恩之心是一種心靈的財富，它能幫助我們找到內心的平靜和寧靜，並激發我們對生命的熱愛。","category":"感恩","color":"#FFD93D","icon":"💎"},
+{"id":396,"text":"好心有好報，付出必有回報。- 佚名","category":"感恩","color":"#6BCB77","icon":"💝"},
+{"id":397,"text":"不斷感恩，讓人生更加美好。- 約翰·坎貝爾（John Campbell）","category":"感恩","color":"#4D96FF","icon":"🌈"},
+{"id":398,"text":"有能力的人應該多給予，不斷回饋社會。- 馬云（Jack Ma）","category":"使命","color":"#FF8B94","icon":"🌍"},
+{"id":399,"text":"感恩的心是最美的飾品。- 伊莎貝拉·羅莎琳尼（Isabella Rossellini）","category":"感恩","color":"#A29BFE","icon":"💄"},
+{"id":400,"text":"慷慨不只是施與，還包括彼此分享愛和時間。- 珍妮弗·安妮斯頓（Jennifer Aniston）","category":"感恩","color":"#FD79A8","icon":"⏰"}
+];
+
+        // 載入卡片
+        async function loadCards() {
+            try {
+                // 先嘗試從 localStorage 載入（如果之前有保存）
+                const savedCards = localStorage.getItem('cardsData');
+                if (savedCards) {
+                    const parsedCards = JSON.parse(savedCards);
+                    // 如果 localStorage 中的數據少於 400 條，使用內嵌的完整數據
+                    if (parsedCards.length < 400) {
+                        console.log('localStorage 中的數據不完整，使用內嵌的完整數據');
+                        cards = defaultCardsData;
+                        localStorage.setItem('cardsData', JSON.stringify(cards));
+                    } else {
+                        cards = parsedCards;
+                    }
+                    displayCards();
+                    return;
+                }
+                
+                // 嘗試從文件載入
+                const response = await fetch('./data/cards.json');
+                if (response.ok) {
+                    const fileCards = await response.json();
+                    // 如果文件中的數據少於 400 條，使用內嵌的完整數據
+                    if (fileCards.length < 400) {
+                        console.log('文件中的數據不完整，使用內嵌的完整數據');
+                        cards = defaultCardsData;
+                    } else {
+                        cards = fileCards;
+                    }
+                    localStorage.setItem('cardsData', JSON.stringify(cards));
+                    displayCards();
+                } else {
+                    throw new Error('無法載入檔案');
+                }
+            } catch (error) {
+                console.log('從文件載入失敗，使用內嵌數據:', error);
+                // 如果載入失敗，使用內嵌的預設數據
+                cards = defaultCardsData;
+                localStorage.setItem('cardsData', JSON.stringify(cards));
+                displayCards();
+            }
+        }
+
+        // 顯示卡片
+        function displayCards() {
+            const container = document.getElementById('cards-container');
+            
+            if (cards.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>目前沒有任何卡片</p>
+                        <button class="btn btn-success" onclick="showAddModal()" style="margin-top: 20px;">新增第一張卡片</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="cards-grid">' + cards.map(card => `
+                <div class="card-item">
+                    <div class="card-item-header">
+                        <span class="card-item-id">ID: ${card.id}</span>
+                    </div>
+                    <div class="card-item-content">
+                        <div class="card-item-icon">${card.icon || '✨'}</div>
+                        <div class="card-item-text">${card.text}</div>
+                        <div class="card-item-meta">
+                            <span>分類: ${card.category}</span>
+                            <span style="background: ${card.color}; color: white;">${card.color}</span>
+                        </div>
+                    </div>
+                    <div class="card-item-actions">
+                        <button class="btn btn-secondary btn-small" onclick="editCard(${card.id})">✏️ 編輯</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCard(${card.id})">🗑️ 刪除</button>
+                    </div>
+                </div>
+            `).join('') + '</div>';
+        }
+
+        // 顯示新增模態框
+        function showAddModal() {
+            editingId = null;
+            document.getElementById('modal-title').textContent = '新增卡片';
+            document.getElementById('card-form').reset();
+            document.getElementById('edit-id').value = '';
+            document.getElementById('card-color').value = '#FF6B6B';
+            document.getElementById('card-color-text').value = '#FF6B6B';
+            document.getElementById('card-modal').classList.add('active');
+        }
+
+        // 編輯卡片
+        function editCard(id) {
+            const card = cards.find(c => c.id === id);
+            if (!card) return;
+
+            editingId = id;
+            document.getElementById('modal-title').textContent = '編輯卡片';
+            document.getElementById('edit-id').value = id;
+            document.getElementById('card-text').value = card.text;
+            document.getElementById('card-category').value = card.category;
+            document.getElementById('card-icon').value = card.icon || '✨';
+            document.getElementById('card-color').value = card.color || '#FF6B6B';
+            document.getElementById('card-color-text').value = card.color || '#FF6B6B';
+            document.getElementById('card-modal').classList.add('active');
+        }
+
+        // 關閉模態框
+        function closeModal() {
+            document.getElementById('card-modal').classList.remove('active');
+            editingId = null;
+        }
+
+        // 保存卡片
+        function saveCard(event) {
+            event.preventDefault();
+
+            const text = document.getElementById('card-text').value.trim();
+            const category = document.getElementById('card-category').value;
+            const icon = document.getElementById('card-icon').value.trim();
+            const color = document.getElementById('card-color-text').value.trim();
+
+            if (!text || !category || !icon || !color) {
+                alert('請填寫所有必填欄位');
+                return;
+            }
+
+            if (editingId) {
+                // 編輯模式
+                const index = cards.findIndex(c => c.id === editingId);
+                if (index !== -1) {
+                    cards[index] = {
+                        ...cards[index],
+                        text,
+                        category,
+                        icon,
+                        color
+                    };
+                    showSuccessMessage('卡片已更新！');
+                }
+            } else {
+                // 新增模式
+                const newId = cards.length > 0 ? Math.max(...cards.map(c => c.id)) + 1 : 1;
+                cards.push({
+                    id: newId,
+                    text,
+                    category,
+                    icon,
+                    color
+                });
+                showSuccessMessage('卡片已新增！');
+            }
+
+            displayCards();
+            closeModal();
+            saveCardsToStorage();
+        }
+
+        // 刪除卡片
+        function deleteCard(id) {
+            if (!confirm('確定要刪除這張卡片嗎？')) return;
+
+            cards = cards.filter(c => c.id !== id);
+            displayCards();
+            showSuccessMessage('卡片已刪除！');
+            saveCardsToStorage();
+        }
+
+        // 顯示成功訊息
+        function showSuccessMessage(message, type = 'success') {
+            const msgEl = document.getElementById('success-message');
+            msgEl.textContent = message;
+            msgEl.style.background = type === 'error' ? '#ef4444' : '#10b981';
+            msgEl.classList.add('show');
+            
+            setTimeout(() => {
+                msgEl.classList.remove('show');
+            }, 3000);
+        }
+
+        // 匯出 JSON
+        function exportCards() {
+            const dataStr = JSON.stringify(cards, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'cards.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showSuccessMessage('JSON 檔案已下載！請將檔案放到 data 資料夾中替換原檔案。');
+        }
+
+        // 載入 JSON 檔案
+        function loadCardsFromFile() {
+            document.getElementById('file-input').click();
+        }
+
+        // 處理檔案載入
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const loadedCards = JSON.parse(e.target.result);
+                    if (Array.isArray(loadedCards)) {
+                        cards = loadedCards;
+                        displayCards();
+                        saveCardsToStorage();
+                        showSuccessMessage('JSON 檔案已載入！');
+                    } else {
+                        showSuccessMessage('JSON 格式錯誤', 'error');
+                    }
+                } catch (error) {
+                    showSuccessMessage('讀取檔案失敗', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 重新載入
+        function refreshCards() {
+            loadCards();
+            showSuccessMessage('已重新載入卡片');
+        }
+
+        // 保存到本地儲存（備份）
+        function saveCardsToStorage() {
+            localStorage.setItem('cards_backup', JSON.stringify(cards));
+            localStorage.setItem('cardsData', JSON.stringify(cards)); // 同時保存為主數據
+        }
+
+        // 顏色選擇器同步
+        document.getElementById('card-color').addEventListener('input', function(e) {
+            document.getElementById('card-color-text').value = e.target.value;
+        });
+
+        document.getElementById('card-color-text').addEventListener('input', function(e) {
+            const color = e.target.value;
+            if (/^#[0-9A-F]{6}$/i.test(color)) {
+                document.getElementById('card-color').value = color;
+            }
+        });
+
+        // 表單提交
+        document.getElementById('card-form').addEventListener('submit', saveCard);
+
+        // 點擊模態框外部關閉
+        document.getElementById('card-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const loginForm = document.getElementById('login-form');
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleLogin(e);
+                    }
+                });
+            }
+            
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            if (passwordInput) {
+                passwordInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
