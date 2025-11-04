@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者後台 - 四則運算練習</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: linear-gradient(135deg, #e3f2fd 0%, #fffde7 100%); }
+        .admin-login-panel {
+            max-width: 350px;
+            margin: 80px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            padding: 36px 30px 28px 30px;
+            text-align: center;
+        }
+        .admin-login-panel h2 {
+            color: #f44336;
+            margin-bottom: 24px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .admin-login-panel input {
+            width: 92%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border: 1.5px solid #bdbdbd;
+            font-size: 1.08rem;
+            background: #f7fafc;
+            transition: border 0.2s;
+        }
+        .admin-login-panel input:focus {
+            border: 1.5px solid #1976d2;
+            outline: none;
+        }
+        .admin-login-panel .btn {
+            width: 100%;
+            margin-top: 18px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+        }
+        .admin-error {
+            color: #f44336;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+        .admin-panel {
+            max-width: 900px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            padding: 36px 32px 28px 32px;
+        }
+        .admin-panel h2 {
+            color: #1976d2;
+            margin-bottom: 32px;
+            font-size: 2.1rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .admin-group {
+            margin-bottom: 38px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid #e3e3e3;
+        }
+        .admin-group:last-child { border-bottom: none; }
+        .admin-group label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #1976d2;
+        }
+        .custom-questions h4 {
+            color: #388e3c;
+            font-size: 1.15rem;
+            margin: 18px 0 10px 0;
+            font-weight: bold;
+        }
+        .question-list {
+            margin-bottom: 10px;
+            padding-left: 0;
+            list-style: none;
+        }
+        .question-list li {
+            background: #f7fafc;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            padding: 10px 12px;
+            font-size: 1.08rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .question-list li input[type="text"] {
+            width: 140px;
+            margin-right: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #bdbdbd;
+            font-size: 1rem;
+            background: #fff;
+        }
+        .question-list li input[type="text"]:focus {
+            border: 1.5px solid #1976d2;
+            outline: none;
+        }
+        .question-list button {
+            border: none;
+            border-radius: 16px;
+            padding: 5px 16px;
+            margin-left: 6px;
+            font-size: 0.98rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(45deg, #4fc3f7, #1976d2);
+            color: #fff;
+            transition: background 0.2s;
+        }
+        .question-list button:hover {
+            background: linear-gradient(45deg, #1976d2, #4fc3f7);
+        }
+        .question-list button:last-child {
+            background: linear-gradient(45deg, #f44336, #ff9800);
+        }
+        .question-list button:last-child:hover {
+            background: linear-gradient(45deg, #ff9800, #f44336);
+        }
+        .custom-questions input[type="text"] {
+            width: 180px;
+            margin-right: 8px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            border: 1.5px solid #bdbdbd;
+            font-size: 1rem;
+            background: #f7fafc;
+            margin-bottom: 8px;
+        }
+        .custom-questions input[type="text"]:focus {
+            border: 1.5px solid #388e3c;
+            outline: none;
+        }
+        .custom-questions button {
+            border: none;
+            border-radius: 16px;
+            padding: 7px 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #388e3c, #81c784);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .custom-questions button:hover {
+            background: linear-gradient(45deg, #81c784, #388e3c);
+        }
+        .admin-logout {
+            float: right;
+            background: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 22px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-top: 4px;
+        }
+        @media (max-width: 900px) {
+            .admin-panel { padding: 18px 4vw; }
+            .admin-group { padding-bottom: 10px; }
+        }
+        @media (max-width: 600px) {
+            .admin-panel { padding: 8px 2vw; }
+            .admin-group label { font-size: 1rem; }
+            .custom-questions input[type="text"] { width: 110px; font-size: 0.95rem; }
+            .question-list li { font-size: 0.95rem; padding: 7px 6px; }
+            .question-list li input[type="text"] { width: 80px; font-size: 0.95rem; }
+            .custom-questions button, .question-list button { font-size: 0.92rem; padding: 6px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="admin-login" class="admin-login-panel">
+        <h2>管理者登入</h2>
+        <input type="password" id="admin-password" placeholder="密碼">
+        <button class="btn btn-primary" id="admin-login-btn">登入</button>
+        <div class="admin-error" id="admin-error"></div>
+    </div>
+    <div id="admin-panel" class="admin-panel" style="display:none;">
+        <button class="admin-logout" id="admin-logout-btn">登出</button>
+        <h2>管理七大練習題型</h2>
+        <div class="admin-group" data-group="addition-subtraction-100">
+            <label>百位數加減</label>
+            <div class="custom-questions">
+                <h4>自定義題目</h4>
+                <input type="text" placeholder="5 + 3 = 8">
+                <button onclick="addCustomQuestion(this)">添加</button>
+                <ul class="question-list"></ul>
+            </div>
+        </div>
+        <div class="admin-group" data-group="addition-subtraction-1000">
+            <label>千位數加減</label>
+            <div class="custom-questions">
+                <h4>自定義題目</h4>
+                <input type="text" placeholder="150 + 75 = 225">
+                <button onclick="addCustomQuestion(this)">添加</button>
+                <ul class="question-list"></ul>
+            </div>
+        </div>
+        <div class="admin-group" data-group="multiplication-division-tens">
+            <label>十位數乘除</label>
+            <div class="custom-questions">
+                <h4>自定義題目</h4>
+                <input type="text" placeholder="6 × 7 = 42">
+                <button onclick="addCustomQuestion(this)">添加</button>
+                <ul class="question-list"></ul>
+            </div>
+        </div>
+        <div class="admin-group" data-group="multiplication-division-hundreds">
+            <label>百位數乘除</label>
+            <div class="custom-questions">
+                <h4>自定義題目</h4>
+                <input type="text" placeholder="15 × 12 = 180">
+                <button onclick="addCustomQuestion(this)">添加</button>
+                <ul class="question-list"></ul>
+            </div>
+        </div>
+        <div class="admin-group" data-group="mixed-ones">
+            <label>個位數四則</label>
+            <div class="custom-questions">
+                <h4>自定義題目</h4>
+                <input type="text" placeholder="8 ÷ 4 = 2">
+                <button onclick="addCustomQuestion(this)">添加</button>
+                <ul class="question-list"></ul>
+            </div>
+        </div>
+        <div class="admin-group" data-group="mixed-tens">
+            <label>十位數四則</label>
+            <div class="custom-questions">
+                <h4>自定義題目</h4>
+                <input type="text" placeholder="25 - 13 = 12">
+                <button onclick="addCustomQuestion(this)">添加</button>
+                <ul class="question-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('admin-login-btn').onclick = function() {
+        const pwd = document.getElementById('admin-password').value;
+        if(pwd === 'admin@123') {
+            document.getElementById('admin-login').style.display = 'none';
+            document.getElementById('admin-panel').style.display = '';
+        } else {
+            document.getElementById('admin-error').innerText = '密碼錯誤';
+        }
+    };
+
+    document.getElementById('admin-logout-btn').onclick = function() {
+        document.getElementById('admin-panel').style.display = 'none';
+        document.getElementById('admin-login').style.display = '';
+        document.getElementById('admin-password').value = '';
+        document.getElementById('admin-error').innerText = '';
+    };
+
+    function addCustomQuestion(btn) {
+        const input = btn.previousElementSibling;
+        const question = input.value.trim();
+        if(!question) return;
+        
+        const list = btn.nextElementSibling;
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${question}</span>
+            <div>
+                <input type="text" value="${question}" style="display:none;">
+                <button onclick="editQuestion(this)">編輯</button>
+                <button onclick="deleteQuestion(this)">刪除</button>
+            </div>
+        `;
+        list.appendChild(li);
+        input.value = '';
+    }
+
+    function editQuestion(btn) {
+        const li = btn.closest('li');
+        const span = li.querySelector('span');
+        const input = li.querySelector('input[type="text"]');
+        
+        if(btn.textContent === '編輯') {
+            span.style.display = 'none';
+            input.style.display = 'inline';
+            input.focus();
+            btn.textContent = '保存';
+        } else {
+            span.textContent = input.value;
+            span.style.display = 'inline';
+            input.style.display = 'none';
+            btn.textContent = '編輯';
+        }
+    }
+
+    function deleteQuestion(btn) {
+        if(confirm('確定要刪除這個題目嗎？')) {
+            btn.closest('li').remove();
+        }
+    }
+
+    // 支持 Enter 鍵登入
+    document.getElementById('admin-password').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter') {
+            document.getElementById('admin-login-btn').click();
+        }
+    });
+
+    // 支持 Enter 鍵添加題目
+    document.querySelectorAll('.custom-questions input[type="text"]').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                this.nextElementSibling.click();
+            }
+        });
+    });
+    </script>
+</body>
+</html> 
