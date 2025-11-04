@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="足球戰術系統">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <title>SCC 足球戰術系統</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="../back-to-main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button id="backToMain" class="back-btn" title="返回主系統">← 返回主系統</button>
+                <h1 id="editableTitle">SCC 7人足球戰術</h1>
+            </div>
+            <div class="scoreboard">
+                <div class="score-team">
+                    <span id="scoreHomeName" class="score-label">主隊</span>
+                    <button class="score-btn" id="homeMinus">-</button>
+                    <span id="homeScore" class="score-value">0</span>
+                    <button class="score-btn" id="homePlus">+</button>
+                </div>
+                <span class="score-sep">:</span>
+                <div class="score-team">
+                    <span id="scoreAwayName" class="score-label">客隊</span>
+                    <button class="score-btn" id="awayMinus">-</button>
+                    <span id="awayScore" class="score-value">0</span>
+                    <button class="score-btn" id="awayPlus">+</button>
+                </div>
+            </div>
+            <div class="team-controls">
+                <div class="team-section">
+                    <div class="color-selector">
+                        <label>顏色:</label>
+                        <select id="homeColor" class="color-select" title="選擇主隊顏色">
+                            <option value="blue">藍色</option>
+                            <option value="red">紅色</option>
+                            <option value="green">綠色</option>
+                            <option value="yellow">黃色</option>
+                            <option value="purple">紫色</option>
+                            <option value="orange">橙色</option>
+                            <option value="pink">粉色</option>
+                            <option value="brown">棕色</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="team-section">
+                    <div class="color-selector">
+                        <label>顏色:</label>
+                        <select id="awayColor" class="color-select" title="選擇客隊顏色">
+                            <option value="red">紅色</option>
+                            <option value="blue">藍色</option>
+                            <option value="green">綠色</option>
+                            <option value="yellow">黃色</option>
+                            <option value="purple">紫色</option>
+                            <option value="orange">橙色</option>
+                            <option value="pink">粉色</option>
+                            <option value="brown">棕色</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- 左側球員面板（還原） -->
+            <div class="players-panel">
+                <div class="team-players">
+                    <div class="home-team-container">
+                        <div class="home-team-content">
+                            <h4 id="editableHomeName">主隊</h4>
+                            <div id="homePlayers" class="players-list">
+                                <!-- 主隊球員將在這裡生成 -->
+                            </div>
+                        </div>
+                        <div class="home-team-arrows">
+                            <button id="homeUpBtn" class="team-arrow">▲</button>
+                            <button id="homeDownBtn" class="team-arrow">▼</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-players">
+                    <div class="home-team-container">
+                        <div class="home-team-content">
+                            <h4 id="editableAwayName">客隊</h4>
+                            <div id="awayPlayers" class="players-list">
+                                <!-- 客隊球員將在這裡生成 -->
+                            </div>
+                        </div>
+                        <div class="home-team-arrows">
+                            <button id="awayUpBtn" class="team-arrow">▲</button>
+                            <button id="awayDownBtn" class="team-arrow">▼</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 足球場置中 -->
+            <div class="football-field">
+                <div class="field-container">
+                    <div class="field-background">
+                        <!-- 球场外框 -->
+                        <div class="field-outline"></div>
+                        
+                        <!-- 中線和中圈 -->
+                        <div class="center-line"></div>
+                        <div class="center-circle"></div>
+                        <div class="center-spot"></div>
+                        
+                        <!-- 禁区 -->
+                        <div class="penalty-area home-penalty-area"></div>
+                        <div class="penalty-area away-penalty-area"></div>
+                        
+                        <!-- 小禁區 -->
+                        <div class="goal-area home-goal-area"></div>
+                        <div class="goal-area away-goal-area"></div>
+                        
+                        <!-- 點球點 -->
+                        <div class="penalty-spot home-penalty-spot"></div>
+                        <div class="penalty-spot away-penalty-spot"></div>
+                        
+                        <!-- 點球弧 -->
+                        <div class="penalty-arc home-penalty-arc"></div>
+                        <div class="penalty-arc away-penalty-arc"></div>
+                        
+                        <!-- 角球弧 -->
+                        <div class="corner-arc top-left"></div>
+                        <div class="corner-arc top-right"></div>
+                        <div class="corner-arc bottom-left"></div>
+                        <div class="corner-arc bottom-right"></div>
+                        
+                        <!-- 球门 -->
+                        <div class="goal home-goal">
+                            <div class="goal-post left-post"></div>
+                            <div class="goal-post right-post"></div>
+                            <div class="goal-crossbar"></div>
+                            <div class="goal-net"></div>
+                        </div>
+                        <div class="goal away-goal">
+                            <div class="goal-post left-post"></div>
+                            <div class="goal-post right-post"></div>
+                            <div class="goal-crossbar"></div>
+                            <div class="goal-net"></div>
+                        </div>
+                    </div>
+                    <div id="fieldPlayers" class="field-players">
+                        <!-- 拖拽的球員將在這裡顯示 -->
+                    </div>
+                    <div id="football" class="football" draggable="true">
+                        ⚽
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側面板 -->
+            <div class="control-panel">
+                <div class="control-section">
+                    <h5>控制選項</h5>
+                    <div class="control-buttons">
+                        <button id="newMatch" class="control-btn">新的賽事</button>
+                        <button id="clearField" class="control-btn">清空球場</button>
+                        <button id="placeAllPlayers" class="control-btn">放置所有球員</button>
+                        <button id="saveFormation" class="control-btn">保存記錄</button>
+                        <button id="loadFormation" class="control-btn">載入記錄</button>
+                        <button id="adminLogin" class="control-btn">管理登入</button>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h5>賽事筆記</h5>
+                    <div class="notes-controls">
+                        <button id="addNote" class="control-btn">新增筆記</button>
+                        <button id="clearAllNotes" class="control-btn">清空筆記</button>
+                    </div>
+                    <div id="notesList" class="notes-list">
+                        <!-- 筆記將在這裡顯示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 球員編輯模態框 -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>編輯球員信息</h3>
+            <div class="form-group">
+                <label for="playerName">球員姓名:</label>
+                <input type="text" id="playerName" placeholder="輸入球員姓名">
+            </div>
+            <div class="form-group">
+                <label for="playerPosition">位置:</label>
+                <select id="playerPosition" title="選擇球員位置">
+                    <option value="GK">守門員</option>
+                    <option value="DF">後衛</option>
+                    <option value="MF">中場</option>
+                    <option value="FW">前鋒</option>
+                </select>
+            </div>
+            <button id="savePlayer" class="save-btn">保存</button>
+        </div>
+    </div>
+
+    <!-- 筆記編輯模態框 -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="noteModalTitle">新增筆記</h3>
+            <div class="form-group">
+                <label for="noteTime">時間:</label>
+                <input type="text" id="noteTime" placeholder="例如: 15分鐘">
+            </div>
+            <div class="form-group">
+                <label for="noteType">類型:</label>
+                <select id="noteType" title="選擇筆記類型">
+                    <option value="進球">進球</option>
+                    <option value="犯規">犯規</option>
+                    <option value="換人">換人</option>
+                    <option value="戰術">戰術</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="noteContent">內容:</label>
+                <textarea id="noteContent" placeholder="輸入筆記內容..." rows="4"></textarea>
+            </div>
+            <button id="saveNote" class="save-btn">保存筆記</button>
+        </div>
+    </div>
+
+    <!-- 豎屏提示覆蓋層 -->
+    <div id="portraitWarning" class="portrait-warning">
+        <div class="portrait-warning-content">
+            <div class="rotate-icon">📱</div>
+            <h2>請將設備橫向旋轉</h2>
+            <p>此系統需要橫屏模式才能正常使用</p>
+            <p class="rotate-hint">請將手機旋轉為橫屏方向</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
