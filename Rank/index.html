@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="計分排名系統">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <title>計分排名系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .feature-tips {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .feature-tips p {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+
+        .feature-tips ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #424242;
+        }
+
+        .feature-tips li {
+            margin-bottom: 5px;
+        }
+
+        .input-section {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .mode-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .mode-selector h3 {
+            margin-bottom: 10px;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            font-size: 13px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .mode-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .mode-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mode-section h4 {
+            margin-bottom: 15px;
+            color: #495057;
+            font-size: 1rem;
+        }
+
+        .known-players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .player-btn {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .player-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .player-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .player-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .player-item.hidden {
+            display: none;
+        }
+
+        .player-btn.has-score {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .player-btn.editing {
+            border-color: #ffc107;
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .edit-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 1001;
+            min-width: 400px;
+        }
+
+        .edit-form.show {
+            display: block;
+        }
+
+        .edit-form h3 {
+            margin-bottom: 20px;
+            color: #495057;
+            text-align: center;
+        }
+
+        .edit-form .input-group {
+            margin-bottom: 20px;
+        }
+
+        .edit-form .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .action-btn {
+            padding: 3px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .quick-input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .batch-add-section {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .batch-add-section h5 {
+            margin-bottom: 15px;
+            color: #495057;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .quick-input-section h5 {
+            margin-bottom: 15px;
+            color: #495057;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .player-btn.hidden {
+            display: none;
+        }
+
+        .keyboard-shortcuts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .keyboard-shortcuts.show {
+            display: block;
+        }
+
+        .shortcut-item {
+            margin: 5px 0;
+        }
+
+        .shortcut-key {
+            background: #667eea;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sort-controls select {
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .sort-mode-controls {
+            background: #f8f9fa;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(102,126,234,0.07);
+            padding: 18px 24px 20px 24px;
+            margin: 0 0 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 260px;
+            max-width: 350px;
+        }
+        .sort-mode-controls label {
+            font-weight: 700;
+            color: #333;
+            font-size: 1.08em;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .sort-mode-buttons {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+        .sort-mode-btn {
+            flex: 1 1 0;
+            min-width: 120px;
+            padding: 10px 0;
+            font-size: 15px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 600;
+            background: #f5f5f5;
+            color: #333;
+            border: none;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+        .sort-mode-btn.active {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.13);
+        }
+        .sort-mode-btn:not(.active):hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .sort-mode-divider {
+            width: 100%;
+            border-top: 1px dashed #bbb;
+            margin: 18px 0 0 0;
+        }
+        #manualSortBtn {
+            display: none !important;
+        }
+        @media (max-width: 600px) {
+            .sort-mode-controls {
+                min-width: unset;
+                max-width: 100%;
+                padding: 12px 8px 14px 8px;
+            }
+            .sort-mode-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .sort-mode-btn {
+                min-width: 90px;
+                font-size: 14px;
+                padding: 8px 0;
+            }
+            #manualSortBtn {
+                font-size: 14px;
+                padding: 10px 0;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .ranking-section {
+            padding: 30px;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .ranking-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .ranking-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .ranking-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .editable-name {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .editable-name:hover {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+
+        .editable-name.editing {
+            background: #fff;
+            border: 2px solid #2196f3;
+            outline: none;
+            padding: 4px 8px;
+        }
+
+        .score-input {
+            width: 80px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: #2196f3;
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        .score-input.invalid {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .action-btn {
+            padding: 3px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+            background: #2196f3;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #1976d2;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+
+        .save-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #388e3c;
+        }
+
+        .cancel-btn {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #757575;
+        }
+
+        .ranking-table th small {
+            opacity: 0.7;
+            font-size: 0.8em;
+        }
+
+        .ranking-table td:nth-child(2) {
+            min-width: 150px;
+        }
+
+        .ranking-table td:nth-child(3) {
+            min-width: 100px;
+        }
+
+        .score-input:placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e5e5e5 100%);
+            color: #333;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #daa520 100%);
+            color: white;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .rank-1 .rank-badge {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .rank-2 .rank-badge {
+            background: #c0c0c0;
+            color: #333;
+        }
+
+        .rank-3 .rank-badge {
+            background: #cd7f32;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #28a745;
+        }
+
+        .toast.error {
+            background: #dc3545;
+        }
+
+        .toast.info {
+            background: #17a2b8;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .sort-controls {
+                justify-content: center;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .ranking-table {
+                font-size: 0.9em;
+            }
+
+            .ranking-table th,
+            .ranking-table td {
+                padding: 10px 8px;
+            }
+
+            .editable-name {
+                min-width: 80px;
+                font-size: 0.9em;
+            }
+
+            .score-input {
+                width: 60px;
+                font-size: 0.9em;
+            }
+
+            .player-actions {
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .action-btn {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+
+            .feature-tips {
+                font-size: 0.8em;
+                padding: 10px;
+            }
+
+            .feature-tips ul {
+                padding-left: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .ranking-table {
+                font-size: 0.8em;
+            }
+
+            .ranking-table th,
+            .ranking-table td {
+                padding: 8px 5px;
+            }
+
+            .editable-name {
+                min-width: 60px;
+                font-size: 0.8em;
+            }
+
+            .score-input {
+                width: 50px;
+                font-size: 0.8em;
+            }
+        }
+
+        /* 新增的樣式類 */
+        .input-field-flex {
+            display: flex;
+            align-items: end;
+        }
+
+        .manual-sort-btn-hidden {
+            display: none !important;
+        }
+
+        .ranking-header-flex {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .ranking-header-h2 {
+            margin: 0;
+        }
+
+        .add-player-btn {
+            padding: 7px 18px;
+            font-size: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .add-player-form {
+            display: none;
+            margin-bottom: 18px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+        }
+
+        .add-player-form-flex {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .add-player-input-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .add-player-input-group-small {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .add-player-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .add-player-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 7px;
+            border: 1.5px solid #e0e0e0;
+            font-size: 15px;
+        }
+
+        .add-player-btn-primary {
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .add-player-btn-secondary {
+            padding: 10px 18px;
+            font-size: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 計分排名系統</h1>
+            <p>輸入選手姓名和分數，系統將自動進行排名</p>
+
+        </div>
+
+        <div class="input-section">
+            <!-- 模式選擇 -->
+            <div class="mode-selector">
+                <h3>選擇輸入模式：</h3>
+                <div class="mode-buttons">
+                    <button class="btn btn-primary mode-btn active" onclick="switchMode('unknown')" id="unknownMode">
+                        ➕ 一個增加
+                    </button>
+                    <button class="btn btn-secondary mode-btn" onclick="switchMode('known')" id="knownMode">
+                        📝 批量增加
+                    </button>
+                </div>
+            </div>
+
+            <!-- 一個增加模式 -->
+            <div id="unknownModeSection" class="mode-section active">
+                <h4>➕ 添加單個選手</h4>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="playerName">選手姓名</label>
+                        <input type="text" id="playerName" placeholder="請輸入選手姓名" maxlength="20">
+                    </div>
+                    <div class="input-field">
+                        <label for="playerScore">分數</label>
+                        <input type="number" id="playerScore" placeholder="請輸入分數" min="0" max="999999">
+                    </div>
+                    <div class="input-field input-field-flex">
+                        <button class="btn btn-primary" onclick="addPlayer()">添加選手</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 批量增加模式 -->
+            <div id="knownModeSection" class="mode-section">
+                <h4>📝 批量添加選手</h4>
+                
+                <!-- 批量添加選手區域 -->
+                <div class="batch-add-section" id="batchAddSection">
+                    <h5>🆕 批量添加選手</h5>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="batchCount">選手數量</label>
+                            <input type="number" id="batchCount" placeholder="請輸入選手數量" min="1" max="100" value="5">
+                        </div>
+                        <div class="input-field">
+                            <label for="namePrefix">姓名前綴</label>
+                            <input type="text" id="namePrefix" placeholder="選手" value="選手">
+                        </div>
+                        <div class="input-field input-field-flex">
+                            <button class="btn btn-primary" onclick="batchAddPlayers()">批量添加</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 刪除已知選手卡片區塊 -->
+            </div>
+
+            <div class="controls">
+                <div class="sort-controls">
+                    <label>排序方式：</label>
+                    <select id="sortOrder" onchange="sortPlayers()" aria-label="排序方式選擇">
+                        <option value="desc">分數由高到低</option>
+                        <option value="asc">分數由低到高</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchPlayer" placeholder="🔍 搜索選手..." onkeyup="searchPlayers()">
+                </div>
+                <button class="btn btn-secondary" onclick="importData()">📥 導入數據</button>
+                <button class="btn btn-secondary" onclick="exportData()">📤 導出數據</button>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ 清空所有</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPlayers">0</div>
+                    <div class="stat-label">總選手數</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgScore">0</div>
+                    <div class="stat-label">平均分數</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="highestScore">0</div>
+                    <div class="stat-label">最高分數</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="lowestScore">0</div>
+                    <div class="stat-label">最低分數</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ranking-section">
+            <div class="sort-mode-controls">
+                <label>排序模式：</label>
+                <div class="sort-mode-buttons">
+                    <button class="sort-mode-btn active" onclick="setSortMode('auto')" id="autoSortMode">
+                        ⚡ 即時排序
+                    </button>
+                    <button class="sort-mode-btn" onclick="setSortMode('manual')" id="manualSortMode">
+                        🔄 按鍵排序
+                    </button>
+                </div>
+                <div class="sort-mode-divider"></div>
+                <button class="btn manual-sort-btn-hidden" id="manualSortBtn" onclick="manualSort()">
+                    ✅ 執行排序
+                </button>
+            </div>
+            <div class="ranking-header ranking-header-flex">
+                <h2 class="ranking-header-h2">🏅 排名榜</h2>
+                <button class="btn btn-primary add-player-btn" id="addPlayerInRankingBtn" onclick="toggleAddPlayerInRanking()">
+                    ＋ 添加選手
+                </button>
+            </div>
+            <div id="addPlayerInRankingForm" class="add-player-form">
+                <div class="add-player-form-flex">
+                    <div class="add-player-input-group">
+                        <label for="addRankingName" class="add-player-label">姓名</label>
+                        <input type="text" id="addRankingName" placeholder="請輸入選手姓名" maxlength="20" class="add-player-input">
+                    </div>
+                    <div class="add-player-input-group-small">
+                        <label for="addRankingScore" class="add-player-label">分數</label>
+                        <input type="number" id="addRankingScore" placeholder="請輸入分數" min="0" max="999999" class="add-player-input">
+                    </div>
+                    <button class="btn btn-primary add-player-btn-primary" onclick="addPlayerFromRanking()">添加</button>
+                    <button class="btn btn-secondary add-player-btn-secondary" onclick="toggleAddPlayerInRanking()">取消</button>
+                </div>
+            </div>
+            <div id="rankingTable">
+                <div class="empty-state">
+                    <div>📊</div>
+                    <h3>還沒有選手數據</h3>
+                    <p>請在上方添加選手和分數來開始排名</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    
+    <div id="keyboardShortcuts" class="keyboard-shortcuts">
+        <h4>⌨️ 快捷鍵</h4>
+        <div class="shortcut-item">
+            <span class="shortcut-key">F1</span> 顯示/隱藏快捷鍵
+        </div>
+        <div class="shortcut-item">
+            <span class="shortcut-key">Ctrl+S</span> 保存數據
+        </div>
+        <div class="shortcut-item">
+            <span class="shortcut-key">Ctrl+Z</span> 撤銷操作
+        </div>
+        <div class="shortcut-item">
+            <span class="shortcut-key">Ctrl+F</span> 搜索選手
+        </div>
+        <div class="shortcut-item">
+            <span class="shortcut-key">F5</span> 刷新排名
+        </div>
+    </div>
+
+    <!-- 編輯選手表單 -->
+    <div id="overlay" class="overlay"></div>
+    <div id="editForm" class="edit-form">
+        <h3>✏️ 編輯選手信息</h3>
+        <div class="input-group">
+            <div class="input-field">
+                <label for="editPlayerName">選手姓名</label>
+                <input type="text" id="editPlayerName" placeholder="請輸入選手姓名" maxlength="20">
+            </div>
+        </div>
+        <div class="input-group">
+            <div class="input-field">
+                <label for="editPlayerScore">分數</label>
+                <input type="number" id="editPlayerScore" placeholder="請輸入分數或留空設為N/A" min="0" max="999999">
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="savePlayerEdit()">💾 保存</button>
+            <button class="btn btn-secondary" onclick="cancelPlayerEdit()">❌ 取消</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        // 返回主系统按钮功能
+        (function() {
+            'use strict';
+            
+            // 创建返回主系统按钮的样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .back-to-main-btn {
+                    position: fixed;
+                    top: 20px;
+                    left: 20px;
+                    z-index: 9999;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 50px;
+                    padding: 12px 20px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    backdrop-filter: blur(10px);
+                    border: 2px solid rgba(255, 255, 255, 0.2);
+                }
+                
+                .back-to-main-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+                }
+                
+                .back-to-main-btn:active {
+                    transform: translateY(0);
+                }
+                
+                .back-to-main-btn .icon {
+                    font-size: 16px;
+                }
+                
+                /* 响应式设计 */
+                @media (max-width: 768px) {
+                    .back-to-main-btn {
+                        top: 15px;
+                        left: 15px;
+                        padding: 10px 16px;
+                        font-size: 12px;
+                    }
+                    
+                    .back-to-main-btn .icon {
+                        font-size: 14px;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .back-to-main-btn {
+                        top: 10px;
+                        left: 10px;
+                        padding: 8px 12px;
+                        font-size: 11px;
+                    }
+                    
+                    .back-to-main-btn .icon {
+                        font-size: 12px;
+                    }
+                }
+            `;
+            
+            // 添加样式到页面
+            document.head.appendChild(style);
+            
+            // 创建返回主系统按钮
+            function createBackButton() {
+                const button = document.createElement('button');
+                button.className = 'back-to-main-btn';
+                button.innerHTML = '<span class="icon">🏠</span>返回主系統';
+                button.title = '返回主系统';
+                
+                // 添加点击事件
+                button.addEventListener('click', function() {
+                    // 尝试多种方式返回主系统
+                    if (window.parent && window.parent !== window) {
+                        // 如果在iframe中，通知父窗口
+                        window.parent.postMessage({ action: 'backToMain' }, '*');
+                    } else if (window.opener) {
+                        // 如果是通过window.open打开的，关闭当前窗口
+                        window.close();
+                    } else {
+                        // 直接跳转到主系统
+                        window.location.href = '../index.html';
+                    }
+                });
+                
+                return button;
+            }
+            
+            // 等待DOM加载完成后添加按钮
+            function initBackButton() {
+                // 检查是否已经存在返回按钮
+                if (document.querySelector('.back-to-main-btn')) {
+                    return;
+                }
+                
+                const button = createBackButton();
+                document.body.appendChild(button);
+                
+                // 监听来自父窗口的消息
+                window.addEventListener('message', function(event) {
+                    if (event.data && event.data.action === 'backToMain') {
+                        window.location.href = '../index.html';
+                    }
+                });
+            }
+            
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initBackButton);
+            } else {
+                initBackButton();
+            }
+        })();
+    </script>
+    <script>
+        // 選手數據存儲
+        let players = JSON.parse(localStorage.getItem('rankingPlayers')) || [];
+        let currentSortOrder = 'desc';
+        let currentMode = 'unknown';
+        let selectedPlayer = null;
+        let history = JSON.parse(localStorage.getItem('rankingHistory')) || [];
+        let autoSaveInterval;
+        let editingPlayerId = null;
+        let sortMode = localStorage.getItem('sortMode') || 'auto'; // 'auto' 或 'manual'
+        let needsSorting = false; // 標記是否需要排序
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            // 初始化排序模式
+            setSortMode(sortMode);
+            
+            // 一個增加模式的事件監聽
+            document.getElementById('playerName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addPlayer();
+                }
+            });
+            document.getElementById('playerScore').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addPlayer();
+                }
+            });
+            
+            // 批量增加模式的事件監聽
+            document.getElementById('batchCount').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    batchAddPlayers();
+                }
+            });
+            document.getElementById('namePrefix').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    batchAddPlayers();
+                }
+            });
+            
+            // 編輯表單的事件監聽
+            document.getElementById('editPlayerName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    savePlayerEdit();
+                }
+            });
+            document.getElementById('editPlayerScore').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    savePlayerEdit();
+                }
+            });
+            
+            // 點擊遮罩關閉編輯表單
+            document.getElementById('overlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cancelPlayerEdit();
+                }
+            });
+        });
+
+        // 切換模式
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // 更新按鈕狀態
+            document.getElementById('unknownMode').classList.toggle('active', mode === 'unknown');
+            document.getElementById('knownMode').classList.toggle('active', mode === 'known');
+            
+            // 更新按鈕樣式
+            document.getElementById('unknownMode').className = `btn ${mode === 'unknown' ? 'btn-primary' : 'btn-secondary'} mode-btn ${mode === 'unknown' ? 'active' : ''}`;
+            document.getElementById('knownMode').className = `btn ${mode === 'known' ? 'btn-primary' : 'btn-secondary'} mode-btn ${mode === 'known' ? 'active' : ''}`;
+            
+            // 顯示對應的區域
+            document.getElementById('unknownModeSection').classList.toggle('active', mode === 'unknown');
+            document.getElementById('knownModeSection').classList.toggle('active', mode === 'known');
+            
+            // 更新已知選手網格
+            if (mode === 'known') {
+                // updateKnownPlayersGrid(); // 移除此行
+            }
+            
+            // 清空選擇
+            selectedPlayer = null;
+        }
+
+        // 更新已知選手網格
+        // function updateKnownPlayersGrid() { // 移除此函數
+        //     const grid = document.getElementById('knownPlayersGrid');
+        //     const uniqueNames = [...new Set(players.map(p => p.name))];
+            
+        //     if (uniqueNames.length === 0) {
+        //         grid.innerHTML = '<p style="text-align: center; color: #6c757d; grid-column: 1 / -1;">還沒有選手數據，請先在未知選手模式中添加姓名</p>';
+        //         return;
+        //     }
+            
+        //     grid.innerHTML = uniqueNames.map(name => {
+        //         const player = players.find(p => p.name === name);
+        //         const hasScore = player && player.score !== null && player.score !== undefined;
+        //         const isSelected = selectedPlayer === name;
+        //         const searchTerm = document.getElementById('searchPlayer')?.value.toLowerCase() || '';
+        //         const isHidden = searchTerm && !name.toLowerCase().includes(searchTerm);
+                
+        //         return `
+        //             <div class="player-item ${isHidden ? 'hidden' : ''}">
+        //                 <button class="player-btn ${hasScore ? 'has-score' : ''} ${isSelected ? 'selected' : ''}" 
+        //                         onclick="selectPlayer('${name}')">
+        //                     ${name}
+        //                     ${hasScore ? ' ✓' : ' (N/A)'}
+        //                 </button>
+        //                 <div class="player-actions">
+        //                     <button class="action-btn edit-btn" onclick="editPlayer('${player.id}')" title="編輯選手">
+        //                         ✏️
+        //                     </button>
+        //                     <button class="action-btn delete-btn" onclick="deletePlayer('${player.id}')" title="刪除選手">
+        //                         🗑️
+        //                     </button>
+        //                 </div>
+        //             </div>
+        //         `;
+        //     }).join('');
+        // }
+
+        // 選擇選手
+        function selectPlayer(name) {
+            selectedPlayer = name;
+            // updateKnownPlayersGrid(); // 移除此行
+            document.getElementById('quickScore').focus();
+            showToast(`已選擇選手：${name}`, 'success');
+        }
+
+        // 添加選手（一個增加模式）
+        function addPlayer() {
+            const nameInput = document.getElementById('playerName');
+            const scoreInput = document.getElementById('playerScore');
+            
+            const name = nameInput.value.trim();
+            const score = parseInt(scoreInput.value);
+            
+            // 驗證輸入
+            if (!name) {
+                showToast('請輸入選手姓名', 'error');
+                nameInput.focus();
+                return;
+            }
+            
+            if (isNaN(score) || score < 0) {
+                showToast('請輸入有效的分數', 'error');
+                scoreInput.focus();
+                return;
+            }
+            
+            // 檢查是否已存在同名選手
+            const existingPlayer = players.find(p => p.name === name);
+            if (existingPlayer) {
+                if (confirm(`選手 "${name}" 已存在，是否要更新分數？`)) {
+                    existingPlayer.score = score;
+                    existingPlayer.timestamp = new Date().toISOString();
+                } else {
+                    return;
+                }
+            } else {
+                // 添加新選手
+                players.push({
+                    id: Date.now() + Math.random(),
+                    name: name,
+                    score: score,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            
+            // 清空輸入框
+            nameInput.value = '';
+            scoreInput.value = '';
+            nameInput.focus();
+            
+            // 保存數據並更新顯示
+            saveData();
+            smartSort();
+            // updateKnownPlayersGrid(); // 移除此行
+            showToast('選手添加成功！', 'success');
+        }
+
+        // 批量添加選手
+        function batchAddPlayers() {
+            const countInput = document.getElementById('batchCount');
+            const prefixInput = document.getElementById('namePrefix');
+            
+            const count = parseInt(countInput.value);
+            const prefix = prefixInput.value.trim() || '選手';
+            
+            if (isNaN(count) || count < 1 || count > 100) {
+                showToast('請輸入有效的選手數量（1-100）', 'error');
+                countInput.focus();
+                return;
+            }
+            
+            if (!prefix) {
+                showToast('請輸入姓名前綴', 'error');
+                prefixInput.focus();
+                return;
+            }
+            
+            // 檢查是否會產生重複姓名
+            const existingNames = players.map(p => p.name);
+            const newNames = [];
+            
+            for (let i = 1; i <= count; i++) {
+                const newName = `${prefix}${i}`;
+                if (existingNames.includes(newName)) {
+                    showToast(`選手 "${newName}" 已存在，請使用不同的前綴`, 'error');
+                    return;
+                }
+                newNames.push(newName);
+            }
+            
+            // 批量添加選手（分數為null，顯示為N/A）
+            newNames.forEach(name => {
+                players.push({
+                    id: Date.now() + Math.random() + Math.random(),
+                    name: name,
+                    score: null, // 設置為null，顯示為N/A
+                    timestamp: new Date().toISOString()
+                });
+            });
+            
+            // 保存數據並更新顯示
+            saveData();
+            smartSort(); // 智能排序，N/A分數會排到最後
+            // updateKnownPlayersGrid(); // 移除此行
+            showToast(`已批量添加 ${count} 個選手！`, 'success');
+        }
+
+        // 快速添加分數（已知選手模式）
+        function addQuickScore() {
+            if (!selectedPlayer) {
+                showToast('請先選擇一個選手', 'error');
+                return;
+            }
+            
+            const scoreInput = document.getElementById('quickScore');
+            const score = parseInt(scoreInput.value);
+            
+            if (isNaN(score) || score < 0) {
+                showToast('請輸入有效的分數', 'error');
+                scoreInput.focus();
+                return;
+            }
+            
+            // 更新選手分數
+            const existingPlayer = players.find(p => p.name === selectedPlayer);
+            if (existingPlayer) {
+                existingPlayer.score = score;
+                existingPlayer.timestamp = new Date().toISOString();
+            } else {
+                // 如果選手不存在，創建新選手
+                players.push({
+                    id: Date.now() + Math.random(),
+                    name: selectedPlayer,
+                    score: score,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            
+            // 清空輸入框並重新選擇
+            scoreInput.value = '';
+            scoreInput.focus();
+            
+            // 保存數據並更新顯示
+            saveData();
+            smartSort();
+            // updateKnownPlayersGrid(); // 移除此行
+            showToast(`${selectedPlayer} 的分數已更新為 ${score}！`, 'success');
+        }
+
+        // 設置排序模式
+        function setSortMode(mode) {
+            sortMode = mode;
+            localStorage.setItem('sortMode', mode);
+            
+            // 更新按鈕狀態
+            document.getElementById('autoSortMode').classList.toggle('active', mode === 'auto');
+            document.getElementById('manualSortMode').classList.toggle('active', mode === 'manual');
+            document.getElementById('autoSortMode').className = `btn ${mode === 'auto' ? 'btn-primary' : 'btn-secondary'} sort-mode-btn ${mode === 'auto' ? 'active' : ''}`;
+            document.getElementById('manualSortMode').className = `btn ${mode === 'manual' ? 'btn-primary' : 'btn-secondary'} sort-mode-btn ${mode === 'manual' ? 'active' : ''}`;
+            
+            // 顯示/隱藏手動排序按鈕
+            document.getElementById('manualSortBtn').style.display = mode === 'manual' ? 'block' : 'none';
+            
+            // 如果切換到即時排序模式且有待排序的數據，立即排序
+            if (mode === 'auto' && needsSorting) {
+                sortPlayers();
+                needsSorting = false;
+            }
+            
+            showToast(`已切換到${mode === 'auto' ? '即時排序' : '按鍵排序'}模式`, 'success');
+        }
+
+        // 手動排序
+        function manualSort() {
+            if (needsSorting) {
+                sortPlayers();
+                needsSorting = false;
+                showToast('排名已更新！', 'success');
+            } else {
+                showToast('排名已是最新狀態', 'info');
+            }
+        }
+
+        // 排序選手
+        function sortPlayers() {
+            currentSortOrder = document.getElementById('sortOrder').value;
+            
+            players.sort((a, b) => {
+                // 處理N/A分數（null, undefined, NaN）
+                const scoreA = (a.score !== null && a.score !== undefined && !isNaN(a.score)) ? a.score : -Infinity;
+                const scoreB = (b.score !== null && b.score !== undefined && !isNaN(b.score)) ? b.score : -Infinity;
+                
+                if (currentSortOrder === 'desc') {
+                    return scoreB - scoreA;
+                } else {
+                    return scoreA - scoreB;
+                }
+            });
+            
+            updateDisplay();
+        }
+
+        // 智能排序（根據模式決定是否立即排序）
+        function smartSort() {
+            if (sortMode === 'auto') {
+                sortPlayers();
+            } else {
+                needsSorting = true;
+                // 在手動排序模式下，顯示提示
+                if (needsSorting) {
+                    showToast('數據已更新，點擊「✅ 執行排序」按鈕更新排名', 'info');
+                }
+            }
+        }
+
+        // 刪除選手
+        function deletePlayer(id) {
+            const player = players.find(p => p.id == id);
+            if (!player) {
+                showToast('找不到選手', 'error');
+                return;
+            }
+            
+            if (confirm(`確定要刪除選手 "${player.name}" 嗎？`)) {
+                players = players.filter(p => p.id !== id);
+                
+                // 如果刪除的是當前選中的選手，清空選擇
+                if (selectedPlayer === player.name) {
+                    selectedPlayer = null;
+                }
+                
+                saveData();
+                updateDisplay();
+                showToast(`選手 "${player.name}" 已刪除`, 'success');
+            }
+        }
+
+        // 開始編輯姓名
+        function startEditName(playerId) {
+            const player = players.find(p => p.id == playerId);
+            if (!player) return;
+            
+            const nameCell = document.querySelector(`tr[data-player-id="${playerId}"] .editable-name`);
+            if (!nameCell) return;
+            
+            const originalName = player.name;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = originalName;
+            input.className = 'editable-name editing';
+            input.style.width = '100%';
+            input.maxLength = 20;
+            
+            // 替換顯示內容為輸入框
+            nameCell.innerHTML = '';
+            nameCell.appendChild(input);
+            input.focus();
+            input.select();
+            
+            // 處理保存和取消
+            function saveEdit() {
+                const newName = input.value.trim();
+                if (newName && newName !== originalName) {
+                    // 檢查是否重複
+                    const existingPlayer = players.find(p => p.name === newName && p.id !== playerId);
+                    if (existingPlayer) {
+                        showToast(`選手 "${newName}" 已存在`, 'error');
+                        input.focus();
+                        return;
+                    }
+                    
+                                         player.name = newName;
+                     player.timestamp = new Date().toISOString();
+                     saveData();
+                     smartSort();
+                     showToast(`選手姓名已更新為 "${newName}"`, 'success');
+                } else {
+                    // 恢復原來的顯示
+                    nameCell.innerHTML = originalName;
+                }
+            }
+            
+            function cancelEdit() {
+                nameCell.innerHTML = originalName;
+            }
+            
+            // 綁定事件
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelEdit();
+                }
+            });
+        }
+        
+        // 更新選手分數
+        function updatePlayerScore(playerId, score) {
+            const player = players.find(p => p.id == playerId);
+            if (!player) return;
+            
+            const newScore = score === '' ? null : parseInt(score);
+            
+            if (newScore !== null && (isNaN(newScore) || newScore < 0)) {
+                showToast('請輸入有效的分數', 'error');
+                return;
+            }
+            
+            player.score = newScore;
+            player.timestamp = new Date().toISOString();
+            saveData();
+            smartSort();
+            showToast(`選手 "${player.name}" 的分數已更新為 ${newScore !== null ? newScore : 'N/A'}`, 'success');
+        }
+        
+        // 驗證分數輸入
+        function validateScore(playerId, input) {
+            const score = input.value;
+            if (score === '') {
+                input.classList.remove('invalid');
+                return;
+            }
+            
+            const numScore = parseInt(score);
+            if (isNaN(numScore) || numScore < 0) {
+                input.classList.add('invalid');
+                showToast('請輸入有效的分數', 'error');
+                input.focus();
+            } else {
+                input.classList.remove('invalid');
+            }
+        }
+        
+        // 清空所有數據
+        function clearAll() {
+            if (confirm('確定要清空所有選手數據嗎？此操作無法撤銷！')) {
+                players = [];
+                saveData();
+                updateDisplay();
+                showToast('所有數據已清空', 'success');
+            }
+        }
+
+        // 導出數據
+        function exportData() {
+            if (players.length === 0) {
+                showToast('沒有數據可導出', 'error');
+                return;
+            }
+            // 轉換為Excel格式
+            const wsData = [
+                ['姓名', '分數', '輸入時間']
+            ];
+            players.forEach(p => {
+                wsData.push([
+                    p.name,
+                    (p.score !== null && p.score !== undefined && !isNaN(p.score)) ? p.score : 'N/A',
+                    new Date(p.timestamp).toLocaleString('zh-TW')
+                ]);
+            });
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '排名數據');
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `排名數據_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Excel檔案導出成功', 'success');
+        }
+
+        // 保存數據到本地存儲
+        function saveData() {
+            localStorage.setItem('rankingPlayers', JSON.stringify(players));
+            // 自動備份到歷史記錄
+            const backup = {
+                timestamp: new Date().toISOString(),
+                players: [...players], // 深拷貝
+                version: '1.0'
+            };
+            history.push(backup);
+            if (history.length > 20) {
+                history.shift(); // 只保留最近20個備份
+            }
+            localStorage.setItem('rankingHistory', JSON.stringify(history));
+        }
+
+        // 更新顯示
+        function updateDisplay() {
+            updateStats();
+            updateRankingTable();
+            if (currentMode === 'known') {
+                // updateKnownPlayersGrid(); // 移除此行
+            }
+        }
+
+        // 更新統計信息
+        function updateStats() {
+            const totalPlayers = players.length;
+            const validScores = players.filter(p => p.score !== null && p.score !== undefined && !isNaN(p.score));
+            const avgScore = validScores.length > 0 ? Math.round(validScores.reduce((sum, p) => sum + p.score, 0) / validScores.length) : 0;
+            const highestScore = validScores.length > 0 ? Math.max(...validScores.map(p => p.score)) : 0;
+            const lowestScore = validScores.length > 0 ? Math.min(...validScores.map(p => p.score)) : 0;
+            
+            document.getElementById('totalPlayers').textContent = totalPlayers;
+            document.getElementById('avgScore').textContent = avgScore;
+            document.getElementById('highestScore').textContent = highestScore;
+            document.getElementById('lowestScore').textContent = lowestScore;
+        }
+
+        // 更新排名表格
+        function updateRankingTable() {
+            const tableContainer = document.getElementById('rankingTable');
+            
+            if (players.length === 0) {
+                tableContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div>📊</div>
+                        <h3>還沒有選手數據</h3>
+                        <p>請在上方添加選手和分數來開始排名</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>選手與分數 <small style="font-weight: normal;">(姓名雙擊可改，分數可直接輸入)</small></th>
+                            <th>輸入時間</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            players.forEach((player, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                const date = new Date(player.timestamp).toLocaleString('zh-TW');
+                const hasScore = player.score !== null && player.score !== undefined && !isNaN(player.score);
+                
+                tableHTML += `
+                    <tr class="${rankClass}" data-player-id="${player.id}">
+                        <td>
+                            <span class="rank-badge">${rank}</span>
+                            ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : ''}
+                        </td>
+                        <td style="display: flex; align-items: center; gap: 10px;">
+                            <div class="editable-name" ondblclick="startEditName(${player.id})" title="雙擊修改姓名">
+                                ${player.name}
+                            </div>
+                            <input type="number" 
+                                   class="score-input ${!hasScore ? 'invalid' : ''}" 
+                                   value="${hasScore ? player.score : ''}" 
+                                   placeholder="N/A"
+                                   onchange="updatePlayerScore(${player.id}, this.value)"
+                                   onblur="validateScore(${player.id}, this)"
+                                   title="點擊輸入分數">
+                        </td>
+                        <td>${date}</td>
+                        <td>
+                            <div class="player-actions">
+                                <button class="action-btn edit-btn" onclick="startEditName(${player.id})" title="編輯姓名">
+                                    ✏️
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deletePlayer(${player.id})" title="刪除選手">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        // 搜索選手
+        function searchPlayers() {
+            const searchTerm = document.getElementById('searchPlayer').value.toLowerCase();
+            // const playerButtons = document.querySelectorAll('.player-btn'); // 移除此行
+            
+            // playerButtons.forEach(btn => { // 移除此行
+            //     const playerName = btn.textContent.toLowerCase(); // 移除此行
+            //     if (playerName.includes(searchTerm)) { // 移除此行
+            //         btn.classList.remove('hidden'); // 移除此行
+            //     } else { // 移除此行
+            //         btn.classList.add('hidden'); // 移除此行
+            //     } // 移除此行
+            // }); // 移除此行
+        }
+
+        // 導入數據
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx,.xls';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            // 啟用日期解析，將日期單元格轉換為 Date 對象
+                            const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
+                            
+                            // 讀取第一個工作表
+                            const firstSheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[firstSheetName];
+                            
+                            // 將工作表轉換為 JSON 格式（第一行作為標題）
+                            // raw: true 保持原始值類型（包括 Date 對象），這樣可以正確處理日期
+                            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: true, defval: null });
+                            
+                            if (jsonData.length < 2) {
+                                showToast('Excel 文件格式不正確：至少需要標題行和一行數據', 'error');
+                                return;
+                            }
+                            
+                            // 檢查標題行
+                            const headers = jsonData[0];
+                            const nameIndex = headers.findIndex(h => h === '姓名' || h === 'name' || h === 'Name');
+                            const scoreIndex = headers.findIndex(h => h === '分數' || h === 'score' || h === 'Score');
+                            const timeIndex = headers.findIndex(h => h === '輸入時間' || h === 'timestamp' || h === 'Timestamp' || h === '時間' || h === 'time' || h === 'Time');
+                            
+                            if (nameIndex === -1) {
+                                showToast('Excel 文件格式不正確：找不到「姓名」列', 'error');
+                                return;
+                            }
+                            
+                            // 解析數據行
+                            const importedPlayers = [];
+                            for (let i = 1; i < jsonData.length; i++) {
+                                const row = jsonData[i];
+                                if (!row || row.length === 0) continue;
+                                
+                                const name = row[nameIndex];
+                                if (!name || name.toString().trim() === '') continue;
+                                
+                                let score = null;
+                                if (scoreIndex !== -1 && row[scoreIndex] !== undefined && row[scoreIndex] !== null && row[scoreIndex] !== '') {
+                                    const scoreValue = row[scoreIndex];
+                                    if (scoreValue === 'N/A' || scoreValue === 'n/a' || scoreValue === '') {
+                                        score = null;
+                                    } else {
+                                        score = parseInt(scoreValue);
+                                        if (isNaN(score)) {
+                                            score = null;
+                                        }
+                                    }
+                                }
+                                
+                                // 處理時間戳
+                                let timestamp = new Date().toISOString();
+                                if (timeIndex !== -1 && row[timeIndex] !== undefined && row[timeIndex] !== null && row[timeIndex] !== '') {
+                                    try {
+                                        const timeValue = row[timeIndex];
+                                        
+                                        // 處理 Date 對象（SheetJS 自動轉換的日期）
+                                        if (timeValue instanceof Date) {
+                                            if (!isNaN(timeValue.getTime())) {
+                                                timestamp = timeValue.toISOString();
+                                            }
+                                        }
+                                        // 處理 Excel 日期序列號（數字格式）
+                                        else if (typeof timeValue === 'number') {
+                                            // Excel 日期序列號：從 1900-01-01 開始的天數
+                                            // 但 Excel 錯誤地認為 1900 是閏年，所以需要減去 1
+                                            const excelEpoch = new Date(1899, 11, 30); // 1899-12-30
+                                            const days = timeValue;
+                                            const parsedDate = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+                                            if (!isNaN(parsedDate.getTime())) {
+                                                timestamp = parsedDate.toISOString();
+                                            }
+                                        } 
+                                        // 處理字符串格式的日期
+                                        else {
+                                            let dateStr = timeValue.toString().trim();
+                                            
+                                            // 處理中文日期格式（如：2024/1/1 下午2:30:00）
+                                            // 將「下午」轉換為 12 小時制
+                                            if (dateStr.includes('下午')) {
+                                                dateStr = dateStr.replace('下午', '');
+                                                const timeMatch = dateStr.match(/(\d{1,2}):(\d{1,2}):(\d{1,2})/);
+                                                if (timeMatch) {
+                                                    let hour = parseInt(timeMatch[1]);
+                                                    if (hour < 12) hour += 12;
+                                                    dateStr = dateStr.replace(timeMatch[0], `${hour}:${timeMatch[2]}:${timeMatch[3]}`);
+                                                }
+                                            }
+                                            // 處理「上午」
+                                            if (dateStr.includes('上午')) {
+                                                dateStr = dateStr.replace('上午', '');
+                                            }
+                                            
+                                            // 嘗試多種日期格式解析
+                                            let parsedDate = null;
+                                            
+                                            // 格式1: 標準 ISO 格式
+                                            parsedDate = new Date(dateStr);
+                                            if (isNaN(parsedDate.getTime())) {
+                                                // 格式2: 中文格式 2024/1/1 14:30:00 或 2024/1/1 下午2:30:00
+                                                const cnMatch = dateStr.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/);
+                                                if (cnMatch) {
+                                                    parsedDate = new Date(
+                                                        parseInt(cnMatch[1]),
+                                                        parseInt(cnMatch[2]) - 1,
+                                                        parseInt(cnMatch[3]),
+                                                        parseInt(cnMatch[4]),
+                                                        parseInt(cnMatch[5]),
+                                                        parseInt(cnMatch[6])
+                                                    );
+                                                } else {
+                                                    // 格式3: 簡化格式 2024/1/1
+                                                    const simpleMatch = dateStr.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+                                                    if (simpleMatch) {
+                                                        parsedDate = new Date(
+                                                            parseInt(simpleMatch[1]),
+                                                            parseInt(simpleMatch[2]) - 1,
+                                                            parseInt(simpleMatch[3])
+                                                        );
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if (parsedDate && !isNaN(parsedDate.getTime())) {
+                                                timestamp = parsedDate.toISOString();
+                                            }
+                                        }
+                                    } catch (e) {
+                                        // 如果解析失敗，使用當前時間
+                                        console.warn('日期解析失敗，使用當前時間:', e);
+                                    }
+                                }
+                                
+                                importedPlayers.push({
+                                    id: Date.now() + Math.random() + i,
+                                    name: name.toString().trim(),
+                                    score: score,
+                                    timestamp: timestamp
+                                });
+                            }
+                            
+                            if (importedPlayers.length === 0) {
+                                showToast('Excel 文件中沒有有效的數據', 'error');
+                                return;
+                            }
+                            
+                            // 詢問用戶是覆蓋還是合併
+                            const action = confirm(`成功讀取 ${importedPlayers.length} 條數據。\n\n點擊「確定」覆蓋現有數據，點擊「取消」合併到現有數據。`);
+                            
+                            if (action) {
+                                // 覆蓋現有數據
+                                players = importedPlayers;
+                            } else {
+                                // 合併數據（檢查重複姓名）
+                                importedPlayers.forEach(newPlayer => {
+                                    const existingIndex = players.findIndex(p => p.name === newPlayer.name);
+                                    if (existingIndex !== -1) {
+                                        // 如果已存在，更新分數和時間
+                                        players[existingIndex].score = newPlayer.score;
+                                        players[existingIndex].timestamp = newPlayer.timestamp;
+                                    } else {
+                                        // 如果不存在，添加新選手
+                                        players.push(newPlayer);
+                                    }
+                                });
+                            }
+                            
+                            saveData();
+                            smartSort();
+                            showToast(`成功導入 ${importedPlayers.length} 條數據！`, 'success');
+                        } catch (error) {
+                            showToast('導入失敗：' + error.message, 'error');
+                            console.error('導入錯誤：', error);
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            };
+            input.click();
+        }
+
+        // 備份數據
+        function backupData() {
+            const backup = {
+                timestamp: new Date().toISOString(),
+                players: players,
+                version: '1.0'
+            };
+            
+            history.push(backup);
+            if (history.length > 10) {
+                history.shift(); // 只保留最近10個備份
+            }
+            
+            localStorage.setItem('rankingHistory', JSON.stringify(history));
+            showToast('數據已備份', 'success');
+        }
+
+        // 自動保存
+        function startAutoSave() {
+            autoSaveInterval = setInterval(() => {
+                saveData();
+            }, 30000); // 每30秒自動保存
+        }
+
+        // 設置鍵盤快捷鍵
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // F1: 顯示/隱藏快捷鍵
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    toggleKeyboardShortcuts();
+                }
+                
+                // Ctrl+S: 保存數據
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    saveData();
+                    showToast('數據已保存', 'success');
+                }
+                
+                // Ctrl+Z: 撤銷操作
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    undoLastAction();
+                }
+                
+                // Ctrl+F: 搜索選手
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    document.getElementById('searchPlayer').focus();
+                }
+                
+                // F5: 刷新排名
+                if (e.key === 'F5') {
+                    e.preventDefault();
+                    updateDisplay();
+                    showToast('排名已刷新', 'success');
+                }
+            });
+        }
+
+        // 切換快捷鍵顯示
+        function toggleKeyboardShortcuts() {
+            const shortcuts = document.getElementById('keyboardShortcuts');
+            shortcuts.classList.toggle('show');
+        }
+
+        // 編輯選手
+        function editPlayer(playerId) {
+            const player = players.find(p => p.id == playerId);
+            if (!player) {
+                showToast('找不到選手', 'error');
+                return;
+            }
+            
+            editingPlayerId = playerId;
+            
+            // 填充表單
+            document.getElementById('editPlayerName').value = player.name;
+            document.getElementById('editPlayerScore').value = (player.score !== null && player.score !== undefined) ? player.score : '';
+            
+            // 顯示編輯表單
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('editForm').classList.add('show');
+            
+            // 聚焦到姓名輸入框
+            document.getElementById('editPlayerName').focus();
+        }
+
+        // 保存選手編輯
+        function savePlayerEdit() {
+            if (!editingPlayerId) {
+                showToast('沒有正在編輯的選手', 'error');
+                return;
+            }
+            
+            const player = players.find(p => p.id == editingPlayerId);
+            if (!player) {
+                showToast('找不到選手', 'error');
+                return;
+            }
+            
+            const newName = document.getElementById('editPlayerName').value.trim();
+            const newScore = document.getElementById('editPlayerScore').value.trim();
+            
+            // 驗證姓名
+            if (!newName) {
+                showToast('請輸入選手姓名', 'error');
+                document.getElementById('editPlayerName').focus();
+                return;
+            }
+            
+            // 檢查姓名重複（排除自己）
+            const existingPlayer = players.find(p => p.name === newName && p.id != editingPlayerId);
+            if (existingPlayer) {
+                showToast(`選手 "${newName}" 已存在`, 'error');
+                document.getElementById('editPlayerName').focus();
+                return;
+            }
+            
+            // 更新選手信息
+            player.name = newName;
+            player.score = newScore === '' ? null : parseInt(newScore);
+            player.timestamp = new Date().toISOString();
+            
+            // 關閉編輯表單
+            cancelPlayerEdit();
+            
+            // 保存數據並更新顯示
+            saveData();
+            smartSort();
+            // updateKnownPlayersGrid(); // 移除此行
+            
+            // 如果編輯的是當前選中的選手，更新選擇
+            if (selectedPlayer === player.name) {
+                selectedPlayer = newName;
+            }
+            
+            showToast(`選手信息已更新：${newName}`, 'success');
+        }
+
+        // 取消選手編輯
+        function cancelPlayerEdit() {
+            editingPlayerId = null;
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('editForm').classList.remove('show');
+            document.getElementById('editPlayerName').value = '';
+            document.getElementById('editPlayerScore').value = '';
+        }
+
+        // 撤銷操作
+        function undoLastAction() {
+            if (history.length > 0) {
+                const lastBackup = history.pop();
+                players = lastBackup.players;
+                saveData();
+                updateDisplay();
+                localStorage.setItem('rankingHistory', JSON.stringify(history));
+                showToast('已撤銷上一步操作', 'success');
+            } else {
+                showToast('沒有可撤銷的操作', 'error');
+            }
+        }
+
+        // 顯示提示信息
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 新增JS函數
+        function toggleAddPlayerInRanking() {
+            const form = document.getElementById('addPlayerInRankingForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                document.getElementById('addRankingName').focus();
+            } else {
+                form.style.display = 'none';
+                document.getElementById('addRankingName').value = '';
+                document.getElementById('addRankingScore').value = '';
+            }
+        }
+        function addPlayerFromRanking() {
+            const nameInput = document.getElementById('addRankingName');
+            const scoreInput = document.getElementById('addRankingScore');
+            const name = nameInput.value.trim();
+            const score = parseInt(scoreInput.value);
+            if (!name) {
+                showToast('請輸入選手姓名', 'error');
+                nameInput.focus();
+                return;
+            }
+            if (isNaN(score) || score < 0) {
+                showToast('請輸入有效的分數', 'error');
+                scoreInput.focus();
+                return;
+            }
+            // 檢查是否已存在同名選手
+            const existingPlayer = players.find(p => p.name === name);
+            if (existingPlayer) {
+                showToast(`選手 "${name}" 已存在`, 'error');
+                nameInput.focus();
+                return;
+            }
+            players.push({
+                id: Date.now() + Math.random(),
+                name: name,
+                score: score,
+                timestamp: new Date().toISOString()
+            });
+            saveData();
+            smartSort();
+            // updateKnownPlayersGrid(); // 移除此行
+            toggleAddPlayerInRanking();
+            showToast('選手添加成功！', 'success');
+        }
+    </script>
+</body>
+</html> 
