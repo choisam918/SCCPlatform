@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課堂計分系統</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- SheetJS 庫用於導出 Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left-section">
+                <a href="../index.html" class="btn-back-to-main" title="返回主系統">返回主系統</a>
+            </div>
+            <div class="header-title-section">
+                <h1>課堂計分系統</h1>
+                <div class="date-display" id="dateDisplay"></div>
+            </div>
+            <div class="header-right-section">
+                <div class="view-toggle">
+                    <button class="view-btn active" id="cardViewBtn" onclick="switchView('card')">卡片</button>
+                    <button class="view-btn" id="leaderboardViewBtn" onclick="switchView('leaderboard')">排行榜</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-group-section">
+            <form class="add-group-form" id="addGroupForm">
+                <input 
+                    type="text" 
+                    id="groupNameInput" 
+                    placeholder="輸入組別名稱（例如：第一組）" 
+                >
+                <button type="submit" class="btn btn-primary">新增組別</button>
+                <div class="add-group-options">
+                    <label>
+                        <span>批量新增：</span>
+                        <input 
+                            type="number" 
+                            id="batchCountInput" 
+                            class="batch-count-input"
+                            placeholder="數量" 
+                            min="1" 
+                            max="50"
+                        >
+                        <span>組</span>
+                    </label>
+                    <button type="button" class="btn btn-secondary" onclick="batchAddGroups()">批量新增組別</button>
+                    <button type="button" class="btn btn-clear" onclick="clearAllGroups()" title="清除所有組別">清除所有組別</button>
+                    <button type="button" class="btn btn-export" onclick="exportData()" title="導出為 Excel 文件">📥 導出 Excel</button>
+                    <button type="button" class="btn btn-import" onclick="document.getElementById('importFileInput').click()" title="從 Excel 文件導入">📤 導入 Excel</button>
+                    <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display: none;" onchange="importData(event)">
+                </div>
+            </form>
+        </div>
+
+        <div class="global-score-controls" id="globalScoreControls">
+            <div class="global-score-buttons">
+                <div class="selected-group-info" id="selectedGroupInfo">
+                    <span>請選擇組別</span>
+                </div>
+                <div class="custom-score-input-group">
+                    <input 
+                        type="number" 
+                        id="customScoreInput" 
+                        class="custom-score-input"
+                        placeholder="分數" 
+                        min="1" 
+                        value="1"
+                        title="自定義分數"
+                    >
+                </div>
+                <button class="btn btn-score-minus-large" id="globalMinusBtn" onclick="globalSubtractScore()" disabled>
+                    <span class="btn-icon">−</span>
+                </button>
+                <button class="btn btn-score-large" id="globalAddBtn" onclick="globalAddScore()" disabled>
+                    <span class="btn-icon">+</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="groupsContainer" class="groups-container">
+            <!-- 小組卡片將動態生成在這裡 -->
+        </div>
+
+        <div id="leaderboardContainer" class="leaderboard-container">
+            <!-- 排行榜將動態生成在這裡 -->
+        </div>
+
+        <div id="statsSection" class="stats-section hidden">
+            <div class="stat-item">
+                <div class="stat-label">總組數</div>
+                <div class="stat-value" id="totalGroups">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">總分數</div>
+                <div class="stat-value" id="totalScore">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">最高分</div>
+                <div class="stat-value" id="maxScore">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
