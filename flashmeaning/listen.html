@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聽發音練習</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="../index.html" class="back-to-main-btn" title="返回主系統">← 返回主系統</a>
+    <div class="container">
+        <div class="header">
+            <h1>🎧 聽發音練習</h1>
+            <p>請聽英文發音，輸入正確的英文單字</p>
+        </div>
+        
+        <div id="practiceContent" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+            <!-- 內容將由 JavaScript 自動載入 -->
+        </div>
+        
+        <div style="text-align: center; margin-top: 8px; flex-shrink: 0;">
+            <button class="btn btn-secondary" onclick="window.location.href='index.html'" style="padding: 8px 20px; font-size: 0.85rem;">回首頁</button>
+        </div>
+    </div>
+
+    <script src="js/vocabulary-manager.js"></script>
+    <script src="js/audio-manager.js"></script>
+    <script>
+        let currentWord = null;
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let practiceWords = [];
+        const totalQuestions = 10;
+
+        function startPractice() {
+            practiceWords = vocabularyManager.getRandomWords(totalQuestions);
+            if (practiceWords.length === 0) {
+                alert('沒有可用詞彙，請先在管理者頁面添加生字！');
+                return;
+            }
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= practiceWords.length) {
+                showResults();
+                return;
+            }
+            
+            currentWord = practiceWords[currentQuestionIndex];
+            const questionNum = currentQuestionIndex + 1;
+            const total = practiceWords.length;
+            
+            document.getElementById('practiceContent').innerHTML = `
+                <div class="question-card">
+                    <div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 2px;">
+                        第 ${questionNum} / ${total} 題
+                    </div>
+                    <div class="word-display" style="font-size: 2rem;">請聽發音</div>
+                    <button class="play-btn" id="playBtn" onclick="playAudio()" style="padding: 8px 16px; font-size: 0.85rem; margin: 4px 0;">🔊 播放發音</button>
+                    <input 
+                        type="text" 
+                        class="answer-input" 
+                        id="answerInput" 
+                        placeholder="請輸入答案..."
+                        autocomplete="off"
+                        style="padding: 10px; font-size: 1rem; max-width: 350px;"
+                    >
+                    <div class="result-message" id="resultMessage" style="font-size: 0.95rem; padding: 8px 12px; margin: 2px 0;"></div>
+                    <div class="correct-answer" id="correctAnswer" style="font-size: 0.85rem; padding: 6px 10px;"></div>
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 4px;">
+                        <button class="btn btn-primary" id="submitBtn" onclick="checkAnswer()" style="padding: 8px 18px; font-size: 0.9rem;">提交答案</button>
+                        <button class="btn btn-success" id="nextBtn" onclick="nextQuestion()" style="display:none; padding: 8px 18px; font-size: 0.9rem;">下一題</button>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                const answerInput = document.getElementById('answerInput');
+                if (answerInput) {
+                    answerInput.focus();
+                    // Enter 鍵提交
+                    answerInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter' && document.getElementById('submitBtn').style.display !== 'none') {
+                            checkAnswer();
+                        }
+                    });
+                }
+            }, 100);
+        }
+
+        function playAudio() {
+            if (currentWord) {
+                audioManager.speakEnglish(currentWord.english).catch(console.warn);
+            }
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            if (!userAnswer) {
+                alert('請輸入答案');
+                return;
+            }
+            
+            const isCorrect = currentWord.english.toLowerCase().trim() === userAnswer.toLowerCase().trim();
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                incorrectCount++;
+            }
+            showResult(isCorrect);
+        }
+
+        function showResult(isCorrect) {
+            const resultMessage = document.getElementById('resultMessage');
+            const correctAnswer = document.getElementById('correctAnswer');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const playBtn = document.getElementById('playBtn');
+            const answerInput = document.getElementById('answerInput');
+            
+            answerInput.disabled = true;
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-flex';
+            
+            if (isCorrect) {
+                resultMessage.className = 'result-message correct';
+                resultMessage.textContent = '✅ 答對了！';
+            } else {
+                resultMessage.className = 'result-message incorrect';
+                resultMessage.textContent = '❌ 答錯了！';
+                correctAnswer.style.display = 'block';
+                correctAnswer.textContent = `正確答案: ${currentWord.english}`;
+            }
+            resultMessage.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            const accuracy = practiceWords.length > 0 
+                ? Math.round((correctCount / practiceWords.length) * 100) 
+                : 0;
+            
+            document.getElementById('practiceContent').innerHTML = `
+                <div class="question-card">
+                    <div class="header" style="margin-bottom: 8px;">
+                        <h1 style="font-size: 1.5rem; margin-bottom: 4px;">🎉 練習完成！</h1>
+                        <p style="font-size: 0.85rem;">您的練習結果如下</p>
+                    </div>
+                    <div class="stats" style="gap: 8px; margin: 12px 0;">
+                        <div class="stat-item" style="padding: 10px 8px;">
+                            <h3 style="font-size: 0.8rem; margin-bottom: 4px;">✅ 正確</h3>
+                            <div class="number" style="font-size: 1.5rem;">${correctCount}</div>
+                        </div>
+                        <div class="stat-item" style="padding: 10px 8px;">
+                            <h3 style="font-size: 0.8rem; margin-bottom: 4px;">❌ 錯誤</h3>
+                            <div class="number" style="font-size: 1.5rem;">${incorrectCount}</div>
+                        </div>
+                        <div class="stat-item" style="padding: 10px 8px;">
+                            <h3 style="font-size: 0.8rem; margin-bottom: 4px;">📊 準確率</h3>
+                            <div class="number" style="font-size: 1.5rem;">${accuracy}%</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
+                        <button class="btn btn-success" onclick="startPractice()" style="padding: 8px 16px; font-size: 0.9rem;">🔄 重新練習</button>
+                        <button class="btn btn-primary" onclick="window.location.href='index.html'" style="padding: 8px 16px; font-size: 0.9rem;">🏠 回到首頁</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 頁面載入時自動開始練習
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待 vocabularyManager 初始化完成
+            setTimeout(() => {
+                startPractice();
+            }, 100);
+        });
+    </script>
+</body>
+</html>
