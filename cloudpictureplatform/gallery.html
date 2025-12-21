@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC雲展覽 - SCC雲展覽平台</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/gallery.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="page-title">SCC雲展覽</h1>
+                <div class="header-info-controls">
+                    <div class="header-controls">
+                        <button class="btn btn-secondary" id="modeToggleBtn">切換模式</button>
+                        <a href="gallery.html" class="btn btn-secondary">返回系統</a>
+                        <button class="btn btn-danger hidden" id="deleteModeBtn">刪除模式</button>
+                        <button class="btn btn-danger hidden" id="deleteSelectedBtn">刪除選中</button>
+                        <button class="btn btn-secondary hidden" id="cancelDeleteBtn">取消</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- 空状态 -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">🖼️</div>
+                <h2>還沒有照片</h2>
+                <p>上傳一些照片開始您的雲展覽之旅吧！</p>
+                <a href="upload.html" class="btn btn-primary">上傳照片</a>
+            </div>
+
+            <!-- 3D展览馆容器 -->
+            <div class="gallery-container hidden" id="galleryContainer">
+                <canvas id="galleryCanvas"></canvas>
+            </div>
+
+            <!-- 相册模式容器 -->
+            <div class="traditional-gallery hidden" id="traditionalGallery">
+                <div class="delete-mode-info hidden" id="deleteModeInfo">
+                    <p>已選擇 <span id="selectedCount">0</span> 張照片</p>
+                    <button class="btn btn-link" id="selectAllBtn">全選</button>
+                    <button class="btn btn-link" id="deselectAllBtn">取消全選</button>
+                </div>
+                <div class="gallery-grid" id="galleryGrid"></div>
+            </div>
+
+            <!-- 全屏查看 -->
+            <div class="fullscreen-viewer hidden" id="fullscreenViewer">
+                <button class="close-btn" id="closeFullscreenBtn">×</button>
+                <div class="viewer-content">
+                    <img id="fullscreenImage" src="" alt="">
+                    <div class="viewer-controls">
+                        <button class="btn btn-secondary" id="prevBtn">上一張</button>
+                        <span id="imageIndex">1 / 1</span>
+                        <button class="btn btn-secondary" id="nextBtn">下一張</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Three.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // 檢查Three.js和OrbitControls是否加載成功
+        window.addEventListener('load', () => {
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js未加載成功');
+            } else {
+                console.log('Three.js加載成功，版本:', THREE.REVISION);
+            }
+            
+            if (typeof THREE.OrbitControls === 'undefined') {
+                console.error('OrbitControls未加載成功');
+            } else {
+                console.log('OrbitControls加載成功');
+            }
+        });
+    </script>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/3d-gallery.js"></script>
+    <script src="js/gallery.js"></script>
+</body>
+</html>
+
+
