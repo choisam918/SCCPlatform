@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>SCC雲展覽 - 雲展覽平台</title>
+    
+    <!-- CSS文件 -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/gallery.css">
+    <link rel="stylesheet" href="mobile-fixes.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .header-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 77, 79, 0.8);
+            border-color: rgba(255, 77, 79, 0.9);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 77, 79, 1);
+        }
+        
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* 3D模式容器 */
+        .scene-container {
+            width: 100%;
+            height: calc(100vh - 100px);
+            min-height: 500px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .scene-container[style*="display: block"] {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        /* 相冊模式容器 */
+        .album-container {
+            display: none;
+            width: 100%;
+            min-height: calc(100vh - 100px);
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .album-container.active {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .album-container[style*="display: block"] {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            max-width: 100%;
+        }
+        
+        @media (max-width: 1200px) {
+            .album-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .album-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .album-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .album-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .album-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: #f0f0f0;
+        }
+        
+        .album-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .album-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state-text {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state-hint {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-buttons {
+                width: 100%;
+            }
+            
+            .btn {
+                flex: 1;
+            }
+            
+            .scene-container {
+                height: calc(100vh - 150px);
+            }
+            
+            /* 移动端相册网格已在上面定义（3列），这里只调整间距 */
+            .album-grid {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="header-title">SCC雲展覽</h1>
+        <div class="header-buttons">
+            <button class="btn" id="switchModeBtn">切換到3D模式</button>
+            <a href="index.html" class="btn">返回系統</a>
+            <button class="btn btn-danger" id="deleteModeBtn" style="display: none;">刪除模式</button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <!-- 3D模式 -->
+        <div class="scene-container" id="sceneContainer">
+            <canvas id="canvas3d"></canvas>
+        </div>
+        
+        <!-- 相冊模式 -->
+        <div class="album-container" id="albumContainer">
+            <div class="album-grid" id="albumGrid"></div>
+        </div>
+        
+        <!-- 空狀態 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">🖼️</div>
+            <div class="empty-state-text">還沒有照片</div>
+            <div class="empty-state-hint">請先上傳照片來創建您的展覽</div>
+            <a href="upload.html" class="btn" style="margin-top: 20px; display: inline-block;">前往上傳</a>
+        </div>
+        
+        <!-- 加載中 -->
+        <div class="loading" id="loadingState" style="display: none;">
+            <div>載入中...</div>
+        </div>
+    </div>
+    
+    <!-- Three.js 庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- 確保OrbitControls正確加載 -->
+    <script>
+        // 等待Three.js和OrbitControls加載完成
+        window.addEventListener('load', function() {
+            if (typeof THREE !== 'undefined') {
+                console.log('Three.js已加載');
+                // 如果OrbitControls沒有通過THREE加載，嘗試其他方式
+                if (typeof THREE.OrbitControls === 'undefined' && typeof OrbitControls !== 'undefined') {
+                    THREE.OrbitControls = OrbitControls;
+                    console.log('OrbitControls已通過全局變量加載');
+                }
+            }
+        });
+    </script>
+    <!-- 備用OrbitControls加載方式 -->
+    <script>
+        // 確保OrbitControls正確加載
+        if (typeof THREE !== 'undefined' && typeof THREE.OrbitControls === 'undefined') {
+            console.warn('OrbitControls未通過THREE加載，嘗試全局加載');
+        }
+    </script>
+    
+    <!-- JavaScript文件 -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/3d-gallery.js?v=17"></script>
+    <script src="js/gallery.js"></script>
+    <script src="mobile-fixes.js"></script>
+    
+</body>
+</html>
