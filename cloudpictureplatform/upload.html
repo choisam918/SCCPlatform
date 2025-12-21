@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>上傳照片 - SCC雲展覽平台</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/upload.css">
+</head>
+<body>
+    <div class="container upload-page">
+        <header class="header">
+            <a href="index.html" class="back-btn">← 返回主頁</a>
+            <h1 class="page-title">上傳照片</h1>
+        </header>
+
+        <main class="main-content">
+            <!-- 上传区域 -->
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">
+                        <p class="upload-title">點擊選擇照片或拖拽到此處</p>
+                        <p class="upload-desc">支援JPG、PNG、WebP格式，最多12張</p>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="selectBtn">選擇照片</button>
+                </div>
+
+                <!-- 数量提示 -->
+                <div class="count-info" id="countInfo" style="display: none;">
+                    <div class="count-text">
+                        已選擇: <span id="selectedCount">0</span> / 12 張照片
+                    </div>
+                    <div class="count-progress">
+                        <div class="count-progress-bar" id="countProgressBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预览区域 -->
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <h2 class="section-title">照片預覽</h2>
+                <div class="preview-grid" id="previewGrid"></div>
+            </div>
+
+            <!-- 上传控制 -->
+            <div class="upload-controls" id="uploadControls" style="display: none;">
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-text">
+                        <span id="progressText">上傳中...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                </div>
+                <div class="control-buttons">
+                    <button class="btn btn-primary" id="uploadBtn">確認上傳</button>
+                    <button class="btn btn-secondary" id="cancelBtn">取消</button>
+                </div>
+            </div>
+
+            <!-- 成功提示 -->
+            <div class="success-message" id="successMessage" style="display: none;">
+                <div class="success-icon">✓</div>
+                <div class="success-text">
+                    <p>上傳成功！</p>
+                    <p id="successCount">已成功上傳 X 張照片</p>
+                </div>
+                <div class="success-actions">
+                    <a href="gallery.html" class="btn btn-primary">立即觀看展覽</a>
+                    <a href="index.html" class="btn btn-secondary">返回主頁</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/image-processor.js"></script>
+    <script src="js/upload.js"></script>
+</body>
+</html>
+
+
