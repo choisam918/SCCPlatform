@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程式展示系統 - 展示頁面</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 使用CDN版本的highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="display-header">
+            <h1>📚 程式展示系統</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="window.location.href='index.html'">← 返回上傳</button>
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ 列印</button>
+                <button class="btn btn-secondary" onclick="exportHTML()">💾 匯出HTML</button>
+                <button class="btn btn-secondary" onclick="toggleTheme()">🌓 切換主題</button>
+            </div>
+        </header>
+
+        <main class="display-main">
+            <div class="display-info">
+                <p>共 <span id="totalFiles">0</span> 個檔案</p>
+            </div>
+
+            <!-- Pyodide 載入狀態提示 -->
+            <div id="pyodideStatus" class="pyodide-status" style="display: none;">
+                <div class="status-content">
+                    <span id="pyodideStatusText">檢查 Python 執行環境...</span>
+                    <button class="btn btn-small btn-secondary" onclick="checkPyodideStatus()" style="margin-left: 10px;">
+                        重新檢查
+                    </button>
+                </div>
+            </div>
+
+            <div class="display-content" id="displayContent">
+                <!-- 程式碼將動態生成 -->
+                <div class="no-files">
+                    <p>尚未上傳任何檔案</p>
+                    <button class="btn btn-primary" onclick="window.location.href='index.html'">
+                        前往上傳檔案
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>程式展示系統 v1.0 | 使用 highlight.js 進行語法高亮 | 使用 Pyodide 執行 Python 程式碼</p>
+        </footer>
+    </div>
+
+    <!-- 使用CDN版本的highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Pyodide - 在瀏覽器中運行Python -->
+    <script 
+        src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"
+        onerror="console.error('Pyodide 腳本載入失敗！請檢查網路連線。'); alert('無法載入 Python 執行環境！\n\n請確認：\n1. 網路連線正常\n2. 可以訪問 cdn.jsdelivr.net\n3. 瀏覽器控制台無錯誤');">
+    </script>
+    <script src="js/storage.js"></script>
+    <script src="js/display.js"></script>
+    <script src="js/networkCheck.js"></script>
+    <script src="js/pyodideCheck.js"></script>
+    <script src="js/pyodideStatus.js"></script>
+    <script src="js/pythonRunner.js"></script>
+</body>
+</html>
