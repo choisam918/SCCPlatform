@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bingo 遊戲</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #070b14;
+        --card: rgba(255, 255, 255, 0.07);
+        --card2: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.94);
+        --muted: rgba(255, 255, 255, 0.62);
+        --border: rgba(255, 255, 255, 0.1);
+        --accent: #8b5cf6;
+        --accent2: #34d399;
+        --danger: #f87171;
+        --ball-base-a: #2d3a5c;
+        --ball-base-b: #141b2e;
+        --ball-base-c: #0a0e18;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f6f7fb;
+          --card: rgba(0, 0, 0, 0.04);
+          --card2: rgba(0, 0, 0, 0.07);
+          --text: rgba(0, 0, 0, 0.88);
+          --muted: rgba(0, 0, 0, 0.60);
+          --border: rgba(0, 0, 0, 0.12);
+        }
+      }
+      * { box-sizing: border-box; }
+      body.pageRoot {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC",
+          "Microsoft JhengHei", Arial, sans-serif;
+        background:
+          radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.18), transparent 55%),
+          radial-gradient(900px 500px at 12% 20%, rgba(99, 102, 241, 0.14), transparent 50%),
+          radial-gradient(800px 480px at 88% 15%, rgba(52, 211, 153, 0.1), transparent 48%),
+          linear-gradient(180deg, #0c1222 0%, var(--bg) 45%, #050810 100%);
+        color: var(--text);
+        min-height: 100vh;
+        min-height: 100dvh;
+        max-height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 14px;
+      }
+      @media (max-width: 880px) {
+        body.pageRoot {
+          max-height: none;
+          overflow: auto;
+        }
+      }
+      .wrap {
+        width: min(1100px, 100%);
+        margin: 0 auto;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .boardSection {
+        min-height: 0;
+        height: 100%;
+        padding: 12px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.15) 100%);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 20px 50px rgba(0,0,0,0.25);
+      }
+      .boardGrid {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+        display: grid;
+        gap: clamp(4px, 0.65vmin, 10px);
+        padding: 8px 6px 10px;
+        align-content: center;
+      }
+      .mainLayout {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 10px;
+        align-items: start;
+      }
+      .rightCol {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      @media (max-width: 980px) {
+        .mainLayout {
+          grid-template-columns: 1fr;
+        }
+      }
+      /* 球體：在格內置中，取較小邊為直徑 */
+      .boardCell {
+        display: grid;
+        place-items: center;
+        place-self: center;
+        height: 70%;
+        width: 70%;
+        aspect-ratio: 1;
+        max-width: 70%;
+        max-height: 70%;
+        min-width: 0;
+        min-height: 0;
+        border-radius: 50%;
+        border: none;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(10px, min(1.55vmin, 2.6vw), 16px);
+        line-height: 1;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: default;
+        color: rgba(255, 255, 255, 0.96);
+        text-shadow:
+          0 1px 0 rgba(0, 0, 0, 0.5),
+          0 -1px 0 rgba(255, 255, 255, 0.12);
+        background:
+          radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 18%, transparent 42%),
+          radial-gradient(circle at 72% 78%, rgba(0, 0, 0, 0.55) 0%, transparent 52%),
+          linear-gradient(155deg, var(--ball-base-a) 0%, var(--ball-base-b) 42%, var(--ball-base-c) 100%);
+        box-shadow:
+          inset 0 -6px 14px rgba(0, 0, 0, 0.55),
+          inset 0 5px 16px rgba(255, 255, 255, 0.14),
+          0 6px 16px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.07);
+        transition: transform 220ms cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 220ms ease, filter 220ms ease;
+      }
+      .boardCell.drawn:not(.last) {
+        color: #faf5ff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 12px rgba(167, 139, 250, 0.35);
+        background:
+          radial-gradient(circle at 26% 20%, rgba(255, 255, 255, 0.65) 0%, rgba(196, 181, 253, 0.35) 14%, transparent 38%),
+          radial-gradient(circle at 70% 82%, rgba(0, 0, 0, 0.45) 0%, transparent 48%),
+          linear-gradient(155deg, #a78bfa 0%, #6d28d9 38%, #4c1d95 72%, #2e1065 100%);
+        box-shadow:
+          inset 0 -5px 12px rgba(0, 0, 0, 0.45),
+          inset 0 4px 14px rgba(255, 255, 255, 0.22),
+          0 6px 20px rgba(109, 40, 217, 0.45),
+          0 0 0 1px rgba(167, 139, 250, 0.35);
+      }
+      .boardCell.last {
+        color: #ecfdf5 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 14px rgba(52, 211, 153, 0.5) !important;
+        background:
+          radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.75) 0%, rgba(167, 243, 208, 0.45) 12%, transparent 36%),
+          radial-gradient(circle at 68% 80%, rgba(0, 0, 0, 0.4) 0%, transparent 50%),
+          linear-gradient(155deg, #6ee7b7 0%, #10b981 35%, #047857 70%, #064e3b 100%);
+        box-shadow:
+          inset 0 -5px 12px rgba(0, 0, 0, 0.35),
+          inset 0 5px 16px rgba(255, 255, 255, 0.28),
+          0 0 0 3px rgba(52, 211, 153, 0.35),
+          0 8px 28px rgba(16, 185, 129, 0.5),
+          0 0 40px rgba(52, 211, 153, 0.2);
+        transform: scale(1.08);
+        z-index: 2;
+        filter: saturate(1.08);
+        animation: ballFlash 650ms cubic-bezier(.2,.9,.2,1) both;
+      }
+
+      @keyframes ballFlash {
+        0% { filter: saturate(1.05) brightness(1.0); }
+        30% { filter: saturate(1.25) brightness(1.95); }
+        55% { filter: saturate(1.15) brightness(1.25); }
+        100% { filter: saturate(1.08) brightness(1.0); }
+      }
+      @media (prefers-color-scheme: light) {
+        .boardCell {
+          color: #1e1b4b;
+          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+          background:
+            radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.95) 0%, rgba(226, 232, 240, 0.6) 25%, transparent 45%),
+            radial-gradient(circle at 70% 78%, rgba(100, 116, 139, 0.25) 0%, transparent 50%),
+            linear-gradient(155deg, #e2e8f0 0%, #cbd5e1 45%, #94a3b8 100%);
+          box-shadow:
+            inset 0 -4px 10px rgba(100, 116, 139, 0.35),
+            inset 0 4px 12px rgba(255, 255, 255, 0.9),
+            0 4px 14px rgba(15, 23, 42, 0.12);
+        }
+        .boardCell.drawn:not(.last) {
+          color: #faf5ff;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+          background:
+            radial-gradient(circle at 26% 20%, rgba(255, 255, 255, 0.95) 0%, rgba(196, 181, 253, 0.7) 14%, transparent 38%),
+            radial-gradient(circle at 70% 82%, rgba(0, 0, 0, 0.35) 0%, transparent 48%),
+            linear-gradient(155deg, #ede9fe 0%, #c4b5fd 32%, #7c3aed 72%, #4c1d95 100%);
+          box-shadow:
+            inset 0 -5px 12px rgba(0, 0, 0, 0.35),
+            inset 0 4px 14px rgba(255, 255, 255, 0.5),
+            0 10px 22px rgba(124, 58, 237, 0.28),
+            0 0 0 2px rgba(124, 58, 237, 0.25);
+        }
+        .boardCell.last {
+          color: #0f766e !important;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+          background:
+            radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.95) 0%, rgba(167, 243, 208, 0.75) 12%, transparent 36%),
+            radial-gradient(circle at 68% 80%, rgba(0, 0, 0, 0.35) 0%, transparent 50%),
+            linear-gradient(155deg, #bbf7d0 0%, #34d399 35%, #10b981 70%, #047857 100%);
+          box-shadow:
+            inset 0 -5px 12px rgba(0, 0, 0, 0.28),
+            inset 0 5px 16px rgba(255, 255, 255, 0.65),
+            0 0 0 3px rgba(16, 185, 129, 0.25),
+            0 16px 35px rgba(16, 185, 129, 0.25);
+        }
+      }
+      .lowerRow {
+        display: grid;
+        grid-template-columns: 1fr min(300px, 34vw);
+        gap: 10px;
+        flex: 0 1 auto;
+        min-height: 0;
+        max-height: min(42vh, 400px);
+      }
+      .gameCol { min-height: 0; overflow: auto; }
+      aside.card { min-height: 0; overflow: auto; }
+      /* 依你的要求：不顯示右側「已抽出的數字」清單區 */
+      aside.card { display: none; }
+      @media (max-width: 880px) {
+        .lowerRow {
+          grid-template-columns: 1fr;
+          max-height: none;
+        }
+      }
+      header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .title {
+        display: grid;
+        gap: 4px;
+      }
+      .title h1 {
+        font-size: clamp(18px, 2.2vw, 22px);
+        margin: 0;
+        letter-spacing: 0.04em;
+        font-weight: 800;
+        background: linear-gradient(120deg, #fff 0%, #c4b5fd 45%, #6ee7b7 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      @media (prefers-color-scheme: light) {
+        .title h1 {
+          background: linear-gradient(120deg, #1e1b4b 0%, #6d28d9 50%, #047857 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+      }
+      .title .sub {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a.btn, button.btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      a.btn:hover, button.btn:hover {
+        background: var(--card2);
+        transform: translateY(-1px);
+        border-color: rgba(124, 58, 237, 0.35);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        min-height: 0;
+      }
+      .card {
+        border: 1px solid var(--border);
+        background: linear-gradient(165deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 50%, rgba(0,0,0,0.08) 100%);
+        border-radius: 20px;
+        padding: 16px;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+      }
+      .bigNumber {
+        display: grid;
+        place-items: center;
+        min-height: 240px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: radial-gradient(700px 380px at 30% 30%, rgba(124, 58, 237, 0.22), transparent 60%),
+          radial-gradient(700px 380px at 70% 70%, rgba(34, 197, 94, 0.16), transparent 60%),
+          rgba(255, 255, 255, 0.03);
+      }
+      .bigNumber .n {
+        font-size: clamp(72px, 9vw, 140px);
+        font-weight: 900;
+        letter-spacing: 1px;
+        line-height: 1;
+        text-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      }
+      .bigNumber .n.pop {
+        animation: pop 420ms cubic-bezier(.2,.9,.2,1) both;
+      }
+      @keyframes pop {
+        0% { transform: translateY(6px) scale(0.96); filter: blur(0.2px); opacity: 0.55; }
+        55% { transform: translateY(-2px) scale(1.04); opacity: 1; }
+        100% { transform: translateY(0) scale(1); opacity: 1; }
+      }
+      .bigNumber .hint {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--muted);
+        text-align: center;
+        max-width: 52ch;
+      }
+      .prevLine {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .prevLine b {
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.2px;
+      }
+      .primaryRow {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        padding: 16px 0 6px;
+        flex-wrap: wrap;
+      }
+      button.primary {
+        border: 1px solid rgba(124, 58, 237, 0.35);
+        background: linear-gradient(180deg, rgba(124, 58, 237, 0.9), rgba(124, 58, 237, 0.75));
+        box-shadow: 0 14px 30px rgba(124, 58, 237, 0.22);
+        padding: 14px 18px;
+        border-radius: 14px;
+        font-size: 16px;
+      }
+      button.primary:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      button.danger {
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        background: linear-gradient(180deg, rgba(239, 68, 68, 0.9), rgba(239, 68, 68, 0.75));
+        box-shadow: 0 14px 30px rgba(239, 68, 68, 0.18);
+      }
+      .meta {
+        display: none;
+      }
+      .stat {
+        display: grid;
+        gap: 4px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .stat .k { color: var(--muted); font-size: 12px; }
+      .stat .v { font-weight: 800; font-size: 18px; }
+      .list {
+        margin-top: 10px;
+        display: grid;
+        gap: 10px;
+      }
+      .listHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .listHeaderRight {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .listTitle {
+        font-weight: 800;
+      }
+      .seg {
+        display: inline-flex;
+        gap: 6px;
+        padding: 6px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+      }
+      .seg button {
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text);
+        font-weight: 800;
+        padding: 8px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .seg button[aria-pressed="true"] {
+        border-color: rgba(124, 58, 237, 0.35);
+        background: rgba(124, 58, 237, 0.18);
+      }
+      .pillGrid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+      }
+      @media (max-width: 520px) {
+        .pillGrid { grid-template-columns: repeat(4, 1fr); }
+      }
+      .pill {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        padding: 8px 10px;
+        text-align: center;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+      }
+      .logList {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        max-height: 320px;
+        overflow: auto;
+        padding: 8px;
+        display: grid;
+        gap: 6px;
+      }
+      .logItem {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.06);
+      }
+      @media (prefers-color-scheme: light) {
+        .logItem { background: rgba(255,255,255,0.55); }
+      }
+      .logLeft { display: flex; gap: 10px; align-items: baseline; }
+      .logIdx {
+        color: var(--muted);
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        min-width: 2.2em;
+      }
+      .logNum {
+        font-weight: 950;
+        font-size: 18px;
+        letter-spacing: 0.2px;
+        font-variant-numeric: tabular-nums;
+      }
+      .logTime {
+        color: var(--muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+      .hidden { display: none !important; }
+      .footerNote {
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+        padding-top: 8px;
+      }
+    </style>
+  </head>
+  <body class="pageRoot">
+    <div class="wrap">
+      <header>
+        <div class="title">
+          <h1>Bingo 遊戲</h1>
+          <div class="sub"></div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="admin.html" title="管理範圍">Admin</a>
+          <button class="btn" id="btnNewRound" type="button" title="清空本回合抽取紀錄">新回合</button>
+        </div>
+      </header>
+
+      <div class="mainLayout">
+        <section class="card boardSection" aria-label="號碼板 1 至最大值">
+          <div id="boardGrid" class="boardGrid" role="grid" aria-label="bingo board"></div>
+        </section>
+
+        <div class="rightCol">
+          <section class="card gameCol">
+            <div class="bigNumber" id="bigNumber" aria-live="polite">
+              <div>
+                <div class="n" id="currentNumber">—</div>
+                <div class="hint" id="hint">
+                  目前範圍為 <span id="rangeText">1 ~ 75</span>。點擊下方 Bingo 開始抽號。
+                </div>
+              <div class="prevLine" id="prevLine" aria-label="previous number">
+                  <span>上一個：</span><b id="prevNumber">—</b>
+                </div>
+              </div>
+            </div>
+
+            <div class="primaryRow">
+              <button class="btn primary" id="btnBingo" type="button">Bingo</button>
+              <button class="btn danger" id="btnUndo" type="button" disabled>復原上一個</button>
+            </div>
+
+            <div class="footerNote hidden"></div>
+          </section>
+
+          <aside class="card">
+            <div class="meta">
+              <div class="stat">
+                <div class="k">最大範圍</div>
+                <div class="v" id="maxStat">75</div>
+              </div>
+              <div class="stat">
+                <div class="k">已抽數量</div>
+                <div class="v"><span id="drawnCount">0</span> / <span id="maxCount">75</span></div>
+              </div>
+              <div class="stat">
+                <div class="k">剩餘</div>
+                <div class="v" id="remainingStat">75</div>
+              </div>
+            </div>
+
+            <div class="list">
+              <div class="listHeader">
+                <div class="listTitle">已抽出的數字</div>
+                <div class="listHeaderRight">
+                  <div class="seg" role="group" aria-label="view mode">
+                    <button id="viewSorted" type="button" aria-pressed="true">排序</button>
+                    <button id="viewLog" type="button" aria-pressed="false">依序</button>
+                  </div>
+                  <button class="btn" id="btnCopy" type="button" title="複製目前檢視的內容">複製</button>
+                </div>
+              </div>
+              <div class="pillGrid" id="pillGrid" aria-label="sorted drawn numbers"></div>
+              <div class="logList hidden" id="logList" aria-label="draw log"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEYS = {
+        max: "bingo:max",
+        drawn: "bingo:drawn",
+        history: "bingo:history",
+        events: "bingo:events"
+      };
+
+      // 需求：未開始時（頁面初次載入）保持空白；按「新回合」後要顯示提示。
+      const SHOW_HINT_KEY = "bingo:showHint";
+      sessionStorage.setItem(SHOW_HINT_KEY, "0");
+
+      function clampInt(n, min, max) {
+        const x = Number.parseInt(String(n), 10);
+        if (!Number.isFinite(x)) return min;
+        return Math.min(max, Math.max(min, x));
+      }
+
+      function getMax() {
+        const raw = localStorage.getItem(STORAGE_KEYS.max);
+        const max = clampInt(raw ?? 75, 1, 9999);
+        return max;
+      }
+
+      function getDrawn() {
+        try {
+          const arr = JSON.parse(localStorage.getItem(STORAGE_KEYS.drawn) ?? "[]");
+          if (!Array.isArray(arr)) return [];
+          return arr.map((x) => clampInt(x, 1, 9999)).filter((x) => x >= 1);
+        } catch {
+          return [];
+        }
+      }
+
+      function setDrawn(arr) {
+        localStorage.setItem(STORAGE_KEYS.drawn, JSON.stringify(arr));
+      }
+
+      function getHistory() {
+        try {
+          const arr = JSON.parse(localStorage.getItem(STORAGE_KEYS.history) ?? "[]");
+          if (!Array.isArray(arr)) return [];
+          return arr.map((x) => clampInt(x, 1, 9999)).filter((x) => x >= 1);
+        } catch {
+          return [];
+        }
+      }
+
+      function setHistory(arr) {
+        localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(arr));
+      }
+
+      function uniq(arr) {
+        return Array.from(new Set(arr));
+      }
+
+      function normalizeEvents(raw) {
+        if (!Array.isArray(raw)) return [];
+        const out = [];
+        for (const item of raw) {
+          if (typeof item === "number" || typeof item === "string") {
+            const n = clampInt(item, 1, 9999);
+            if (n >= 1) out.push({ n, ts: Date.now() });
+            continue;
+          }
+          if (item && typeof item === "object") {
+            const n = clampInt(item.n, 1, 9999);
+            const tsRaw = Number(item.ts);
+            // ts 缺失/無效時仍保留抽取（避免球體顏色不同步）
+            const ts = Number.isFinite(tsRaw) ? tsRaw : Date.now();
+            if (n >= 1) out.push({ n, ts });
+          }
+        }
+        return out;
+      }
+
+      function getEvents() {
+        // 新版：events = [{n, ts}, ...]，完整保留每次抽取（含時間）
+        try {
+          const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.events) ?? "null");
+          const events = normalizeEvents(raw);
+          if (events.length) return events;
+        } catch {}
+
+        // 舊版資料 migration：history（依序數字）/ drawn（不重複數字）
+        const history = getHistory();
+        if (history.length) {
+          const base = Date.now() - history.length * 1000;
+          const events = history.map((n, i) => ({ n, ts: base + i * 1000 }));
+          localStorage.setItem(STORAGE_KEYS.events, JSON.stringify(events));
+          return events;
+        }
+        return [];
+      }
+
+      function setEvents(events) {
+        localStorage.setItem(STORAGE_KEYS.events, JSON.stringify(events));
+      }
+
+      function boardCols(max) {
+        if (max <= 30) return 6;
+        if (max <= 50) return 8;
+        if (max <= 75) return 10;
+        if (max <= 100) return 10;
+        if (max <= 144) return 12;
+        return Math.min(16, Math.ceil(Math.sqrt(max * 1.25)));
+      }
+
+      function buildBoardGrid(max) {
+        const el = document.getElementById("boardGrid");
+        if (!el) return;
+        if (el.dataset.maxBuilt === String(max) && el.childElementCount === max) return;
+        el.dataset.maxBuilt = String(max);
+        el.innerHTML = "";
+        const cols = boardCols(max);
+        const rows = Math.ceil(max / cols);
+        el.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+        el.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
+        for (let i = 1; i <= max; i++) {
+          const cell = document.createElement("div");
+          cell.className = "boardCell";
+          cell.dataset.n = String(i);
+          cell.textContent = String(i);
+          cell.setAttribute("role", "gridcell");
+          el.appendChild(cell);
+        }
+      }
+
+      function syncBoard(max, drawnSet, lastN) {
+        buildBoardGrid(max);
+        const el = document.getElementById("boardGrid");
+        if (!el) return;
+        for (const c of el.children) {
+          const n = Number(c.dataset.n);
+          const isDrawn = drawnSet.has(n);
+          c.classList.toggle("drawn", isDrawn);
+          c.classList.toggle("last", isDrawn && lastN === n);
+        }
+      }
+
+      function updateUI() {
+        const max = getMax();
+        const eventsAll = getEvents();
+        // 注意：不要因為縮小範圍就刪除舊抽取紀錄；只在畫面/規則上「忽略」超出範圍的數字
+        const inRangeEvents = eventsAll.filter((e) => e.n >= 1 && e.n <= max);
+
+        // drawn 保留（為了舊版兼容/快速顯示），以 events 推導出不重複集合
+        const drawn = uniq(inRangeEvents.map((e) => e.n));
+        setDrawn(drawn);
+
+        const prev = inRangeEvents.length >= 2 ? inRangeEvents.at(-2)?.n ?? null : null;
+        document.getElementById("prevNumber").textContent = prev ? String(prev) : "—";
+        const prevLineEl = document.getElementById("prevLine");
+
+        const current = inRangeEvents.at(-1)?.n ?? null;
+        const currentEl = document.getElementById("currentNumber");
+        currentEl.textContent = current ? String(current) : "—";
+        currentEl.classList.remove("pop");
+        if (current) {
+          // reflow 觸發動畫
+          void currentEl.offsetWidth;
+          currentEl.classList.add("pop");
+        }
+
+        document.getElementById("rangeText").textContent = `1 ~ ${max}`;
+        document.getElementById("maxStat").textContent = String(max);
+        document.getElementById("maxCount").textContent = String(max);
+        document.getElementById("drawnCount").textContent = String(drawn.length);
+        document.getElementById("remainingStat").textContent = String(Math.max(0, max - drawn.length));
+
+        const btnBingo = document.getElementById("btnBingo");
+        btnBingo.disabled = drawn.length >= max;
+        btnBingo.textContent = drawn.length >= max ? "已抽完" : "Bingo";
+
+        document.getElementById("btnUndo").disabled = eventsAll.length === 0;
+
+        const grid = document.getElementById("pillGrid");
+        grid.innerHTML = "";
+        // 顯示由小到大，方便對照
+        const sorted = [...drawn].sort((a, b) => a - b);
+        for (const n of sorted) {
+          const el = document.createElement("div");
+          el.className = "pill";
+          el.textContent = String(n);
+          grid.appendChild(el);
+        }
+
+        const logList = document.getElementById("logList");
+        logList.innerHTML = "";
+        const fmt = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        eventsAll.forEach((e, idx) => {
+          const item = document.createElement("div");
+          item.className = "logItem";
+          const left = document.createElement("div");
+          left.className = "logLeft";
+          const iel = document.createElement("div");
+          iel.className = "logIdx";
+          iel.textContent = `#${idx + 1}`;
+          const nel = document.createElement("div");
+          nel.className = "logNum";
+          nel.textContent = String(e.n);
+          left.appendChild(iel);
+          left.appendChild(nel);
+
+          const time = document.createElement("div");
+          time.className = "logTime";
+          if (e.n > max) time.textContent = `${fmt.format(new Date(e.ts))}（超出目前範圍）`;
+          else time.textContent = fmt.format(new Date(e.ts));
+
+          item.appendChild(left);
+          item.appendChild(time);
+          logList.appendChild(item);
+        });
+
+        syncBoard(max, new Set(drawn), current);
+
+        // 尚未開始抽取：保持顯示區塊空白（無提示文字）
+        const hint = document.getElementById("hint");
+        if (drawn.length >= max) {
+          hint.textContent = `範圍 1 ~ ${max} 已全部抽完。可以按「新回合」重新開始。`;
+          prevLineEl.classList.remove("hidden");
+        } else if (!current) {
+          const showHint = sessionStorage.getItem(SHOW_HINT_KEY) === "1";
+          hint.textContent = showHint ? `目前範圍為 1 ~ ${max}。點擊下方 Bingo 開始抽號。` : "";
+          prevLineEl.classList.add("hidden");
+        } else {
+          // 依你的要求：抽取後不顯示「已抽出...剩下...」那句
+          hint.textContent = "";
+          prevLineEl.classList.remove("hidden");
+        }
+      }
+
+      function pickOne(max, drawnSet) {
+        const remaining = max - drawnSet.size;
+        if (remaining <= 0) return null;
+
+        // 小範圍用洗牌思路，避免一直撞到已抽
+        if (max <= 5000) {
+          let n;
+          do {
+            n = Math.floor(Math.random() * max) + 1;
+          } while (drawnSet.has(n));
+          return n;
+        }
+
+        // 大範圍 fallback（仍然可用，但可能較慢）
+        while (true) {
+          const n = Math.floor(Math.random() * max) + 1;
+          if (!drawnSet.has(n)) return n;
+        }
+      }
+
+      function onBingo() {
+        const max = getMax();
+        const eventsAll = getEvents();
+        const inRangeEvents = eventsAll.filter((e) => e.n >= 1 && e.n <= max);
+        const drawn = uniq(inRangeEvents.map((e) => e.n));
+        const drawnSet = new Set(drawn);
+        const n = pickOne(max, drawnSet);
+        if (!n) {
+          updateUI();
+          return;
+        }
+
+        // 每次抽取都記錄（含時間）
+        eventsAll.push({ n, ts: Date.now() });
+        setEvents(eventsAll);
+
+        // 已開始抽取後，提示不再顯示
+        sessionStorage.setItem(SHOW_HINT_KEY, "0");
+
+        // 立刻同步球體顏色，避免你看到延遲或狀態不同步
+        const nextInRange = eventsAll.filter((e) => e.n >= 1 && e.n <= max);
+        const nextDrawn = uniq(nextInRange.map((e) => e.n));
+        const nextLast = nextInRange.at(-1)?.n ?? null;
+        syncBoard(max, new Set(nextDrawn), nextLast);
+
+        // 舊欄位也同步更新（可留可不留；留著不會影響）
+        const history = getHistory();
+        history.push(n);
+        setHistory(history);
+        setDrawn(uniq(drawn.concat([n])));
+        updateUI();
+      }
+
+      function onUndo() {
+        const max = getMax();
+        const eventsAll = getEvents();
+        const last = eventsAll.pop();
+        if (!last) return;
+        setEvents(eventsAll);
+
+        // 舊欄位同步（把最後一次抽取的 n 從 history 移除一次）
+        const history = getHistory();
+        const idxH = history.lastIndexOf(last.n);
+        if (idxH >= 0) history.splice(idxH, 1);
+        setHistory(history);
+
+        const inRangeEvents = eventsAll.filter((e) => e.n >= 1 && e.n <= max);
+        const drawn = uniq(inRangeEvents.map((e) => e.n));
+        setDrawn(drawn);
+        const lastN = inRangeEvents.at(-1)?.n ?? null;
+        syncBoard(max, new Set(drawn), lastN);
+        updateUI();
+      }
+
+      function onNewRound() {
+        // 依你的需求：「新回合」= 清空所有數據（包含範圍設定）
+        localStorage.removeItem(STORAGE_KEYS.max);
+        localStorage.removeItem(STORAGE_KEYS.drawn);
+        localStorage.removeItem(STORAGE_KEYS.history);
+        localStorage.removeItem(STORAGE_KEYS.events);
+        localStorage.removeItem("bingo:viewMode");
+
+        // 新回合後要顯示提示文字
+        sessionStorage.setItem(SHOW_HINT_KEY, "1");
+
+        // 強制同步左側球體：確保所有球都清空（避免只清資料但 class 沒刷新）
+        const max = getMax();
+        syncBoard(max, new Set(), null);
+
+        updateUI();
+      }
+
+      async function onCopy() {
+        const max = getMax();
+        const mode = localStorage.getItem("bingo:viewMode") ?? "sorted";
+        let text = "";
+        if (mode === "log") {
+          const events = getEvents();
+          text = events
+            .map((e, i) => {
+              const suffix = e.n > max ? " (out of range)" : "";
+              return `#${i + 1} ${e.n} (${new Date(e.ts).toLocaleTimeString()})${suffix}`;
+            })
+            .join("\n");
+        } else {
+          const drawn = uniq(getDrawn()).filter((n) => n >= 1 && n <= max).sort((a, b) => a - b);
+          text = drawn.join(", ");
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          const btn = document.getElementById("btnCopy");
+          const old = btn.textContent;
+          btn.textContent = "已複製";
+          setTimeout(() => (btn.textContent = old), 900);
+        } catch {
+          prompt("複製失敗，請手動複製：", text);
+        }
+      }
+
+      function pad2(x) {
+        return String(x).padStart(2, "0");
+      }
+
+      function formatTime(ts) {
+        try {
+          return new Date(ts).toLocaleTimeString();
+        } catch {
+          return "";
+        }
+      }
+
+      async function onSaveScreen() {
+        const btn = document.getElementById("btnSaveScreen");
+        const old = btn.textContent;
+        btn.disabled = true;
+        try {
+
+        const pad = (x) => String(x).padStart(2, "0");
+        const now = new Date();
+        const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(
+          now.getMinutes()
+        )}${pad(now.getSeconds())}`;
+
+        const totalW = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, window.innerWidth);
+        const totalH = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
+        const dpr = window.devicePixelRatio || 1;
+        const maxCanvasDim = 12000;
+
+        // 先算縮放，避免 canvas 尺寸過大直接失敗
+        const scale = Math.min(dpr, maxCanvasDim / totalW, maxCanvasDim / totalH, 1);
+        const renderScale = scale <= 0 ? 1 : scale;
+
+        // 收集樣式（inline 到 foreignObject）
+        const styleHtml = Array.from(document.querySelectorAll("style"))
+          .map((s) => s.outerHTML)
+          .join("\n");
+
+        // clone body（避免外層 DOM 變動影響）
+        const pageClass = document.body.className || "";
+        const bodyClone = document.body.cloneNode(true);
+        bodyClone.querySelectorAll("script").forEach((s) => s.remove());
+        const bodyInner = bodyClone.innerHTML;
+
+        function renderSvgToImage(svg) {
+          const timeoutMs = 15000;
+          return new Promise((resolve, reject) => {
+            const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(svgBlob);
+            const img = new Image();
+            const timer = window.setTimeout(() => {
+              URL.revokeObjectURL(url);
+              reject(new Error("SVG foreignObject 渲染逾時"));
+            }, timeoutMs);
+            img.onload = () => {
+              window.clearTimeout(timer);
+              URL.revokeObjectURL(url);
+              resolve(img);
+            };
+            img.onerror = () => {
+              window.clearTimeout(timer);
+              URL.revokeObjectURL(url);
+              reject(new Error("SVG 轉圖片失敗"));
+            };
+            img.src = url;
+          });
+        }
+
+        function downloadBlob(blob, filename) {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 800);
+        }
+
+        const bodyTag = (w, h, tx, ty) => {
+          // body.pageRoot 這類 selector 需要 body tag
+          const transform = tx || ty ? `transform: translate(${tx || 0}px, ${ty || 0}px);` : "";
+          return `<body class="${pageClass}" style="margin:0;width:${w}px;height:${h}px;overflow:hidden;${transform}">${bodyInner}</body>`;
+        };
+
+        // 1) 嘗試全頁一次渲染
+        try {
+          const w = totalW;
+          const h = totalH;
+          const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+              <foreignObject x="0" y="0" width="${w}" height="${h}">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="width:${w}px;height:${h}px;overflow:hidden;margin:0;">
+                  ${styleHtml}
+                  ${bodyTag(w, h)}
+                </div>
+              </foreignObject>
+            </svg>
+          `.trim();
+
+          const img = await renderSvgToImage(svg);
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.ceil(w * renderScale);
+          canvas.height = Math.ceil(h * renderScale);
+          const ctx = canvas.getContext("2d");
+          if (!ctx) throw new Error("canvas 取得失敗");
+          ctx.imageSmoothingEnabled = true;
+          ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const pngBlob = await new Promise((res) => canvas.toBlob(res, "image/png", 1.0));
+          if (!pngBlob) throw new Error("PNG 轉換失敗");
+          downloadBlob(pngBlob, `bingo-${stamp}.png`);
+          btn.disabled = false;
+          return;
+        } catch {
+          // 忽略，改用分段拼接
+        }
+
+        // 2) fallback：分段（用 viewport 尺寸切片，避免全頁一次渲染失敗）
+        const segW = window.innerWidth;
+        const segH = window.innerHeight;
+        const cols = Math.ceil(totalW / segW);
+        const rows = Math.ceil(totalH / segH);
+
+        // 依你的需求：不顯示「轉檔中...」字樣
+
+        // 不把切片拼成超大 finalCanvas（避免卡死/失敗）
+        // 每一片直接下載一張 PNG，確保「按了就能成功存下來」。
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const x0 = c * segW;
+            const y0 = r * segH;
+            const w = Math.min(segW, totalW - x0);
+            const h = Math.min(segH, totalH - y0);
+
+            const svg = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+                <foreignObject x="0" y="0" width="${w}" height="${h}">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="width:${w}px;height:${h}px;overflow:hidden;margin:0;">
+                    ${styleHtml}
+                    ${bodyTag(totalW, totalH, -x0, -y0)}
+                  </div>
+                </foreignObject>
+              </svg>
+            `.trim();
+
+            const img = await renderSvgToImage(svg);
+            const tileCanvas = document.createElement("canvas");
+            tileCanvas.width = Math.ceil(w * renderScale);
+            tileCanvas.height = Math.ceil(h * renderScale);
+            const tileCtx = tileCanvas.getContext("2d");
+            if (!tileCtx) throw new Error("tile canvas 取得失敗");
+
+            tileCtx.imageSmoothingEnabled = true;
+            tileCtx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+            tileCtx.drawImage(img, 0, 0, w, h);
+
+            const pngBlob = await new Promise((res) => tileCanvas.toBlob(res, "image/png", 1.0));
+            if (!pngBlob) throw new Error("PNG 轉換失敗");
+
+            // 下載每片
+            downloadBlob(pngBlob, `bingo-${stamp}-r${r + 1}-c${c + 1}.png`);
+          }
+        }
+
+        btn.disabled = false;
+        } catch (e) {
+          btn.disabled = false;
+          alert("保存畫面失敗，請重新整理頁面後再按一次。");
+        }
+      }
+
+      document.getElementById("btnBingo").addEventListener("click", onBingo);
+      document.getElementById("btnUndo").addEventListener("click", onUndo);
+      document.getElementById("btnNewRound").addEventListener("click", onNewRound);
+      document.getElementById("btnCopy").addEventListener("click", onCopy);
+
+      function setViewMode(mode) {
+        localStorage.setItem("bingo:viewMode", mode);
+        const sortedBtn = document.getElementById("viewSorted");
+        const logBtn = document.getElementById("viewLog");
+        const pillGrid = document.getElementById("pillGrid");
+        const logList = document.getElementById("logList");
+        const isLog = mode === "log";
+        sortedBtn.setAttribute("aria-pressed", String(!isLog));
+        logBtn.setAttribute("aria-pressed", String(isLog));
+        pillGrid.classList.toggle("hidden", isLog);
+        logList.classList.toggle("hidden", !isLog);
+      }
+
+      document.getElementById("viewSorted").addEventListener("click", () => setViewMode("sorted"));
+      document.getElementById("viewLog").addEventListener("click", () => setViewMode("log"));
+
+      // 支援空白鍵抽號
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "Space" && !e.repeat) {
+          e.preventDefault();
+          const btn = document.getElementById("btnBingo");
+          if (!btn.disabled) onBingo();
+        }
+      });
+
+      // 若 admin 改了 max，回到此頁會自動更新
+      window.addEventListener("storage", updateUI);
+      setViewMode(localStorage.getItem("bingo:viewMode") ?? "sorted");
+      updateUI();
+    </script>
+  </body>
+</html>
