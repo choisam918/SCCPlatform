@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SCC流程圖</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="flowchart-body">
+    <div class="app app--flowchart" id="app">
+      <aside class="sidebar" aria-label="工具列">
+        <div class="sidebar__title">SCC流程圖</div>
+        <section class="panel">
+          <div class="panel__title">工具</div>
+          <div class="toolgroup" role="group" aria-label="工具選擇">
+            <button class="toolbtn" id="toolSelect" type="button" data-tool="select">
+              <span class="toolbtn__hint">V</span>
+            </button>
+            <button class="toolbtn" id="toolLine" type="button" data-tool="line">
+              <span class="toolbtn__hint">L</span>
+            </button>
+            <button class="toolbtn" id="edgeMode" type="button" title="切換新連線：直線／折線" aria-label="新連線路徑直線或折線">
+              <span class="toolbtn__hint" id="edgeModeLabel">直線</span>
+            </button>
+          </div>
+        </section>
+
+        <details class="more" open>
+          <summary class="more__summary">更多</summary>
+          <div class="more__body">
+            <section class="panel">
+              <div class="panel__title">形狀</div>
+              <div class="row">
+                <button class="btn" id="applyFlowToSelection" type="button">套用至選取節點</button>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__title">搜尋</div>
+              <div class="row row--stack">
+                <input id="searchNode" class="textin" type="text" placeholder="輸入文字…" />
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__title">匯出</div>
+              <div class="row">
+                <button class="btn" id="exportJson" type="button">JSON</button>
+                <button class="btn" id="exportPng" type="button">PNG</button>
+              </div>
+              <div class="row">
+                <button class="btn" id="exportSvg" type="button">SVG</button>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__title">導入</div>
+              <div class="row">
+                <button class="btn" id="importJsonBtn" type="button">JSON</button>
+                <input
+                  id="importJsonFile"
+                  class="sr-only"
+                  type="file"
+                  accept="application/json"
+                  title="選擇 JSON 檔案"
+                  aria-label="選擇要導入的 JSON 檔案"
+                />
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__title">PNG 設定</div>
+              <div class="row row--stack">
+                <label class="label">
+                  背景
+                  <select id="pngBg" class="select" title="PNG 背景" aria-label="PNG 背景">
+                    <option value="white" selected>白底</option>
+                    <option value="transparent">透明</option>
+                  </select>
+                </label>
+                <label class="label">
+                  倍率
+                  <select id="pngScale" class="select" title="PNG 倍率" aria-label="PNG 倍率">
+                    <option value="1">1x</option>
+                    <option value="2" selected>2x</option>
+                    <option value="4">4x</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__title">設定</div>
+              <div class="row">
+                <button class="btn btn--danger" id="clearAll" type="button">清除</button>
+              </div>
+            </section>
+          </div>
+        </details>
+
+
+      </aside>
+
+      <main class="stage" aria-label="畫圖區">
+        <div class="stage__chrome">
+          <div class="stage__toolbar" aria-label="圖層與縮放">
+          <div class="palette is-collapsed" aria-label="形狀面板">
+            <div class="palette__header">
+              <div class="palette__title">基本流程圖</div>
+              <button class="palette__toggle" id="paletteToggle" type="button" aria-expanded="false" title="收合/展開">
+                收合
+              </button>
+            </div>
+            <div class="palette__grid flow-presets" id="flowPresets" role="group" aria-label="流程圖形狀預設">
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="pill" data-tone="terminal" title="開始／結束">
+                起迄
+              </div>
+              <div class="flowbtn is-active" role="button" tabindex="0" draggable="true" data-shape="rect" data-tone="process" title="處理">
+                處理
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="diamond" data-tone="decision" title="判斷">
+                判斷
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="parallelogram" data-tone="io" title="輸入／輸出">
+                輸入/輸出
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="rect" data-tone="subprocess" title="子流程">
+                子流程
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="document" data-tone="process" title="文件">
+                文件
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="database" data-tone="process" title="資料庫">
+                資料庫
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="circle" data-tone="process" title="圓形">
+                圓形
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="manual-input" data-tone="process" title="手動輸入">
+                手動輸入
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="preparation" data-tone="process" title="準備">
+                準備
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="text" data-tone="process" title="文字">
+                文字
+              </div>
+              <div class="flowbtn" role="button" tabindex="0" draggable="true" data-shape="frame" data-tone="process" title="區塊框">
+                區塊框
+              </div>
+            </div>
+          </div>
+          <div class="stage__zoom" aria-label="縮放">
+            <button class="iconbtn" id="zoomOut" type="button" title="縮小">－</button>
+            <button class="iconbtn" id="zoomIn" type="button" title="放大">＋</button>
+          </div>
+          </div>
+        </div>
+
+        <div class="viewport viewport--flow-light" id="viewport" tabindex="0" aria-label="畫布視窗">
+          <canvas id="edgeCanvas"></canvas>
+          <div class="overlay" id="overlay">
+            <svg id="hitSvg" class="hits" aria-hidden="true"></svg>
+            <div id="nodesLayer" class="nodes" aria-label="節點層"></div>
+          </div>
+        </div>
+
+        <div class="minimap minimap--hidden" id="minimap" aria-label="小地圖">
+          <canvas class="minimap__canvas" id="minimapCanvas"></canvas>
+          <div class="minimap__tools">
+            <button class="iconbtn iconbtn--sm" id="minimapToggle" type="button" title="顯示/隱藏小地圖">小地圖</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
