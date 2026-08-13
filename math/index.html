@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="數學四則運算練習">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <title>小學數學四則運算練習</title>
+    <link rel="stylesheet" href="../mobile-stable.css">
+    <script src="../mobile-stable.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+                <header>
+            <h1>🎯 數學四則運算練習</h1>
+            <div class="progress-info">
+                <div class="progress-card">
+                    <div class="progress-label">得分</div>
+                    <div class="progress-value" id="score">0</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-label">連續正確</div>
+                    <div class="progress-value" id="streak">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div id="level-select" class="level-select fullscreen-select">
+            <div class="fullscreen-container">
+                <button id="admin-login-btn" class="btn-admin-overlay" type="button">
+                    <span class="admin-icon">⚙️</span>
+                    <span class="admin-text">後台管理</span>
+                </button>
+                <div class="fullscreen-header">
+                    <h2>🎯 數學四則運算練習</h2>
+                    <p class="subtitle">選擇您想要練習的數學類型</p>
+                </div>
+
+                <div class="practice-groups">
+                    <section class="practice-group">
+                        <h3 class="practice-group-title addition">加減法</h3>
+                        <div class="practice-group-cards">
+                            <div class="fullscreen-card addition" data-category="addition-subtraction-100">
+                                <div class="card-icon">➕➖</div>
+                                <h3>百位數加減</h3>
+                            </div>
+                            <div class="fullscreen-card addition" data-category="addition-subtraction-1000">
+                                <div class="card-icon">➕➖</div>
+                                <h3>千位數加減</h3>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="practice-group">
+                        <h3 class="practice-group-title multiply">乘除法</h3>
+                        <div class="practice-group-cards">
+                            <div class="fullscreen-card multiply" data-category="multiplication-division-ones">
+                                <div class="card-icon">✖️➗</div>
+                                <h3>個位數乘除</h3>
+                            </div>
+                            <div class="fullscreen-card multiply" data-category="multiplication-division-tens">
+                                <div class="card-icon">✖️➗</div>
+                                <h3>十位數乘除</h3>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="practice-group">
+                        <h3 class="practice-group-title mixed">四則運算</h3>
+                        <div class="practice-group-cards">
+                            <div class="fullscreen-card mixed" data-category="mixed-ones">
+                                <div class="card-icon">🎯</div>
+                                <h3>個位數四則</h3>
+                            </div>
+                            <div class="fullscreen-card mixed" data-category="mixed-tens">
+                                <div class="card-icon">🎯</div>
+                                <h3>十位數四則</h3>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-area" class="game-area hidden">
+            <div class="question-container">
+                <div class="question">
+                    <span id="num1">5</span>
+                    <span id="operator">+</span>
+                    <span id="num2">3</span>
+                    <span>=</span>
+                    <input type="number" id="answer" placeholder="?" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="submit-btn" class="btn btn-primary">提交答案</button>
+                <button id="skip-btn" class="btn btn-secondary">跳過</button>
+                <button id="back-btn" class="btn btn-secondary">返回選單</button>
+                <button id="back-to-mult-mode" class="btn btn-secondary hidden">返回到選擇要練習的乘數</button>
+            </div>
+
+            <div class="feedback hidden" id="feedback">
+                <div class="feedback-content">
+                    <span id="feedback-text"></span>
+                    <button id="next-btn" class="btn btn-primary">下一題</button>
+                </div>
+            </div>
+
+            <div class="timer">
+                <div class="timer-bar">
+                    <div id="timer-fill" class="timer-fill"></div>
+                </div>
+                <span id="time-left">60</span>秒
+                <button id="pause-btn" class="btn btn-secondary pause-btn">暫停</button>
+                <button id="resume-btn" class="btn btn-primary resume-btn">繼續</button>
+            </div>
+        </div>
+
+        <div id="level-complete" class="level-complete hidden">
+            <div class="complete-content">
+                <h2>🎉 練習完成！</h2>
+                <div class="stats">
+                    <p>正確答案: <span id="correct-count">0</span></p>
+                    <p>總題數: <span id="total-count">0</span></p>
+                    <p>準確率: <span id="accuracy">0%</span></p>
+                </div>
+                <div class="buttons">
+                    <button id="next-level-btn" class="btn btn-primary">繼續練習</button>
+                    <button id="retry-btn" class="btn btn-secondary">重新挑戰</button>
+                    <button id="menu-btn" class="btn btn-secondary">返回選單</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+    <script>
+        (function() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .pause-btn, .resume-btn {
+                    margin-left: 16px;
+                }
+                .resume-btn {
+                    display: none;
+                }
+            `;
+            document.head.appendChild(style);
+        })();
+    </script>
+    <script>
+    document.getElementById('admin-login-btn').onclick = function() {
+        window.location.href = 'admin.html';
+    };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>中英生字翻譯系統</title>
+    <link rel="stylesheet" href="../mobile-stable.css">
+    <script src="../mobile-stable.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>中英生字練習</h1>
+        </div>
+        
+        <div class="mode-selector" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
+            <button class="mode-btn" onclick="window.location.href='translate.html'">
+                📝 中英翻譯練習
+            </button>
+            <button class="mode-btn" onclick="window.location.href='listen.html'">
+                🎧 聽發音練習
+            </button>
+            <button class="admin-btn" onclick="showAdminLogin()">
+                🔐 管理者模式
+            </button>
+        </div>
+    </div>
+
+    <!-- 管理者登入模態框 -->
+    <div id="adminLoginModal" class="modal-overlay" onclick="if(event.target===this) closeAdminLogin()">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 24px; color: #764ba2; text-align: center; font-size: 1.5rem;">管理者登入</h2>
+            <input 
+                id="adminPasswordInput" 
+                type="password" 
+                placeholder="請輸入管理者密碼" 
+                class="answer-input"
+                style="margin-bottom: 16px;"
+                autocomplete="off"
+            >
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="checkAdminPassword()" class="btn btn-primary">登入</button>
+                <button onclick="closeAdminLogin()" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAdminLogin() {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.add('active');
+            document.getElementById('adminPasswordInput').value = '';
+            setTimeout(() => {
+                document.getElementById('adminPasswordInput').focus();
+            }, 100);
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').classList.remove('active');
+        }
+
+        function checkAdminPassword() {
+            const pwd = document.getElementById('adminPasswordInput').value;
+            if (pwd === 'admin@123') {
+                // 設置登入狀態，有效期為本次會話
+                sessionStorage.setItem('admin_logged_in', 'true');
+                sessionStorage.setItem('admin_login_time', Date.now().toString());
+                window.location.href = 'admin.html';
+            } else {
+                alert('密碼錯誤！');
+                document.getElementById('adminPasswordInput').value = '';
+            }
+        }
+
+        // 按下 Enter 也能送出
+        document.getElementById('adminPasswordInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAdminPassword();
+            }
+            if (e.key === 'Escape') {
+                closeAdminLogin();
+            }
+        });
+    </script>
+</body>
+</html>

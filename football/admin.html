@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>足球戰術系統 - 管理頁面</title>
+    <link rel="stylesheet" href="../mobile-stable.css">
+    <script src="../mobile-stable.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .admin-content {
+            padding: 30px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .admin-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #1e3c72;
+        }
+
+        .admin-section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .admin-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .admin-card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .admin-btn.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .admin-btn.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .admin-btn.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: #212529;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #1e3c72;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: #1e3c72;
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #1e3c72;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        /* 登入頁面樣式 */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            color: #1e3c72;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .login-box .form-group {
+            margin-bottom: 25px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .admin-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="login-container">
+        <button class="back-btn" onclick="goBack()">← 返回主頁</button>
+        <div class="login-box">
+            <h1>🔐 管理員登入</h1>
+            <div class="form-group">
+                <label for="adminPassword">管理員密碼</label>
+                <input type="password" id="adminPassword" placeholder="請輸入管理員密碼" onkeypress="handlePasswordKeyPress(event)">
+            </div>
+            <button class="login-btn" onclick="checkPassword()">登入</button>
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- 管理頁面內容 -->
+    <div id="adminPage" class="hidden">
+        <button class="back-btn" onclick="goBack()">← 返回主頁</button>
+        
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>⚽ 足球戰術系統管理</h1>
+                <p>系統管理與數據維護</p>
+            </div>
+            
+            <div class="admin-content">
+            <!-- 統計概覽 -->
+            <div class="admin-section">
+                <h2>📊 系統統計</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalFormations">0</div>
+                        <div class="stat-label">保存的陣型</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalNotes">0</div>
+                        <div class="stat-label">賽事筆記</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPlayers">30</div>
+                        <div class="stat-label">球員總數</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="lastBackup">-</div>
+                        <div class="stat-label">最後備份</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 數據管理 -->
+            <div class="admin-section">
+                <h2>🗄️ 數據管理</h2>
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3>陣型管理</h3>
+                        <p>管理保存的戰術陣型記錄</p>
+                        <button class="admin-btn" onclick="viewFormations()">查看陣型</button>
+                        <button class="admin-btn danger" onclick="clearAllFormations()">清空所有</button>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3>筆記管理</h3>
+                        <p>管理賽事筆記與記錄</p>
+                        <button class="admin-btn" onclick="viewNotes()">查看筆記</button>
+                        <button class="admin-btn danger" onclick="clearAllNotes()">清空所有</button>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3>數據備份</h3>
+                        <p>備份與還原陣型筆記</p>
+                        <button class="admin-btn success" onclick="backupData()">備份數據</button>
+                        <button class="admin-btn warning" onclick="restoreData()">還原數據</button>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3>系統備份</h3>
+                        <p>完整系統備份與還原</p>
+                        <button class="admin-btn success" onclick="backupSystem()">系統備份</button>
+                        <button class="admin-btn warning" onclick="restoreSystem()">系統還原</button>
+                        <button class="admin-btn" onclick="viewBackupHistory()">備份歷史</button>
+                        <button class="admin-btn" onclick="setupAutoBackup()">自動備份設定</button>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3>系統重置</h3>
+                        <p>重置系統到初始狀態</p>
+                        <button class="admin-btn danger" onclick="resetSystem()">重置系統</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系統設定 -->
+            <!-- 此區塊已移除 -->
+        </div>
+    </div>
+
+    <!-- 陣型列表模態框 -->
+    <div id="formationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('formationsModal')">&times;</span>
+            <h3>保存的陣型列表</h3>
+            <div id="formationsList"></div>
+        </div>
+    </div>
+
+    <!-- 筆記列表模態框 -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('notesModal')">&times;</span>
+            <h3>賽事筆記列表</h3>
+            <div id="notesList"></div>
+        </div>
+    </div>
+
+    <!-- 備份歷史模態框 -->
+    <div id="backupHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('backupHistoryModal')">&times;</span>
+            <h3>系統備份歷史</h3>
+            <div id="backupHistoryList"></div>
+        </div>
+    </div>
+
+    <script>
+        // 管理員密碼
+        const ADMIN_PASSWORD = 'admin@123';
+        
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查是否已經登入
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                showAdminPage();
+                checkBackupReminder(); // 檢查備份提醒
+            } else {
+                showLoginPage();
+            }
+        });
+
+        // 檢查備份提醒
+        function checkBackupReminder() {
+            const autoBackupEnabled = localStorage.getItem('autoBackupEnabled') === 'true';
+            if (!autoBackupEnabled) return;
+            
+            const nextReminder = localStorage.getItem('nextBackupReminder');
+            if (!nextReminder) return;
+            
+            const now = new Date();
+            const reminderTime = new Date(nextReminder);
+            
+            if (now >= reminderTime) {
+                // 顯示備份提醒
+                if (confirm('📅 備份提醒\n\n距離上次備份已經超過設定的時間，建議您現在進行數據備份。\n\n是否要現在進行系統備份？')) {
+                    backupSystem();
+                } else {
+                    // 延遲提醒到明天
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    localStorage.setItem('nextBackupReminder', tomorrow.toISOString());
+                }
+            }
+        }
+
+        // 顯示登入頁面
+        function showLoginPage() {
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+        }
+
+        // 顯示管理頁面
+        function showAdminPage() {
+            console.log('顯示管理頁面');
+            const loginPage = document.getElementById('loginPage');
+            const adminPage = document.getElementById('adminPage');
+            
+            console.log('登入頁面元素:', loginPage);
+            console.log('管理頁面元素:', adminPage);
+            
+            if (loginPage) {
+                loginPage.classList.add('hidden');
+                console.log('隱藏登入頁面');
+            }
+            if (adminPage) {
+                adminPage.classList.remove('hidden');
+                console.log('顯示管理頁面');
+            }
+            
+            updateStats();
+        }
+
+        // 檢查密碼
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showAdminPage();
+                errorMessage.classList.add('hidden');
+            } else {
+                errorMessage.textContent = '密碼錯誤，請重新輸入！';
+                errorMessage.classList.remove('hidden');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        // 處理密碼輸入框的 Enter 鍵
+        function handlePasswordKeyPress(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+
+        // 登出功能
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            showLoginPage();
+        }
+
+        // 更新統計數據
+        function updateStats() {
+            // 陣型數量
+            const formations = JSON.parse(localStorage.getItem('footballFormations') || '[]');
+            document.getElementById('totalFormations').textContent = formations.length;
+            
+            // 筆記數量
+            const notes = JSON.parse(localStorage.getItem('footballNotes') || '[]');
+            document.getElementById('totalNotes').textContent = notes.length;
+            
+            // 球員數量 (固定30人)
+            document.getElementById('totalPlayers').textContent = '30';
+            
+            // 最後備份時間
+            const lastBackup = localStorage.getItem('lastBackupTime');
+            const lastSystemBackup = localStorage.getItem('lastSystemBackupTime');
+            const backupTime = lastSystemBackup || lastBackup;
+            document.getElementById('lastBackup').textContent = backupTime ? new Date(backupTime).toLocaleDateString() : '無';
+        }
+
+        // 返回主頁
+        function goBack() {
+            // 使用 Electron IPC 返回主頁
+            if (window.electronAPI) {
+                window.electronAPI.navigateToMain();
+            } else {
+                // 備用方案：直接導航
+                window.location.href = 'index.html';
+            }
+        }
+
+        // 查看陣型
+        function viewFormations() {
+            const formations = JSON.parse(localStorage.getItem('footballFormations') || '[]');
+            const modal = document.getElementById('formationsModal');
+            const list = document.getElementById('formationsList');
+            
+            if (formations.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">暫無保存的陣型</p>';
+            } else {
+                let html = '<table class="data-table">';
+                html += '<tr><th>陣型名稱</th><th>主隊</th><th>客隊</th><th>比分</th><th>保存時間</th><th>操作</th></tr>';
+                
+                formations.forEach((formation, index) => {
+                    const date = new Date(formation.timestamp).toLocaleString();
+                    html += `<tr>
+                        <td>${formation.name}</td>
+                        <td>${formation.homeTeamName || '主隊'}</td>
+                        <td>${formation.awayTeamName || '客隊'}</td>
+                        <td>${formation.homeScore || 0} : ${formation.awayScore || 0}</td>
+                        <td>${date}</td>
+                        <td>
+                            <button class="admin-btn" onclick="deleteFormation(${index})">刪除</button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</table>';
+                list.innerHTML = html;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // 查看筆記
+        function viewNotes() {
+            const notes = JSON.parse(localStorage.getItem('footballNotes') || '[]');
+            const modal = document.getElementById('notesModal');
+            const list = document.getElementById('notesList');
+            
+            if (notes.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">暫無賽事筆記</p>';
+            } else {
+                let html = '<table class="data-table">';
+                html += '<tr><th>筆記內容</th><th>時間</th><th>操作</th></tr>';
+                
+                notes.forEach((note, index) => {
+                    const date = new Date(note.timestamp).toLocaleString();
+                    html += `<tr>
+                        <td>${note.content.substring(0, 50)}${note.content.length > 50 ? '...' : ''}</td>
+                        <td>${date}</td>
+                        <td>
+                            <button class="admin-btn" onclick="deleteNote(${index})">刪除</button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</table>';
+                list.innerHTML = html;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // 清空所有陣型
+        function clearAllFormations() {
+            if (confirm('確定要清空所有保存的陣型嗎？此操作無法復原！')) {
+                localStorage.removeItem('footballFormations');
+                updateStats();
+                alert('所有陣型已清空！');
+            }
+        }
+
+        // 清空所有筆記
+        function clearAllNotes() {
+            if (confirm('確定要清空所有賽事筆記嗎？此操作無法復原！')) {
+                localStorage.removeItem('footballNotes');
+                updateStats();
+                alert('所有筆記已清空！');
+            }
+        }
+
+        // 備份數據
+        function backupData() {
+            const backup = {
+                formations: JSON.parse(localStorage.getItem('footballFormations') || '[]'),
+                notes: JSON.parse(localStorage.getItem('footballNotes') || '[]'),
+                timestamp: new Date().toISOString()
+            };
+            
+            // 檢測設備類型
+            const isMobile = /Android|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isHuawei = /Huawei|HONOR/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 移動設備：使用多種保存方式
+                showMobileBackupOptions(backup, '數據備份');
+            } else {
+                // 桌面設備：正常下載
+                const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `football_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                localStorage.setItem('lastBackupTime', new Date().toISOString());
+                updateStats();
+                
+                alert('數據備份完成！\n\n📁 文件已保存到您的下載資料夾\n📄 文件名：football_backup_' + new Date().toISOString().split('T')[0] + '.json\n\n💡 建議：\n• 將備份文件保存到安全位置\n• 定期進行備份\n• 可以將文件複製到雲端硬碟');
+            }
+        }
+
+        // 還原數據
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const backup = JSON.parse(e.target.result);
+                            if (backup.formations) {
+                                localStorage.setItem('footballFormations', JSON.stringify(backup.formations));
+                            }
+                            if (backup.notes) {
+                                localStorage.setItem('footballNotes', JSON.stringify(backup.notes));
+                            }
+                            updateStats();
+                            alert('數據還原成功！');
+                        } catch (error) {
+                            alert('還原失敗：檔案格式錯誤！');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        // 系統備份
+        function backupSystem() {
+            // 收集所有系統數據
+            const systemBackup = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                description: '足球戰術系統完整備份',
+                
+                // 核心數據
+                formations: JSON.parse(localStorage.getItem('footballFormations') || '[]'),
+                notes: JSON.parse(localStorage.getItem('footballNotes') || '[]'),
+                
+                // 系統設定
+                systemSettings: {
+                    lastBackupTime: localStorage.getItem('lastBackupTime'),
+                    adminLoginTime: sessionStorage.getItem('adminLoggedIn'),
+                    // 可以添加更多系統設定
+                },
+                
+                // 統計信息
+                statistics: {
+                    totalFormations: JSON.parse(localStorage.getItem('footballFormations') || '[]').length,
+                    totalNotes: JSON.parse(localStorage.getItem('footballNotes') || '[]').length,
+                    totalPlayers: 30,
+                    backupCreatedAt: new Date().toISOString()
+                },
+                
+                // 系統信息
+                systemInfo: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    cookieEnabled: navigator.cookieEnabled,
+                    onLine: navigator.onLine
+                }
+            };
+            
+            // 檢測設備類型
+            const isMobile = /Android|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isHuawei = /Huawei|HONOR/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 移動設備：使用多種保存方式
+                showMobileBackupOptions(systemBackup, '系統備份');
+            } else {
+                // 桌面設備：正常下載
+                const blob = new Blob([JSON.stringify(systemBackup, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `football_system_backup_${new Date().toISOString().split('T')[0]}_${new Date().toISOString().split('T')[1].split('.')[0].replace(/:/g, '-')}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // 更新備份時間
+                localStorage.setItem('lastBackupTime', new Date().toISOString());
+                localStorage.setItem('lastSystemBackupTime', new Date().toISOString());
+                updateStats();
+                
+                // 顯示詳細的保存說明
+                const fileName = `football_system_backup_${new Date().toISOString().split('T')[0]}_${new Date().toISOString().split('T')[1].split('.')[0].replace(/:/g, '-')}.json`;
+                alert('系統備份完成！\n\n📁 文件已保存到您的下載資料夾\n📄 文件名：' + fileName + '\n\n📋 備份內容包括：\n• 所有陣型數據\n• 所有賽事筆記\n• 系統設定\n• 統計信息\n• 系統環境信息\n\n💡 建議：\n• 將備份文件保存到安全位置\n• 定期進行系統備份\n• 可以將文件複製到雲端硬碟\n• 建議每週至少備份一次');
+            }
+        }
+
+        // 系統還原
+        function restoreSystem() {
+            if (confirm('系統還原將覆蓋所有現有數據，確定要繼續嗎？')) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const systemBackup = JSON.parse(e.target.result);
+                                
+                                // 驗證備份文件格式
+                                if (!systemBackup.version || !systemBackup.formations || !systemBackup.notes) {
+                                    alert('還原失敗：不是有效的系統備份文件！');
+                                    return;
+                                }
+                                
+                                // 還原核心數據
+                                if (systemBackup.formations) {
+                                    localStorage.setItem('footballFormations', JSON.stringify(systemBackup.formations));
+                                }
+                                if (systemBackup.notes) {
+                                    localStorage.setItem('footballNotes', JSON.stringify(systemBackup.notes));
+                                }
+                                
+                                // 還原系統設定
+                                if (systemBackup.systemSettings) {
+                                    if (systemBackup.systemSettings.lastBackupTime) {
+                                        localStorage.setItem('lastBackupTime', systemBackup.systemSettings.lastBackupTime);
+                                    }
+                                }
+                                
+                                // 更新統計
+                                updateStats();
+                                
+                                // 顯示還原信息
+                                let restoreInfo = '系統還原成功！\n\n';
+                                restoreInfo += `備份版本：${systemBackup.version}\n`;
+                                restoreInfo += `備份時間：${new Date(systemBackup.timestamp).toLocaleString()}\n`;
+                                restoreInfo += `陣型數量：${systemBackup.formations.length}\n`;
+                                restoreInfo += `筆記數量：${systemBackup.notes.length}\n`;
+                                
+                                alert(restoreInfo);
+                                
+                            } catch (error) {
+                                console.error('還原錯誤:', error);
+                                alert('還原失敗：檔案格式錯誤或損壞！');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            }
+        }
+
+        // 重置系統
+        function resetSystem() {
+            if (confirm('確定要重置整個系統嗎？所有數據將被清空，此操作無法復原！')) {
+                if (confirm('最後確認：真的要重置系統嗎？')) {
+                    localStorage.clear();
+                    updateStats();
+                    alert('系統已重置！');
+                    // 重置後自動登出並回到主畫面
+                    sessionStorage.removeItem('adminLoggedIn');
+                    showLoginPage();
+                }
+            }
+        }
+
+        // 刪除陣型
+        function deleteFormation(index) {
+            if (confirm('確定要刪除這個陣型嗎？')) {
+                const formations = JSON.parse(localStorage.getItem('footballFormations') || '[]');
+                formations.splice(index, 1);
+                localStorage.setItem('footballFormations', JSON.stringify(formations));
+                viewFormations(); // 重新載入列表
+                updateStats();
+            }
+        }
+
+        // 刪除筆記
+        function deleteNote(index) {
+            if (confirm('確定要刪除這個筆記嗎？')) {
+                const notes = JSON.parse(localStorage.getItem('footballNotes') || '[]');
+                notes.splice(index, 1);
+                localStorage.setItem('footballNotes', JSON.stringify(notes));
+                viewNotes(); // 重新載入列表
+                updateStats();
+            }
+        }
+
+        // 關閉模態框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 查看備份歷史
+        function viewBackupHistory() {
+            const modal = document.getElementById('backupHistoryModal');
+            const list = document.getElementById('backupHistoryList');
+            
+            const lastBackup = localStorage.getItem('lastBackupTime');
+            const lastSystemBackup = localStorage.getItem('lastSystemBackupTime');
+            
+            let html = '<div style="margin-bottom: 20px;">';
+            html += '<h4 style="color: #1e3c72; margin-bottom: 10px;">備份記錄</h4>';
+            
+            if (lastSystemBackup) {
+                const systemBackupDate = new Date(lastSystemBackup);
+                html += `<div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong>🔄 系統備份</strong><br>
+                    時間：${systemBackupDate.toLocaleString()}<br>
+                    類型：完整系統備份
+                </div>`;
+            }
+            
+            if (lastBackup) {
+                const backupDate = new Date(lastBackup);
+                html += `<div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong>📊 數據備份</strong><br>
+                    時間：${backupDate.toLocaleString()}<br>
+                    類型：陣型與筆記備份
+                </div>`;
+            }
+            
+            if (!lastBackup && !lastSystemBackup) {
+                html += '<div style="text-align: center; color: #6c757d; padding: 20px;">暫無備份記錄</div>';
+            }
+            
+            html += '</div>';
+            
+            // 添加備份統計
+            const formations = JSON.parse(localStorage.getItem('footballFormations') || '[]');
+            const notes = JSON.parse(localStorage.getItem('footballNotes') || '[]');
+            
+            html += '<div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">';
+            html += '<h4 style="color: #1e3c72; margin-bottom: 10px;">當前數據統計</h4>';
+            html += `<p>陣型數量：${formations.length}</p>`;
+            html += `<p>筆記數量：${notes.length}</p>`;
+            html += `<p>球員總數：30</p>`;
+            html += '</div>';
+            
+            list.innerHTML = html;
+            modal.style.display = 'block';
+        }
+
+        // 自動備份設定
+        function setupAutoBackup() {
+            const autoBackupEnabled = localStorage.getItem('autoBackupEnabled') === 'true';
+            const autoBackupInterval = localStorage.getItem('autoBackupInterval') || '7'; // 預設7天
+            
+            let html = '<div style="margin-bottom: 20px;">';
+            html += '<h4 style="color: #1e3c72; margin-bottom: 15px;">自動備份設定</h4>';
+            
+            html += '<div style="margin-bottom: 15px;">';
+            html += '<label style="display: flex; align-items: center; margin-bottom: 10px;">';
+            html += `<input type="checkbox" id="autoBackupCheckbox" ${autoBackupEnabled ? 'checked' : ''} style="margin-right: 10px;">`;
+            html += '啟用自動備份提醒';
+            html += '</label>';
+            html += '</div>';
+            
+            html += '<div style="margin-bottom: 15px;">';
+            html += '<label style="display: block; margin-bottom: 5px;">備份提醒間隔：</label>';
+            html += '<select id="backupInterval" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">';
+            html += `<option value="1" ${autoBackupInterval === '1' ? 'selected' : ''}>每天</option>`;
+            html += `<option value="3" ${autoBackupInterval === '3' ? 'selected' : ''}>每3天</option>`;
+            html += `<option value="7" ${autoBackupInterval === '7' ? 'selected' : ''}>每週</option>`;
+            html += `<option value="14" ${autoBackupInterval === '14' ? 'selected' : ''}>每2週</option>`;
+            html += `<option value="30" ${autoBackupInterval === '30' ? 'selected' : ''}>每月</option>`;
+            html += '</select>';
+            html += '</div>';
+            
+            html += '<div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">';
+            html += '<strong>💡 自動備份說明：</strong><br>';
+            html += '• 系統會在指定間隔後提醒您進行備份<br>';
+            html += '• 備份文件會自動下載到您的下載資料夾<br>';
+            html += '• 建議定期備份以保護重要數據<br>';
+            html += '• 可以手動關閉自動備份功能';
+            html += '</div>';
+            
+            html += '<div style="text-align: center;">';
+            html += '<button class="admin-btn success" onclick="saveAutoBackupSettings()">保存設定</button>';
+            html += '<button class="admin-btn" onclick="closeModal(\'autoBackupModal\')" style="margin-left: 10px;">取消</button>';
+            html += '</div>';
+            
+            // 創建或更新模態框
+            let modal = document.getElementById('autoBackupModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'autoBackupModal';
+                modal.className = 'modal';
+                modal.style.cssText = `
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0,0,0,0.5);
+                `;
+                
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+                modalContent.innerHTML = html;
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+            } else {
+                modal.querySelector('.modal-content').innerHTML = html;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // 保存自動備份設定
+        function saveAutoBackupSettings() {
+            const enabled = document.getElementById('autoBackupCheckbox').checked;
+            const interval = document.getElementById('backupInterval').value;
+            
+            localStorage.setItem('autoBackupEnabled', enabled);
+            localStorage.setItem('autoBackupInterval', interval);
+            
+            if (enabled) {
+                // 設置下次提醒時間
+                const nextReminder = new Date();
+                nextReminder.setDate(nextReminder.getDate() + parseInt(interval));
+                localStorage.setItem('nextBackupReminder', nextReminder.toISOString());
+            } else {
+                localStorage.removeItem('nextBackupReminder');
+            }
+            
+            closeModal('autoBackupModal');
+            alert('自動備份設定已保存！');
+        }
+
+        // 顯示移動設備備份選項
+        function showMobileBackupOptions(backupData, backupType) {
+            // 移除已存在的模態框
+            const existingModal = document.getElementById('mobileBackupModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // 創建模態框
+            const modal = document.createElement('div');
+            modal.id = 'mobileBackupModal';
+            modal.className = 'modal';
+            modal.style.cssText = `
+                display: block;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0,0,0,0.5);
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background-color: white;
+                margin: 5vh auto;
+                padding: 0;
+                border-radius: 15px;
+                width: 95vw;
+                max-width: 420px;
+                max-height: 90vh;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            `;
+            
+            // 標題
+            const title = document.createElement('h3');
+            title.textContent = '選擇保存方式';
+            title.style.cssText = `
+                margin: 0;
+                padding: 18px 18px 12px 18px;
+                color: #1e3c72;
+                text-align: center;
+                font-size: 1.3rem;
+                background: white;
+                position: sticky;
+                top: 0;
+                z-index: 2;
+            `;
+            // 新增明顯提示
+            const shareTip = document.createElement('div');
+            shareTip.textContent = '建議使用「分享」功能將備份導出到郵件、雲端、微信等支援的 App。';
+            shareTip.style.cssText = `
+                color: #155724;
+                background: #d4edda;
+                border-left: 4px solid #28a745;
+                padding: 10px 18px;
+                margin: 0 0 8px 0;
+                font-size: 1rem;
+                text-align: center;
+            `;
+            
+            // 保存選項容器
+            const optionsContainer = document.createElement('div');
+            optionsContainer.style.cssText = `
+                flex: 1 1 auto;
+                overflow-y: auto;
+                padding: 0 18px 0 18px;
+                margin-bottom: 0;
+                min-height: 0;
+            `;
+            
+            // 創建備份文件
+            const fileName = backupType === '系統備份' ? 
+                `football_system_backup_${new Date().toISOString().split('T')[0]}_${new Date().toISOString().split('T')[1].split('.')[0].replace(/:/g, '-')}.json` :
+                `football_backup_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], {type: 'application/json'});
+            
+            // 新增可手動複製的備份內容區塊
+            const backupTextArea = document.createElement('textarea');
+            backupTextArea.value = JSON.stringify(backupData, null, 2);
+            backupTextArea.readOnly = true;
+            backupTextArea.style.width = '100%';
+            backupTextArea.style.height = '180px';
+            backupTextArea.style.margin = '12px 0';
+            backupTextArea.style.fontSize = '0.95rem';
+            backupTextArea.style.fontFamily = 'monospace';
+            backupTextArea.style.background = '#f8f9fa';
+            backupTextArea.style.border = '1.5px solid #ffc107';
+            backupTextArea.style.borderRadius = '8px';
+            backupTextArea.style.padding = '10px';
+            backupTextArea.style.overflowY = 'auto';
+            backupTextArea.title = '長按可全選並複製';
+            // 插入到選項最上方
+            optionsContainer.insertBefore(backupTextArea, optionsContainer.firstChild);
+            
+            // 選項1: 複製到剪貼簿
+            const clipboardOption = createMobileBackupOption(
+                '📋 複製到剪貼簿',
+                '複製備份數據到剪貼簿，可貼到筆記應用',
+                () => copyBackupToClipboard(backupData)
+            );
+            
+            // 選項2: 分享到檔案應用
+            const shareOption = createMobileBackupOption(
+                '📁 分享到檔案應用',
+                '將備份分享到檔案管理器、雲端硬碟或其他應用',
+                () => shareBackupToFileApp(backupData, blob, fileName)
+            );
+            
+            // 選項3: 使用瀏覽器下載
+            const downloadOption = createMobileBackupOption(
+                '⬇️ 瀏覽器下載',
+                '嘗試使用瀏覽器下載功能',
+                () => tryMobileDownload(blob, fileName)
+            );
+            
+            // 選項4: 保存到華為雲端硬碟
+            const huaweiCloudOption = createMobileBackupOption(
+                '☁️ 保存到華為雲端硬碟',
+                '將備份保存到華為雲端硬碟（需要安裝華為雲端硬碟應用）',
+                () => saveToHuaweiCloud(backupData, fileName)
+            );
+            
+            // 取消按鈕
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = '取消';
+            cancelBtn.style.cssText = `
+                background: #6c757d;
+                color: white;
+                border: none;
+                padding: 16px 0;
+                border-radius: 0 0 15px 15px;
+                cursor: pointer;
+                font-size: 1.1rem;
+                width: 100%;
+                margin: 0;
+                border-top: 1px solid #eee;
+                position: sticky;
+                bottom: 0;
+                left: 0;
+                z-index: 2;
+            `;
+            
+            cancelBtn.addEventListener('click', () => {
+                modal.remove();
+            });
+            
+            // 組裝模態框
+            optionsContainer.appendChild(shareOption);
+            optionsContainer.appendChild(clipboardOption);
+            // optionsContainer.appendChild(downloadOption); // 已移除
+            // optionsContainer.appendChild(huaweiCloudOption); // 已移除
+            
+            modalContent.appendChild(title);
+            modalContent.appendChild(shareTip);
+            modalContent.appendChild(optionsContainer);
+            modalContent.appendChild(cancelBtn);
+            modal.appendChild(modalContent);
+            
+            // 點擊背景關閉
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+            
+            // 添加到頁面
+            document.body.appendChild(modal);
+        }
+
+        // 創建移動設備備份選項
+        function createMobileBackupOption(title, description, onClick) {
+            const option = document.createElement('div');
+            option.style.cssText = `
+                padding: 15px;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                background: #f8f9fa;
+                margin-bottom: 10px;
+            `;
+            
+            option.innerHTML = `
+                <div style="font-weight: bold; color: #1e3c72; margin-bottom: 5px;">
+                    ${title}
+                </div>
+                <div style="font-size: 0.9rem; color: #6c757d;">
+                    ${description}
+                </div>
+            `;
+            
+            // 點擊事件
+            option.addEventListener('click', () => {
+                onClick();
+                document.getElementById('mobileBackupModal').remove();
+            });
+            
+            // 懸停效果
+            option.addEventListener('mouseenter', () => {
+                option.style.borderColor = '#1e3c72';
+                option.style.background = '#e3f2fd';
+            });
+            
+            option.addEventListener('mouseleave', () => {
+                option.style.borderColor = '#e9ecef';
+                option.style.background = '#f8f9fa';
+            });
+            
+            return option;
+        }
+
+        // 分享備份到檔案應用
+        function shareBackupToFileApp(backupData, blob, fileName) {
+            if (navigator.share) {
+                const backupFile = new File([blob], fileName, {type: 'application/json'});
+                navigator.share({
+                    title: '足球戰術系統備份',
+                    text: '足球戰術系統數據備份文件',
+                    files: [backupFile]
+                }).then(() => {
+                    localStorage.setItem('lastBackupTime', new Date().toISOString());
+                    updateStats();
+                    alert('備份分享成功！請選擇保存位置。');
+                }).catch(err => {
+                    console.log('分享失敗:', err);
+                    alert('本設備不支援分享功能，請改用下載或複製等其他保存方式。');
+                });
+            } else {
+                alert('本設備不支援分享功能，請改用下載或複製等其他保存方式。');
+            }
+        }
+
+        // 複製備份到剪貼簿
+        function copyBackupToClipboard(backupData) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(JSON.stringify(backupData, null, 2)).then(() => {
+                    localStorage.setItem('lastBackupTime', new Date().toISOString());
+                    updateStats();
+                    alert('✅ 備份數據已複製到剪貼簿！\n\n📝 手動保存步驟：\n1. 打開記事本或檔案管理器\n2. 建立新檔案\n3. 貼上備份內容\n4. 儲存為 .json 檔案\n5. 建議檔名：football_backup_日期.json\n\n💡 提示：還原時選擇這個 .json 檔案即可');
+                }).catch(err => {
+                    console.error('複製失敗:', err);
+                    alert('❌ 複製失敗，請手動複製以下數據：\n\n' + JSON.stringify(backupData, null, 2));
+                });
+            } else {
+                alert('❌ 您的設備不支援剪貼簿功能，請使用其他保存方式。');
+            }
+        }
+
+        // 嘗試移動設備下載
+        function tryMobileDownload(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            localStorage.setItem('lastBackupTime', new Date().toISOString());
+            updateStats();
+            alert('已嘗試下載備份文件，請檢查您的下載資料夾。');
+        }
+
+        // 保存到華為雲端硬碟功能
+        function saveToHuaweiCloud(backupData, fileName) {
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], {type: 'application/json'});
+            
+            if (navigator.share) {
+                const backupFile = new File([blob], fileName, {type: 'application/json'});
+                navigator.share({
+                    title: '足球戰術系統備份',
+                    text: '請選擇保存到華為雲端硬碟',
+                    files: [backupFile]
+                }).then(() => {
+                    localStorage.setItem('lastBackupTime', new Date().toISOString());
+                    updateStats();
+                    alert('備份文件已準備好！請在分享選項中選擇「華為雲端硬碟」進行保存。');
+                }).catch(err => {
+                    // 備用方案：下載文件
+                    tryMobileDownload(blob, fileName);
+                });
+            }
+        }
+
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

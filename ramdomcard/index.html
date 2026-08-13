@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="隨機卡">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <!-- 微信瀏覽器優化 -->
+    <meta name="x5-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="x5-page-mode" content="app">
+    <title>隨機卡</title>
+    <link rel="stylesheet" href="../mobile-stable.css">
+    <script src="../mobile-stable.js" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <a href="admin.html" class="admin-btn">管理者登入</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎴 隨機卡</h1>
+            <div class="date-display" id="date-display">載入中...</div>
+        </div>
+
+        <!-- 卡片容器 -->
+        <div class="cards-wrapper" id="cards-wrapper">
+            <!-- 上一頁按鈕 -->
+            <button class="page-nav-btn page-nav-prev" id="prev-btn" onclick="switchPage(-1)" style="display: none;">
+                <span>‹</span>
+            </button>
+            
+            <!-- 卡片容器 -->
+            <div class="cards-container" id="cards-container">
+            <div class="card" id="card-0">
+                <!-- 卡片背面 -->
+                <div class="card-face card-back">
+                    <div class="card-back-content">
+                        <div class="card-back-icon">🎴</div>
+                        <div class="card-back-text">等待抽卡</div>
+                    </div>
+                </div>
+                <!-- 卡片正面 -->
+                <div class="card-face card-front">
+                    <div class="card-front-content">
+                        <div class="card-category">鼓勵</div>
+                        <div class="card-icon">✨</div>
+                        <div class="card-text">準備好抽卡了嗎？</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="card-1">
+                <!-- 卡片背面 -->
+                <div class="card-face card-back">
+                    <div class="card-back-content">
+                        <div class="card-back-icon">🎴</div>
+                        <div class="card-back-text">等待抽卡</div>
+                    </div>
+                </div>
+                <!-- 卡片正面 -->
+                <div class="card-face card-front">
+                    <div class="card-front-content">
+                        <div class="card-category">鼓勵</div>
+                        <div class="card-icon">✨</div>
+                        <div class="card-text">準備好抽卡了嗎？</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="card-2">
+                <!-- 卡片背面 -->
+                <div class="card-face card-back">
+                    <div class="card-back-content">
+                        <div class="card-back-icon">🎴</div>
+                        <div class="card-back-text">等待抽卡</div>
+                    </div>
+                </div>
+                <!-- 卡片正面 -->
+                <div class="card-face card-front">
+                    <div class="card-front-content">
+                        <div class="card-category">鼓勵</div>
+                        <div class="card-icon">✨</div>
+                        <div class="card-text">準備好抽卡了嗎？</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 第二行卡片（用於顯示第二次抽卡） -->
+            <div class="card" id="card-3" style="display: none;">
+                <!-- 卡片背面 -->
+                <div class="card-face card-back">
+                    <div class="card-back-content">
+                        <div class="card-back-icon">🎴</div>
+                        <div class="card-back-text">等待抽卡</div>
+                    </div>
+                </div>
+                <!-- 卡片正面 -->
+                <div class="card-face card-front">
+                    <div class="card-front-content">
+                        <div class="card-category">鼓勵</div>
+                        <div class="card-icon">✨</div>
+                        <div class="card-text">準備好抽卡了嗎？</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="card-4" style="display: none;">
+                <!-- 卡片背面 -->
+                <div class="card-face card-back">
+                    <div class="card-back-content">
+                        <div class="card-back-icon">🎴</div>
+                        <div class="card-back-text">等待抽卡</div>
+                    </div>
+                </div>
+                <!-- 卡片正面 -->
+                <div class="card-face card-front">
+                    <div class="card-front-content">
+                        <div class="card-category">鼓勵</div>
+                        <div class="card-icon">✨</div>
+                        <div class="card-text">準備好抽卡了嗎？</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="card-5" style="display: none;">
+                <!-- 卡片背面 -->
+                <div class="card-face card-back">
+                    <div class="card-back-content">
+                        <div class="card-back-icon">🎴</div>
+                        <div class="card-back-text">等待抽卡</div>
+                    </div>
+                </div>
+                <!-- 卡片正面 -->
+                <div class="card-face card-front">
+                    <div class="card-front-content">
+                        <div class="card-category">鼓勵</div>
+                        <div class="card-icon">✨</div>
+                        <div class="card-text">準備好抽卡了嗎？</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 下一頁按鈕 -->
+            <button class="page-nav-btn page-nav-next" id="next-btn" onclick="switchPage(1)" style="display: none;">
+                <span>›</span>
+            </button>
+        </div>
+        
+        <!-- 頁面指示器 -->
+        <div class="page-indicator" id="page-indicator" style="display: none;">
+            <span class="page-dot active" data-page="0"></span>
+            <span class="page-dot" data-page="1"></span>
+        </div>
+
+        <!-- 狀態訊息 -->
+        <div class="status-message" id="status-message">
+            點擊下方按鈕抽三張勵志卡片
+        </div>
+
+        <!-- 抽卡按鈕 -->
+        <button class="btn" id="draw-btn" onclick="drawCard()">
+            抽三張卡片
+        </button>
+
+    </div>
+
+    <!-- 設定面板 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>⚙️ 設定</h2>
+                <button class="close-btn" onclick="toggleSettings()">×</button>
+            </div>
+            
+            <div class="settings-body">
+                <p style="text-align: center; color: var(--text-secondary); padding: 2rem 1rem;">
+                    設定選項已移至首頁頂部
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // iOS Safari 視口高度修復（優化性能）
+        (function() {
+            let rafId = null;
+            let timeoutId = null;
+            
+            // 設置視口高度變量，解決iOS Safari的100vh問題（使用防抖優化）
+            function setViewportHeight() {
+                // 取消之前的請求
+                if (rafId !== null) {
+                    cancelAnimationFrame(rafId);
+                }
+                if (timeoutId !== null) {
+                    clearTimeout(timeoutId);
+                }
+                
+                // 使用 requestAnimationFrame 優化性能
+                rafId = requestAnimationFrame(function() {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                    rafId = null;
+                });
+            }
+            
+            // 防抖函數（用於 resize 事件）
+            function debounce(func, wait) {
+                return function() {
+                    if (timeoutId !== null) {
+                        clearTimeout(timeoutId);
+                    }
+                    timeoutId = setTimeout(func, wait);
+                };
+            }
+            
+            // 創建防抖版本
+            const debouncedSetViewportHeight = debounce(setViewportHeight, 150);
+            
+            // 初始設置
+            setViewportHeight();
+            
+            // 監聽視窗大小變化（包括iOS Safari地址欄隱藏/顯示和Android瀏覽器）
+            if (typeof window !== 'undefined') {
+                // resize 使用防抖版本
+                window.addEventListener('resize', debouncedSetViewportHeight, { passive: true });
+                
+                // orientationchange 使用較長延遲確保完成旋轉
+                window.addEventListener('orientationchange', function() {
+                    // 延遲一下讓iOS和Android完成旋轉
+                    setTimeout(setViewportHeight, 200);
+                }, { passive: true });
+                
+                // 監聽視窗焦點變化（處理Android瀏覽器地址欄）- 使用防抖
+                window.addEventListener('focus', debouncedSetViewportHeight, { passive: true });
+                
+                // 監聽視覺視口變化（更準確的移動端視口檢測）- 使用防抖
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', debouncedSetViewportHeight, { passive: true });
+                }
+            }
+            
+            // 防止iOS Safari和Android的雙擊縮放（僅在按鈕和連結上）
+            let lastTouchEnd = 0;
+            if (typeof document !== 'undefined') {
+                document.addEventListener('touchend', function(event) {
+                    const target = event.target;
+                    // 檢查是否為按鈕或連結
+                    var isButtonOrLink = target.tagName === 'BUTTON' || target.tagName === 'A';
+                    if (!isButtonOrLink && target.closest) {
+                        isButtonOrLink = target.closest('button') || target.closest('a');
+                    }
+                    if (isButtonOrLink) {
+                        const now = Date.now();
+                        if (now - lastTouchEnd <= 300) {
+                            event.preventDefault();
+                        }
+                        lastTouchEnd = now;
+                    }
+                }, { passive: false });
+            }
+            
+            // 防止iOS Safari和Android下拉刷新（在某些情況下）
+            let touchStartY = 0;
+            if (typeof document !== 'undefined') {
+                document.addEventListener('touchstart', function(event) {
+                    if (event.touches && event.touches.length > 0) {
+                        touchStartY = event.touches[0].clientY;
+                    }
+                }, { passive: true });
+                
+                document.addEventListener('touchmove', function(event) {
+                    // 如果向下滑動且已經在頂部，阻止下拉刷新
+                    if (event.touches && event.touches.length > 0) {
+                        const touchY = event.touches[0].clientY;
+                        if (touchY > touchStartY && (typeof window !== 'undefined' && window.scrollY === 0)) {
+                            event.preventDefault();
+                        }
+                    }
+                }, { passive: false });
+            }
+        })();
+        
+        // 立即检查并初始化数据（在任何脚本加载前）
+        (function() {
+            // 检查 localStorage 中是否有完整数据
+            try {
+                const savedCards = localStorage.getItem('cardsData');
+                if (savedCards) {
+                    const parsed = JSON.parse(savedCards);
+                    if (parsed.length >= 400) {
+                        console.log('✅ 检测到 localStorage 中有完整数据（' + parsed.length + '条）');
+                        return; // 已有完整数据，不需要初始化
+                    }
+                }
+            } catch (e) {
+                console.warn('检查 localStorage 失败:', e);
+            }
+            
+            // 如果没有完整数据，尝试立即初始化
+            console.log('🔄 准备初始化数据...');
+        })();
+    </script>
+    <script src="js/card-system.js"></script>
+    <script src="js/settings.js"></script>
+    <script>
+        // 确保数据初始化：在页面加载后检查并初始化完整数据
+        window.addEventListener('DOMContentLoaded', function() {
+            // 延迟检查，等待 card-system.js 加载完成
+            setTimeout(function() {
+                checkAndInitializeData();
+            }, 1000); // 增加延迟确保 cardSystem 完全初始化
+        });
+
+        async function checkAndInitializeData() {
+            // 检查 localStorage 中是否有完整的400条数据
+            const savedCards = localStorage.getItem('cardsData');
+            let needsInit = false;
+            
+            if (!savedCards) {
+                needsInit = true;
+                console.log('📭 localStorage 中没有数据，需要初始化');
+            } else {
+                try {
+                    const parsedCards = JSON.parse(savedCards);
+                    if (parsedCards.length < 400) {
+                        needsInit = true;
+                        console.log('⚠️ localStorage 中的数据不完整（' + parsedCards.length + '条），需要重新加载');
+                    } else {
+                        console.log('✅ localStorage 中已有完整数据（' + parsedCards.length + '条）');
+                    }
+                } catch (e) {
+                    needsInit = true;
+                    console.error('❌ 解析 localStorage 数据失败:', e);
+                }
+            }
+
+            // 如果需要初始化，尝试从 cards.json 文件加载
+            if (needsInit) {
+                console.log('🔄 正在从文件加载完整数据...');
+                let loaded = false;
+                
+                // 方法1: 尝试从 cards.json 文件加载
+                try {
+                    const response = await fetch('./data/cards.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.length >= 400) {
+                            localStorage.setItem('cardsData', JSON.stringify(data));
+                            console.log('✅ 成功从文件加载并保存完整数据（' + data.length + '条）');
+                            loaded = true;
+                        } else {
+                            console.warn('⚠️ 文件中的数据不完整（' + data.length + '条）');
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ 从文件加载失败（可能是 CORS 问题）:', error);
+                }
+                
+                // 方法2: 如果文件加载失败，尝试从 admin.html 提取数据
+                if (!loaded) {
+                    console.log('🔄 尝试从 admin.html 提取完整数据...');
+                    try {
+                        const adminResponse = await fetch('./admin.html');
+                        if (adminResponse.ok) {
+                            const adminHtml = await adminResponse.text();
+                            // 提取 defaultCardsData
+                            const match = adminHtml.match(/const defaultCardsData\s*=\s*(\[[\s\S]*?\])\s*;/);
+                            if (match && match[1]) {
+                                try {
+                                    const fullData = JSON.parse(match[1]);
+                                    if (fullData && Array.isArray(fullData) && fullData.length >= 400) {
+                                        localStorage.setItem('cardsData', JSON.stringify(fullData));
+                                        console.log('✅ 成功从 admin.html 提取并保存完整数据（' + fullData.length + '条）');
+                                        loaded = true;
+                                    }
+                                } catch (parseError) {
+                                    console.error('解析从 admin.html 提取的 JSON 失败:', parseError);
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error('从 admin.html 获取数据失败:', error);
+                    }
+                }
+                
+                // 如果成功加载，更新卡片系统
+                if (loaded && window.cardSystem) {
+                    await window.cardSystem.forceLoadCompleteData();
+                    // 更新状态消息
+                    const statusMsg = document.getElementById('status-message');
+                    if (statusMsg) {
+                        statusMsg.textContent = '點擊下方按鈕抽三張勵志卡片';
+                        statusMsg.style.color = '';
+                    }
+                } else if (!loaded) {
+                    // 如果两种方法都失败
+                    console.error('❌ 无法加载完整数据！');
+                    const statusMsg = document.getElementById('status-message');
+                    if (statusMsg) {
+                        statusMsg.textContent = '数据加载失败，请点击右上角"管理者登入"初始化数据';
+                        statusMsg.style.color = '#FF6B6B';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+

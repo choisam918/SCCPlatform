@@ -1,0 +1,26 @@
+{
+  "words": [
+    { "chinese": "蘋果", "english": "apple", "category": "水果", "difficulty": "easy" },
+    { "chinese": "書", "english": "book", "category": "學習用品", "difficulty": "easy" },
+    { "chinese": "汽車", "english": "car", "category": "交通工具", "difficulty": "easy" },
+    { "chinese": "狗", "english": "dog", "category": "動物", "difficulty": "easy" },
+    { "chinese": "房子", "english": "house", "category": "建築", "difficulty": "easy" },
+    { "chinese": "貓", "english": "cat", "category": "動物", "difficulty": "easy" },
+    { "chinese": "鳥", "english": "bird", "category": "動物", "difficulty": "easy" },
+    { "chinese": "花", "english": "flower", "category": "植物", "difficulty": "easy" },
+    { "chinese": "樹", "english": "tree", "category": "植物", "difficulty": "easy" },
+    { "chinese": "水", "english": "water", "category": "自然", "difficulty": "easy" },
+    { "chinese": "電腦", "english": "computer", "category": "科技", "difficulty": "medium" },
+    { "chinese": "手機", "english": "phone", "category": "科技", "difficulty": "medium" },
+    { "chinese": "音樂", "english": "music", "category": "藝術", "difficulty": "medium" },
+    { "chinese": "電影", "english": "movie", "category": "娛樂", "difficulty": "medium" },
+    { "chinese": "餐廳", "english": "restaurant", "category": "場所", "difficulty": "medium" }
+  ],
+  "categories": [
+    "水果", "學習用品", "交通工具", "動物", "建築", 
+    "植物", "自然", "科技", "藝術", "娛樂", "場所"
+  ],
+  "difficulties": ["easy", "medium", "hard"],
+  "lastUpdated": "2024-01-01",
+  "version": "1.0"
+} 

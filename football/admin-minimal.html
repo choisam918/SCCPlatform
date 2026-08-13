@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>足球系統 - 管理頁面</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #28a745;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .back-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px 20px;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #28a745;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+        .login-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .login-btn:hover {
+            background: #218838;
+        }
+        .test-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .test-btn:hover {
+            background: #138496;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .admin-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .admin-content h1 {
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h1>⚽ 足球系統管理登入</h1>
+            <div class="form-group">
+                <label for="adminPassword">管理員密碼</label>
+                <input type="password" id="adminPassword" placeholder="請輸入管理員密碼" onkeypress="if(event.key==='Enter') checkPassword()">
+            </div>
+            <button class="login-btn" onclick="checkPassword()">登入</button>
+            <button class="test-btn" onclick="testAlert()">🧪 測試 Alert</button>
+            <button class="test-btn" onclick="testConsole()">📝 測試 Console</button>
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- 管理頁面 -->
+    <div id="adminPage" class="hidden">
+        <button class="back-btn" onclick="goBack()">← 返回主頁</button>
+        
+        <div class="container">
+            <div class="admin-content">
+                <h1>✅ 足球系統管理頁面</h1>
+                <p>您已成功登入足球系統管理頁面。</p>
+                <p>返回按鈕位於左上角。</p>
+                <p>系統運行正常。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('=== Football 管理頁面載入 ===');
+        
+        const ADMIN_PASSWORD = 'admin@123';
+        
+        // 測試函數
+        function testAlert() {
+            alert('Football Alert 測試成功！');
+            console.log('Football Alert 測試執行');
+        }
+        
+        function testConsole() {
+            console.log('Football Console 測試執行');
+            document.getElementById('errorMessage').innerHTML = 'Console 測試完成 - 請檢查 F12';
+            document.getElementById('errorMessage').classList.remove('hidden');
+        }
+        
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Football admin DOM 載入完成');
+            // 檢查是否已經登入
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                showAdminPage();
+            } else {
+                showLoginPage();
+            }
+        });
+
+        // 顯示登入頁面
+        function showLoginPage() {
+            console.log('顯示登入頁面');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+        }
+
+        // 顯示管理頁面
+        function showAdminPage() {
+            console.log('顯示管理頁面');
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.remove('hidden');
+        }
+
+        // 檢查密碼
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showAdminPage();
+                errorMessage.classList.add('hidden');
+            } else {
+                errorMessage.textContent = '密碼錯誤，請重新輸入！';
+                errorMessage.classList.remove('hidden');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        // 返回主頁
+        function goBack() {
+            console.log('返回主頁函數被調用');
+            if (window.electronAPI && window.electronAPI.navigateToMain) {
+                console.log('使用 Electron API 返回主頁');
+                window.electronAPI.navigateToMain();
+            } else {
+                console.log('使用直接導航返回主頁');
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // 檢查環境
+        console.log('Football 環境檢查:');
+        console.log('- window.electronAPI:', typeof window.electronAPI);
+        console.log('- sessionStorage:', typeof sessionStorage);
+        console.log('- document.getElementById:', typeof document.getElementById);
+    </script>
+</body>
+</html>
+
