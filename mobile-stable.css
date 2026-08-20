@@ -1,0 +1,106 @@
+/* SCC Platform：平板／手機版面鎖定，避免走位與橫向溢出 */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  width: 100%;
+  max-width: 100%;
+  /* 不要在 html 設 overflow-x:hidden：會讓 overflow-y 變成 auto，
+     與 body 形成雙層捲動容器，觸控裝置常因此無法垂直捲動 */
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  /* 僅在 body 限制橫向；clip 不建立捲動容器（舊瀏覽器退回 hidden） */
+  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+svg,
+iframe,
+table {
+  max-width: 100%;
+}
+
+button,
+a,
+.card,
+.fullscreen-card,
+.mode-card,
+.category-btn,
+.card-btn {
+  touch-action: manipulation;
+}
+
+@media (max-width: 1200px) {
+  html,
+  body {
+    min-width: 0;
+  }
+
+  /* 預設允許文件自然垂直捲動（各頁若需全螢幕鎖定可自行覆寫） */
+  html {
+    height: auto;
+  }
+
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+    max-width: 100%;
+  }
+
+  .container,
+  .main-container,
+  .wrap,
+  .subsystems,
+  .practice-groups,
+  .mode-grid,
+  .fullscreen-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .card,
+  .fullscreen-card,
+  .mode-card,
+  .subsystem-card {
+    min-width: 0;
+  }
+
+  h1, h2, h3, p, label {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+/* 固定在角落的按鈕不要超出安全區 */
+@media (max-width: 1024px) {
+  .theme-toggle,
+  .btn-admin-small,
+  .btn-admin-overlay,
+  .admin-btn,
+  .admin-link {
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* 流程圖畫布需要拖曳／縮放，不要套觸控鎖定 */
+.flowchart-body,
+.flowchart-body canvas,
+.flowchart-body .viewport {
+  touch-action: auto;
+}
